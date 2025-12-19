@@ -1,0 +1,6628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" 
+      content="width=device-width, initial-scale=1.0,
+               minimum-scale=1.0, maximum-scale=1.0,
+               user-scalable=no, viewport-fit=cover">
+<title>ソフトテニス ダブルスマッチ スコアボードアプリ</title>
+
+<!-- 既存フォント -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=RocknRoll+One&family=Seymour+One&family=Rubik+Doodle+Shadow&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+<!-- PWA用 -->
+<meta name="theme-color" content="#006400">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- マニフェスト（別ファイル） -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Google Analytics (集計ツール)-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJXT1XNPN2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZJXT1XNPN2');
+</script>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:"Kosugi Maru",sans-serif;
+  background: #006400;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* --- アプリ基本設定 --- */
+
+/* --- すべてのテキスト選択を禁止 --- */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* --- サーバー点滅 --- */
+@keyframes blink {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0; }
+}
+.blinking { animation: blink 0.6s linear; }
+
+/* テキストをゆっくり点滅（1秒周期） */
+.blink-text {
+  animation: textBlink 1.5s linear infinite;
+}
+@keyframes textBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ---------------------------- スケーリング（全スマホ対応版 ---------------------------- */
+#appScaleWrapper {
+  width: 400px;   /* デザイン基準幅 */
+  height: 800px;  /* デザイン基準高さ */
+  transform-origin: top left;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+/* ---------------------------- スケーリング（全スマホ対応版 ---------------------------- */
+
+/* --------------------------------- タイトル画面の表示アニメーション --------------------------------- */
+/* --- タイトル画面 --- */
+#titleWrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 常に画面中央に */
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#titleScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100dvh;
+  text-align: center;
+  background: linear-gradient(-45deg, #004d00, #006400, #008000, #006400);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+  overflow: hidden;
+}
+
+/* --- タイトル文字 --- */
+#titleText {
+  font-family: "RocknRoll One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #fff;
+  letter-spacing: 3px;
+  text-shadow: 3px 3px 8px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+/* --- ソフトテニス文字ラッパー --- */
+.title-main-wrapper {
+  position: relative;
+  display: inline-block;
+  transform: translateX(20px);
+  animation: textShake 1.5s forwards;
+  animation-delay: 0.3s;
+}
+
+/* --- ボール --- */
+.ball-left {
+  position: absolute;
+  left: -50px;
+  top: 0;
+  font-size: 1em;
+  z-index: 2;
+  animation: ballBounce 1.5s forwards;
+}
+
+/* --- 影（ボールの真下に配置） --- */
+.ball-shadow {
+  position: absolute;
+  left: -50px;
+  top: 1.13em;                     /* ← ボール1個分 下へ移動！（ここが修正点） */
+  width: 1em;
+  height: 0.3em;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  z-index: 1;
+  animation: shadowBounce 1.5s forwards;
+}
+
+/* --- ボール：高バウンド + 減衰 + 3秒版 --- */
+@keyframes ballBounce {
+  0%   { transform: translateY(-150%); }  /* 1回目：超ジャンプ */
+  18%  { transform: translateY(0); }
+
+  32%  { transform: translateY(-80%); }   /* 2回目：高め */
+  45%  { transform: translateY(0); }
+
+  58%  { transform: translateY(-35%); }   /* 3回目：やや高め */
+  70%  { transform: translateY(0); }
+
+  82%  { transform: translateY(-15%); }   /* 4回目：弱く */
+  100% { transform: translateY(0); }
+}
+
+
+/* --- 影：ボール同期の減衰バウンド 3秒版 --- */
+@keyframes shadowBounce {
+  /* 1回目（最大） */
+  0%   { transform: translateY(-150%) scaleX(0.45) scaleY(0.75); opacity: 0.4; }
+  18%  { transform: translateY(0) scaleX(1.8) scaleY(0.35); opacity: 1; }
+
+  /* 2回目 */
+  32%  { transform: translateY(-80%) scaleX(0.6) scaleY(0.65); opacity: 0.6; }
+  45%  { transform: translateY(0) scaleX(1.5) scaleY(0.4); opacity: 0.95; }
+
+  /* 3回目 */
+  58%  { transform: translateY(-35%) scaleX(0.75) scaleY(0.55); opacity: 0.5; }
+  70%  { transform: translateY(0) scaleX(1.3) scaleY(0.4); opacity: 0.85; }
+
+  /* 4回目（収束） */
+  82%  { transform: translateY(-15%) scaleX(0.9) scaleY(0.5); opacity: 0.4; }
+  100% { transform: translateY(0) scaleX(1.0) scaleY(0.45); opacity: 0.7; }
+}
+
+/* --- テキスト揺れの減衰 3秒版 --- */
+@keyframes textShake {
+  0%   { transform: translateX(20px) translateY(0); }
+  18%  { transform: translateX(20px) translateY(-5px); }  /* 大揺れ */
+
+  32%  { transform: translateX(20px) translateY(3px); }
+  45%  { transform: translateX(20px) translateY(-2px); }
+
+  58%  { transform: translateX(20px) translateY(1.5px); }
+  70%  { transform: translateX(20px) translateY(-1px); }
+
+  100% { transform: translateX(20px) translateY(0); }
+}
+
+/* --- 各行文字アニメ --- */
+.title-main, .line {
+  display: block;
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+  animation: fadeUp 1s ease forwards, shine 2s ease-in-out infinite;
+  animation-fill-mode: forwards;
+  color: #fff;
+}
+
+.title-main { animation-delay: 0.3s; }
+.line:nth-child(2) { animation-delay: 0.8s; }
+.line:nth-child(3) { animation-delay: 1.3s; }
+
+/* --- 文字浮かび上がり --- */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+  60% { opacity: 1; transform: scale(1.05) translateY(-5px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* --- 光るシャイン --- */
+@keyframes shine {
+  0%, 100% { text-shadow: 3px 3px 8px rgba(0,0,0,0.6); }
+  50% { text-shadow: 3px 3px 20px rgba(255,255,255,0.8); }
+}
+
+/* --- 背景グラデーション --- */
+@keyframes gradientBG {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+/* --------------------------------- タイトル画面の表示アニメーション終り --------------------------------- */
+
+
+/* Smash!!!!ロゴ表示 */
+@keyframes smoothSpinPop {
+  0% {transform: scale(0) rotate(0deg);opacity: 0;}
+  50% {transform: scale(1.5) rotate(540deg);opacity: 1;}
+  100% {transform: scale(1) rotate(1080deg);}
+}
+
+#smashText {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ff0;
+  text-shadow: 2px 2px 6px #000;
+  text-align: center;
+  animation: smoothSpinPop 1s linear forwards;
+}
+
+#smashExclamations {
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 6px #000;
+  animation: rainbowColors 1s linear infinite;
+  display: inline-block;
+  letter-spacing: 4px;  /* !!!!の間隔を広げる */
+}
+
+@keyframes rainbowColors {
+  0% { color: red; }
+  20% { color: orange; }
+  40% { color: yellow; }
+  60% { color: green; }
+  80% { color: blue; }
+  100% { color: purple; }
+}
+
+/* 設定画面--- コンテナ、入力、表示 --- */
+.container{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  width:100%;
+  height:100%;
+  padding:5px;
+  box-sizing:border-box;
+}
+input,select,button{
+  padding:6px;
+  margin:3px 0;
+  border-radius:8px;
+  border:none;
+  font-size:14px;
+}
+button{
+  cursor:pointer;
+  transition:all 0.2s;
+}
+button:hover{opacity:0.9;}
+
+/* 設定画面全体の統一幅 */
+.setup-block {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* 設定画面コンテナ */
+#setupScreen {
+  display: none;          /* 初期は非表示 */
+  position: relative;
+}
+
+/* 設定画面上部透明枠（余白用） */
+#setupExtraTop {
+  width: 100%;
+  height: 100px;          /* 上部スペース */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;   /* クリック無効 */
+}
+
+/* 設定画面タイトル */
+.setup-title {
+  font-size: 22px;
+  color: white;
+  font-weight: bold;
+}
+
+/* 設定画面タイトル下余白（透明枠） */
+#setupSubFrame {
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* クリック不可 */
+}
+
+/* 設定画面_アナウンス用（上段） */
+#setupHintTextTop {
+  width: 100%;
+  height: 40px;
+  margin: 10px 0 10px 0;
+  pointer-events: none;
+  text-align: center;
+  color: white;
+  font-size: 16px;
+  line-height: 18px;       /* テキストを縦中央に配置 */
+}
+
+/* 設定画面_大会名フォーム用の透明親枠 */
+.tournament-wrapper {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent; /* 背景を完全に透明に */
+  margin: 4px 0px;          /* 上下の余白 */
+}
+
+/* 設定画面_大会名入力欄 */
+#tournamentNameInput{
+  width:100%;
+  max-width:400px;
+  height: 38px;
+  resize: none;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding:6px;
+  text-align: center;
+  font-size:18px;
+  border-radius:8px;
+  border:none;
+  box-sizing:border-box;
+}
+
+/* 大会名保存エリア全体（透明枠） */
+.tournament-save-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 4px auto;
+  gap: 4px; /* 各要素の間隔 */
+  width: calc(100% - 2px);
+  overflow-x: hidden;
+
+}
+
+/* 大会名保存ボタン・呼び出しボタン（ぷっくり版） */
+.tournament-btn {
+  flex: 0 0 38px;
+  height: 38px;
+
+  font-size: 16px;
+  margin: 4px;
+  font-family: "Kosugi Maru", sans-serif;
+
+  border-radius: 10px;
+  border: none;
+
+  /* ぷっくり用ブルーグラデーション */
+  background: linear-gradient(to bottom, #33AADD, #0077B6);
+  color: white;
+
+  cursor: pointer;
+  padding: 0 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 立体感 */
+  box-shadow:
+    0 4px 0 #005F8A,
+    0 6px 10px rgba(0, 0, 0, 0.3);
+
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* ホバー：少し明るく */
+.tournament-btn:hover {
+  background: linear-gradient(to bottom, #4BBBEA, #1490CC);
+}
+
+/* 押した時：沈む */
+.tournament-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #005F8A,
+    0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 大会名保存リスト（ドロップダウン） */
+.tournament-select {
+  flex: 1; /* 残り幅を全部使う */
+  height: 38px;
+  font-size: 16px;
+  font-family: "Kosugi Maru", sans-serif;
+  border-radius: 8px;
+  padding: 0 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+  width: calc(100% - 2px);
+  overflow-x: hidden;
+}
+
+/* 設定画面--- A/Bチーム入力欄 --- */
+
+/* 透明の親枠（最大幅400px） */
+.team-inputs-wrapper {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0 2px;
+  box-sizing: border-box;
+}
+
+/* 2列を均等に並べる枠 */
+.team-inputs {
+  display: flex;
+  justify-content: space-between; /* ← 2列を左右に振り分け */
+  gap: 8px;                        /* 列間のスペース調整 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 左右の列は等幅にする */
+.team-column {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-sizing: border-box;
+}
+
+/* 左列は左寄せ・右列は右寄せ */
+.team-column.left {
+  align-items: flex-start;
+}
+
+.team-column.right {
+  align-items: flex-end;
+}
+
+/* 入力欄（幅は親に合わせる） */
+.team-column input {
+  width: 100%;
+  height: 32px;
+  padding: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-family: "Kosugi Maru", sans-serif;
+}
+
+/* チーム名・選手名 保存ボタン */
+.team-column button {
+  width: 100%;
+  height: 32px;
+
+  border-radius: 10px;
+  border: none;
+
+  /* ぷっくり用グラデーション（コーラル系） */
+  background: linear-gradient(to bottom, #FF9A76, #FF6347);
+  color: white;
+
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: "Kosugi Maru", sans-serif;
+
+  /* 立体感 */
+  box-shadow:
+    0 3px 0 #CC4F3A,
+    0 4px 8px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* ホバー：少し明るく */
+.team-column button:hover {
+  background: linear-gradient(to bottom, #FFB39A, #FF7A5C);
+}
+
+/* 押した時：沈む */
+.team-column button:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 #CC4F3A,
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* 設定画面--- A/Bチーム入力欄 --- */
+
+/* --- 保存チーム名・ペア名呼出し欄 --- */
+
+/* 外側の透明親枠 */
+.team-restore-wrapper {
+  display: flex;
+  justify-content: space-between; /* ボタン・ドロップダウンの間隔を均等に */
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 4px auto;
+  gap: 2px; /* ボタンとドロップダウンの間隔 */
+}
+
+
+/* 設定画面_保存チーム名等呼び出し全体 */
+.team-restore-row {
+  display: flex;
+  justify-content: space-between; /* ボタン・ドロップダウンの間隔を均等に */
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 4px auto;
+  gap: 2px; /* 各要素の間隔 */
+}
+
+/* 設定画面_保存チーム・ペア選択_中央のドロップダウン */
+.team-restore-select {
+  flex: 1; /* 残り幅を全部使う */
+  height: 38px;
+  font-size: 16px;
+  font-family: "Kosugi Maru", sans-serif;
+  border-radius: 8px;
+  padding: 0 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+  width: calc(100% - 2px);
+  overflow-x: hidden;
+}
+
+/* 設定画面_保存チーム・ペア選択_両端のボタン */
+.team-restore-btn {
+  flex: 0 0 36px;
+  height: 36px;
+
+  font-size: 14px;
+  margin: 4px;
+  color: white;
+  font-family: "Kosugi Maru", sans-serif;
+
+  border-radius: 10px;
+  border: none;
+
+  /* ぷっくり用グラデーション */
+  background: linear-gradient(to bottom, #FFB733, #FF8C00);
+
+  cursor: pointer;
+  padding: 0 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 立体感 */
+  box-shadow:
+    0 3px 0 #CC7000,
+    0 4px 8px rgba(0, 0, 0, 0.3);
+
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* ホバー：少し明るく */
+.team-restore-btn:hover {
+  background: linear-gradient(to bottom, #FFC14D, #FF9F1A);
+}
+
+/* 押下：沈む */
+.team-restore-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 0 #CC7000,
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* チーム名と選手名を初期化 */
+.reset-button {
+  margin-top: 4px;
+
+  /* ベース色 */
+  background: linear-gradient(to bottom, #777, #555);
+  color: white;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+  max-width: 400px;
+  height: 38px;
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+
+  font-size: 16px;
+  font-family: "Kosugi Maru", sans-serif;
+
+  /* ぷっくり感 */
+  box-shadow:
+    0 4px 0 #444,          /* 下の影（縁） */
+    0 6px 10px rgba(0,0,0,0.3);
+
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* ホバー時：少し明るく */
+.reset-button:hover {
+  background: linear-gradient(to bottom, #888, #666);
+}
+
+/* 押した時：沈む */
+.reset-button:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #444,
+    0 3px 6px rgba(0,0,0,0.3);
+}
+
+/* 設定画面_余白・メッセージ用透明フレーム */
+#setupMessageFrame {
+  width: 100%;
+  text-align: center;
+  height: 20px;          /* 必要に応じて調整 */
+  margin-bottom: 0px;    /* 下の要素との間隔 */
+  color: white;
+  font-size: 0px;
+  pointer-events: none;  /* クリック不可 */
+}
+
+/* 設定画面_アナウンス用（下段） */
+#setupHintTextBottom {
+  width: 100%;
+  height: 18px;
+  margin: 10px 0 10px 0;
+  pointer-events: none;
+  text-align: center;
+  color: white;
+  font-size: 16px;
+  line-height: 18px;       /* テキストを縦中央に配置 */
+}
+
+/* 透明の親枠（共通設定） */
+.select-wrapper,
+.start-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent; /* 背景は完全に透明 */
+  margin: 0px 0px;          /* 上下に余白をとる */
+}
+
+/* 設定画面_ゲーム数選択セレクトボックス */
+.match-type-select {
+  display: block;
+  margin: 4px auto 4px auto;
+  width: 100%;           /* 親要素に対しての横幅指定（スマホで中央にフィット） */
+  max-width: 400px;     /* 最大幅制限 */
+  height: 38px;         /* ボックスの高さ */
+  font-size: 18px;
+  border-radius: 8px;
+  text-align: center;
+  text-align-last: center; /* 選択中テキストを中央寄せ */
+  font-family: "Kosugi Maru", sans-serif;
+}
+
+/* リスト展開時にも同じ幅にしたい場合 */
+.match-type-select option {
+  width: 100%; /* 一部ブラウザでリスト幅を合わせる効果 */
+}
+
+/* 設定画面_試合開始ボタン（ぷっくり版） */
+.start-btn {
+  width: 100%;
+  max-width: 400px;
+  height: 38px;
+
+  font-size: 18px;
+  font-weight: bold;
+  font-family: "Kosugi Maru", sans-serif;
+
+  border-radius: 12px;
+  border: none;
+
+  /* ぷっくり用コーラルグラデーション */
+  background: linear-gradient(to bottom, #FF9A76, #FF6347);
+  color: white;
+
+  cursor: pointer;
+
+  /* 立体感（しっかり） */
+  box-shadow:
+    0 4px 0 #CC4F3A,
+    0 6px 12px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease,
+    background 0.1s ease;
+}
+
+/* ホバー：少し明るく */
+.start-btn:hover {
+  background: linear-gradient(to bottom, #FFB39A, #FF7A5C);
+}
+
+/* 押した時：しっかり沈む */
+.start-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #CC4F3A,
+    0 3px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* 試合画面全体 */
+#gameScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  height: auto;
+  position: relative;
+
+  /* 縦スクロールのみ許可、横は非表示 */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* はみ出し防止のために幅指定（推奨） */
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* 全体を中央寄せにする外枠 */
+#centerWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* 横中央寄せ */
+  margin-top: 1px;
+}
+
+/* 既存の outerContainer を横揃え中央に */
+#outerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px; /* A・vs・B の間のバランス調整 */
+}
+
+/* ------------------- お天気と日時 ------------------- */
+#dateWeatherContainer {
+    width: 95%;
+    max-width: 390px; /* ★ 最大幅を390pxに固定 */
+    margin: 2px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px; /* 少し細く調整 */
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden; /* はみ出し防止 */
+}
+
+/* 日時（フォントを少し小さめに） */
+#safeDateTimeBox {
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-right: 0.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 天気全体枠（強制390px制御用） */
+#weatherBox {
+    font-size: 11px; /* ★ 全体を小さくスタート */
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    height: 22px;
+    max-width: 180px; /* ★ ← 少し幅を制限しバランス調整 */
+}
+
+/* 天気アイコン */
+#weatherBox i {
+    font-size: 14px; /* 初期値（後で JS が自動調整） */
+    padding: 1px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* hover */
+#weatherBox i:hover {
+    transform: translateY(-1px) scale(1.1);
+    background: rgba(255,255,255,0.3);
+}
+
+/* 天気別カラー */
+.wi-day-sunny { color: #FFD93D; background: #FFD93D33; }
+.wi-day-cloudy { color: #FFB347; background: #FFB34733; }
+.wi-cloud { color: #90E0EF; background: #90E0EF33; }
+.wi-showers { color: #48CAE4; background: #48CAE433; }
+.wi-rain, .wi-rain-wind { color: #0077B6; background: #0077B633; }
+.wi-snow, .wi-snowflake-cold { color: #CAF0F8; background: #CAF0F833; }
+.wi-na { color: #FF6B6B; background: #FF6B6B33; }
+
+/* 住所表示は常に4文字＋"…"に対応 */
+#weatherBox span.region {
+    display: inline-block;
+    max-width: 38px;  /* ★ 4文字＋…に最適化 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+}
+
+/* モーダルは現状維持 */
+#addressModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#addressModalContent {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+}
+
+#addressModalContent input {
+    width: 95%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+#addressModalContent button {
+    padding: 6px 12px;
+    margin: 4px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #48CAE4;
+    color: #fff;
+    font-weight: 500;
+}
+
+#addressModalContent button:hover {
+    background-color: #0096C7;
+}
+/* ------------------- お天気と日時 ------------------- */
+
+/* 試合画面_大会名表示 */
+#tournamentDisplay {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 1px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  font-family: "Kosugi Maru", sans-serif;
+
+  /* 折り返し禁止 + はみ出し防止 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* デフォルトフォントサイズ */
+  font-size: 21px;
+
+  position: relative;
+  z-index: 5;
+}
+
+/* 狭い画面（600px以下）では大会名も縮小 */
+@media (max-width: 600px) {
+  #tournamentDisplay {
+    font-size: 4.6vw;  /* finalDisplay より少し大きめ */
+  }
+}
+
+/* 試合画面_--- チーム名表示（ぷっくり・フラット版） --- */
+.team-name-display {
+  width: 155px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 10px;
+  background: #fff; /* JSで変更可能（単色） */
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  margin: 3px 5px;
+  box-sizing: border-box;
+  font-size: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* JSと干渉しないように background の transition は入れない */
+  transition: box-shadow 0.2s ease;
+
+  /* --- ぷっくり立体・浮かない版 --- */
+  box-shadow:
+    /* 上の白ハイライト（光） */
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+
+    /* 下の陰影（丸み） */
+    inset 0 -3px 5px rgba(0, 0, 0, 0.18),
+
+    /* わずかな外側影（浮かない程度の自然さ） */
+    0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+/* 試合画面_--- ペア名表示 --- */
+.pair-name{
+  font-size:16px;
+  text-align:center;
+  margin:3px 0;
+}
+
+/* 試合画面_vs（レディ）ボタン設定（オレンジ背景・白文字・ぷっくり） */
+.ready-btn {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(to bottom, #ffca7a, #FFA500); /* 上から下のグラデーションで立体感 */
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ffffff; /* 白文字 */
+  font-weight: bold;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); /* ぷっくり立体感 */
+  transition: all 0.2s ease;
+  font-family: "Kosugi Maru", sans-serif;
+  margin: 0px 5px;
+}
+
+.ready-btn:hover {
+  background: linear-gradient(to bottom, #ffb84d, #FF8C00);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
+}
+
+.ready-btn:active {
+  background: linear-gradient(to bottom, #FF8C00, #FF6A00);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) inset;
+  transform: translateY(1px);
+}
+
+/* Readyボタンが押せない状態（水色・クリック無効化・ぷっくり維持） */
+.ready-btn.inactive {
+  background: linear-gradient(to bottom, #A6DFFF, #87CEFA); /* 水色グラデーション */
+  color: #ffffff; /* 白文字 */
+  pointer-events: none; /* クリック無効化 */
+  cursor: default;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3); /* 立体感を維持 */
+  opacity: 1; /* グレー化防止 */
+  transition: all 0.2s ease;
+}
+
+/* 試合画面_vs（レディ）ボタン押す前の消灯処理（従来の透明化） */
+.inactive {
+  opacity: 0.4;        /* 消灯イメージ */
+  pointer-events: none; /* クリック無効化 */
+}
+
+/* 試合画面_vs（レディ）ボタン設定終り */
+
+/* 試合画面_--- コントロールボタン --- */
+.controls{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:1px;
+  width:100%;
+  align-items:center;
+  gap:0px;
+  font-family: "Kosugi Maru", sans-serif;
+}
+
+/* 試合画面_--- ファイナル・ジャッジ文字標準表示 --- */
+.display-fixed {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  margin: 1px;
+  min-height: 20px;
+
+  /* 通常は20px固定 */
+  font-size: 16px;
+
+  /* 折り返し・はみ出し防止 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 狭い画面（600px以下）では自動縮小 */
+@media (max-width: 600px) {
+  .display-fixed {
+    font-size: 4vw; /* 横幅に応じて自動で小さくなる */
+  }
+}
+
+/* finalDisplay を入れる透明の枠 */
+#finalDisplayWrapper {
+  width: 390px;          /* ★ 測定用の固定幅 */
+  height: auto;
+  overflow: hidden;      /* はみ出し確認用 */
+  white-space: nowrap;
+  background: transparent;
+  margin: 0 auto;        /* 中央寄せ（必要なら） */
+}
+
+/* 試合画面_--- ファイナル表示 --- */
+#finalDisplay {
+  font-weight: bold;
+  text-align: center;
+  max-width: 100%;
+  display: block;   /* ブロック要素で幅が有効になる */
+  margin-top: 1px;
+  margin-bottom: 0px;
+  font-family: "Kosugi Maru", sans-serif;
+  width: 100%;
+  white-space: nowrap;         /* 折り返さない */
+  overflow: hidden;            /* はみ出し防止 */
+  
+  font-size: 16px;             /* デフォルト16px */
+  
+  /* 白ベース + 濃いパステル虹色グラデーション */
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #ff9999,
+    #fff266,
+    #99ff99,
+    #66ffff,
+    #6699ff,
+    #cc99ff,
+    #ffffff
+  );
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* 軽めの影で明るさを維持 */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+
+  /* アニメーション速度 */
+  animation: rainbowShift 3s linear infinite;
+}
+
+@keyframes rainbowShift {
+  0% { background-position: 100% 0%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* 試合画面_--- デュース等ジャッジ表示 --- */
+#deuceDisplay {
+  color: #FFD700;         /* ゴールド系でテニスっぽく鮮やか */
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 3px;
+
+  /* オプション: 少し光らせたい場合 */
+  text-shadow: 0 0 3px rgba(255, 215, 0, 0.8);
+}
+
+/* 試合画面_得点盤用透明枠内始め */
+#overlay-wrapper {
+  flex-shrink: 0;   /* ← flex圧縮を防ぐ */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column; /* ← 上下の伸びを許可 */
+  width: 100%;  /* ← 横幅を固定 */
+  height: 140px; /* ← 縦幅を固定 */
+  max-width: 100%;
+  margin: 2px auto;
+  /* border: 2px solid red; */ /* 確認用は不要 */
+  padding: 0px; /* ← はみ出し防止の余白を追加 */
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.3); /* ← 半透明の黒背景（透明度30%） */
+  border-radius: 10px; /* ← Rをつける（角丸） */
+}
+
+/* --- 試合画面_得点表示標準 --- */
+.points-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0px;
+  margin-top: 0px;
+}
+/* --- 試合画面_ポイント盤の外枠 --- */
+.points-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  width: 110px;
+  gap: 0px;
+}
+
+.overlay-frame {
+  display: flex;
+  justify-content: space-between; /* 横方向は均等に並べる */
+  align-items: flex-start;        /* ← 上揃えに固定 */
+  width: 100%;
+  gap: 1px;                       /* 少し余白を付ける */
+  min-width: 0;
+}
+.overlay-box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0; /* flex内での縮小を許可 */
+}
+.overlay-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 内部は上端揃え */
+  align-items: center;         /* 中央揃えにしたいものだけ中央 */
+}
+.split-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* ← 上端に寄せる！ */
+  height: 100%;
+}
+.split-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 0px;
+}
+
+/* サーバー表示始め */
+.split-middle {
+  display: flex;
+  justify-content: center;  /* 親の中央に配置 */
+  align-items: center;
+  width: 100%;             
+  height: 20px;
+  background-color: transparent;
+  margin-top: 7px;
+  margin-bottom: 5px;
+}
+
+.middle-frame {
+  display: flex;
+  justify-content: center;  /* 中央寄せ */
+  align-items: center;
+  gap: 26px;                /* 白丸S同士の間隔 */
+}
+
+/* 白丸S：電球・ボールのような立体感 */
+.middle-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 26px;
+  height: 26px;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #cccccc); /* ぷっくり光沢 */
+  border-radius: 50%;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 
+      0 2px 4px rgba(0,0,0,0.3),       /* 下に軽い影 */
+      inset 0 -2px 4px rgba(255,255,255,0.5); /* 内側ハイライトで球体感 */
+  opacity: 0.1; /* デフォルト消灯 */
+  transition: opacity 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* 点灯状態：完全に光る */
+.middle-box.active {
+  opacity: 1;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #eeeeee); /* 明るい球体 */
+  box-shadow: 
+      0 2px 8px rgba(255,255,255,0.8), /* 発光感 */
+      0 4px 10px rgba(0,0,0,0.4),
+      inset 0 -2px 4px rgba(255,255,255,0.6);
+}
+
+/* 中央のS文字 */
+.middle-symbol {
+  color: red;
+  font-size: 14px;
+  font-family: "Saira", sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+  text-shadow: 0 0 2px #fff; /* 光の反射感 */
+}
+/* サーバー表示終り */
+
+.split-bottom {
+  display: flex;             /* flex で中央揃え */
+  justify-content: center;   /* 横中央 */
+  align-items: center;       /* 縦中央 */
+  height: 20px;              /* 枠の高さ */
+}
+
+/* サイドバー（#1・#5）を少し細くする */
+.overlay-box:first-child,
+.overlay-box:last-child {
+  flex: 0.6; /* 左右を少し細くする */
+}
+
+/* 試合画面_ゲームポイント盤そのもの */
+.mini-game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 41px;              
+  height: 41px;
+  margin: 0px 0px 0px 0px;  /* 上1px・右0px・下1px・左0px */
+  padding: 0;
+  background: black;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;          /* 内部のズレを防止 */
+}
+
+/* 試合画面_ゲームポイント盤_数字 */
+.mini-flip-container {
+  position: relative;
+  width: 100%;               /* 親の幅にフィット */
+  height: 100%;              /* 親の高さにフィット */
+  perspective: 800px;
+  font-size: 36px;           /* 数字サイズ統一 */
+  font-family: "Saira", sans-serif;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.mini-flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease-in-out;
+}
+
+.mini-front, .mini-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border-radius: 8px;
+  background: transparent;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+#gameAFront, #gameABack { color: #0000FF; } /* blue → #0000FF */
+#gameBFront, #gameBBack { color: #008000; } /* green → #008000 */
+
+.mini-back { transform: rotateX(180deg); }
+
+/* 試合画面_ポイント盤数字 */
+.flip-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 120px;
+  height: 110px;
+  font-size: 114px;
+  font-family: "Saira", sans-serif;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+/* 数字スパンの設定 */
+.front span, .back span {
+  display: inline-block;
+  transform-origin: center;
+  transition: transform 0.25s ease-in-out;
+}
+
+/* 桁数に応じた縮尺（数字のみ対象） */
+.flip-container[data-length="2"] .front span,
+.flip-container[data-length="2"] .back span {
+  transform: scale(0.7);
+}
+
+.flip-container[data-length="3"] .front span,
+.flip-container[data-length="3"] .back span {
+  transform: scale(0.5);
+}
+
+.flipper {
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform 0.3s ease-in-out;
+}
+.front, .back {
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:bold;
+  border-radius:12px;
+  background:black;
+  border:2px solid #fff;
+  box-sizing:border-box;
+  text-shadow:-1px -1px 0 #fff,1px -1px 0 #fff,-1px 1px 0 #fff,1px 1px 0 #fff;
+}
+
+#pointAFlip .front, #pointAFlip .back { color: #0000FF; } /* blue → #0000FF */
+#pointBFlip .front, #pointBFlip .back { color: #008000; } /* green → #008000 */
+
+.back { transform: rotateX(180deg); }
+.flip { transform: rotateX(-180deg); }
+
+/* 試合画面A側（左）ポイント盤＆ポイント追加ボタン */
+#pointAFlip {
+  width: 90px;
+  height: 106px;
+  margin-right: 15px; /* 中央ゲームポイント盤との間 */
+  margin-left: 0px;   /* 左端は詰める */
+  margin-top: 0px;    /* 上からの距離を調整 */
+
+  /* 立体感＋背景 */
+  background: #4CAF50; /* 初期色 */
+  border-radius: 12px; /* 角丸でぷっくり感 */
+  box-shadow: 
+    0 8px 12px rgba(0,0,0,0.3),          /* 外側影で浮き感 */
+    inset 0 -4px 8px rgba(255,255,255,0.5), /* 内側ハイライト */
+    inset 0 4px 8px rgba(0,0,0,0.15);      /* 内側下影で丸み強調 */
+
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.3s;
+}
+
+/* 押下アニメーション */
+#pointAFlip:active {
+  transform: scale(0.92); /* 強めに縮む */
+  box-shadow:
+    0 3px 5px rgba(0,0,0,0.35),       /* 凹んだ影 */
+    inset 0 4px 8px rgba(255,255,255,0.2),
+    inset 0 -4px 8px rgba(0,0,0,0.2);
+}
+
+/* 試合画面_B側（右）ポイント盤＆ポイント追加ボタン */
+#pointBFlip {
+  width: 90px;
+  height: 106px;
+  margin-left: 15px; /* 中央ゲームポイント盤との間 */
+  margin-right: 0px; /* 右端は詰める */
+  margin-top: 0px;   /* 上からの距離を調整 */
+
+  /* 立体感＋背景 */
+  background: #FF5722; /* 初期色 */
+  border-radius: 12px; /* 角丸でぷっくり感 */
+  box-shadow: 
+    0 8px 12px rgba(0,0,0,0.3),          /* 外側影で浮き感 */
+    inset 0 -4px 8px rgba(255,255,255,0.5), /* 内側ハイライト */
+    inset 0 4px 8px rgba(0,0,0,0.15);      /* 内側下影で丸み強調 */
+
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.3s;
+}
+
+/* 押下アニメーション */
+#pointBFlip:active {
+  transform: scale(0.92); /* 強めに縮む */
+  box-shadow:
+    0 3px 5px rgba(0,0,0,0.35),       /* 凹んだ影 */
+    inset 0 4px 8px rgba(255,255,255,0.2),
+    inset 0 -4px 8px rgba(0,0,0,0.2);
+}
+
+/* 試合画面_ポイント盤内ロゴ（ぷっくりボタン） */
+.rogo-text {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+  transform: translateX(0px);
+  text-align: center;
+  font-family: "Rubik Doodle Shadow", system-ui;
+  font-size: 17px;
+  font-weight: bold;
+  color: #FFFFFF;
+  letter-spacing: 0px;
+
+  /* ★ JS で上下色を変更するグラデ背景（そのまま保持） */
+  background: linear-gradient(to bottom, #0000FF 50%, #008000 50%);
+
+  padding: 2px 6px;
+  border-radius: 6px;
+
+  /* ★ ぷっくり影（背景を変えずに立体感） */
+  box-shadow:
+    0 3px 6px rgba(0,0,0,0.35),
+    inset 0 2px 3px rgba(255,255,255,0.25),
+    inset 0 -2px 3px rgba(0,0,0,0.15);
+
+  text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+  position: relative;
+  top: 6px;
+  cursor: pointer;
+
+  /* アニメーション */
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* ★ホバー時：軽く浮く */
+.rogo-text:hover {
+  transform: translateX(1px) translateY(-1px) scale(1.00);
+  box-shadow:
+    0 5px 8px rgba(0,0,0,0.38),
+    inset 0 2px 3px rgba(255,255,255,0.25),
+    inset 0 -2px 3px rgba(0,0,0,0.15);
+}
+
+/* ★ クリック（押し込み強め） */
+.rogo-text:active {
+  transform: translateX(2px) translateY(1px) scale(0.90); /* ← しっかり凹む */
+  box-shadow:
+    0 2px 3px rgba(0,0,0,0.28),            /* 外側影を弱めてボタンが沈む */
+    inset 0 4px 6px rgba(255,255,255,0.18), /* 内側上の光を少し強く */
+    inset 0 -4px 6px rgba(0,0,0,0.25);      /* 内側下影を強めて凹み感UP */
+}
+
+/* 試合画面_--- サイド_ポイント積み上げ外枠 --- */
+.side-bar {
+  width: 26px;
+  height: 106px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0px 2px 0px 2px;  /* 上0px・右2px・下0px・左2px */
+  border: none;
+  background: transparent;
+}
+/* 試合画面_--- サイド_ポイントブロック --- */
+.score-block {
+  width: 100%;
+  height: 14px;
+  margin: 1px 0;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 試合画面_得点盤用透明枠内終り */
+
+/* 試合画面_アナウンスの共通設定 */
+#showInfo,
+#independentTextFrame,
+#infoText {
+  white-space: nowrap;     /* 折り返し禁止 */
+  overflow: hidden;        /* はみ出し非表示 */
+  text-overflow: ellipsis; /* 末尾を…に */
+}
+
+/* 試合画面_アナウンスベース */
+#showInfo {
+  font-size: 16px;
+  height: 30px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+/* 試合画面アナウンス（試合画面読込み直後に表示） */
+#independentTextFrame {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 18px;
+  color: white;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* 試合画面_アナウンス（メイン） */
+#infoText {
+  font-size: 16px;
+  height: 30px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+/* --- 補助エリア（ボタンや追加情報用） --- */
+#extraArea {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* 試合画面_コート用親枠始め */
+.court-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  height: 240px;
+  margin: 3px auto 1px auto; /* 上1px、右auto、下1px、左auto */
+  background: transparent;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* 左右の透明エリア */
+.court-side {
+  flex: 0 0 auto;
+  height: 100%;
+  position: relative;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* コートを置く中央エリア */
+.court-center {
+  flex: 0 0 240px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* ← これが基準になる */
+}
+
+/* 試合画面_--- コート --- */
+#courtContainer{position:relative;width:100%;max-width:400px;aspect-ratio:1/1;margin:0px 5px;background:#228B22;box-sizing:border-box;transition:transform 0.5s;}
+.court-line{position:absolute;background:#fff;}
+.baseline-top{top:0;left:0;width:100%;height:2px;}
+.baseline-bottom{bottom:0;left:0;width:100%;height:2px;}
+.double-left{top:0;bottom:0;left:0;width:2px;}
+.double-right{top:0;bottom:0;right:0;width:2px;}
+.single-left{top:0;bottom:0;left:10%;width:2px;}
+.single-right{top:0;bottom:0;right:10%;width:2px;}
+.service-top{top:25%;left:10%;right:10%;height:2px;}
+.service-bottom{bottom:25%;left:10%;right:10%;height:2px;}
+.center-line{top:25%;height:50%;left:50%;width:2px;transform:translateX(-50%);}
+.center-mark-top{top:0;left:50%;width:2px;height:10px;transform:translateX(-50%);}
+.center-mark-bottom{bottom:0;left:50%;width:2px;height:10px;transform:translateX(-50%);}
+.net{top:50%;left:0;right:0;height:2px;position:absolute;background:#ccc;}
+
+/* 試合画面_--- コート内チーム名（ぷっくり・フラット版） --- */
+.team-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  max-width: 100%;
+  height: 30px;
+  line-height: 30px;
+  color: #000;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 12px;
+  pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  font-family: "Kosugi Maru", sans-serif;
+
+  /* 初期背景色（JSで変更可能） */
+  background: #4CAF50;
+
+  /* --- ぷっくり質感・フラット（浮かせない） --- */
+  box-shadow:
+    /* わずかな外側影（浮かずに輪郭強調） */
+    0 0 2px rgba(0, 0, 0, 0.15),
+
+    /* 上の白ハイライト */
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+
+    /* 下の陰影 */
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+
+  /* 背景は JS が扱うので transition から外す */
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* --- ホバー＆指が触れる直前の軽い反応（少し拡大） --- */
+.team-box:hover {
+  transform: translate(-50%, -50%) scale(1.03);
+  box-shadow:
+    0 0 3px rgba(0, 0, 0, 0.20),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.17);
+}
+
+/* --- タッチ（スマホ）用：押す直前に反応する --- */
+@media (pointer: coarse) {
+  .team-box:active {
+    transform: translate(-50%, -50%) scale(1.03);
+    box-shadow:
+      0 0 3px rgba(0, 0, 0, 0.20),
+      inset 0 2px 4px rgba(255, 255, 255, 0.6),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.17);
+  }
+}
+
+/* Aチーム */
+.bg-teamA {
+  background: #FFFFFFE6; /* rgba(255,255,255,0.9) → #FFFFFFE6 */
+}
+
+/* Bチーム */
+.bg-teamB {
+  background: #FFFF00E6; /* rgba(255,255,0,0.9) → #FFFF00E6 */
+}
+
+/* 試合画面_--- コート内選手（ぷっくり・フラット版） --- */
+.player-box {
+  width: 72px;
+  height: 30px;
+  line-height: 30px;
+  background: #f0f0f0;
+  color: #000;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  pointer-events: auto;
+  position: absolute;
+  transform-origin: center center;
+  user-select: none;
+  touch-action: none;
+  font-family: "Kosugi Maru", sans-serif;
+
+  box-shadow:
+    0 0 2px rgba(0, 0, 0, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+
+  /* 拡大と影の変化を滑らかに */
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+/* --- ホバー & タッチ前反応（近づいたら少し拡大） --- */
+.player-box:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 3px rgba(0, 0, 0, 0.20),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.17);
+}
+
+/* --- タッチ環境用（指が触れる直前の反応） --- */
+@media (pointer: coarse) {
+  .player-box:active {
+    transform: scale(1.03);
+    box-shadow:
+      0 0 3px rgba(0, 0, 0, 0.20),
+      inset 0 2px 4px rgba(255, 255, 255, 0.6),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.17);
+  }
+}
+
+/* Aチーム選手 */
+.player-box.teamA {
+  background: #FFFFFFE6; /* rgba(255,255,255,0.9) → #FFFFFFE6 */
+}
+
+/* Bチーム選手 */
+.player-box.teamB {
+  background: #FFFF00E6; /* rgba(255,255,0,0.9) → #FFFF00E6 */
+}
+
+/* 左右の回転ボタン領域 */
+#courtSideLeft,
+#courtSideRight {
+  width: 50px;
+  height: 230px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  z-index: 5;
+}
+
+#courtSideLeft { left: 1px; }
+#courtSideRight { right: 1px; }
+
+/* 左右ボタン共通デザイン：枠のみ透明 */
+#courtSideLeft button,
+#courtSideRight button {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.05); /* ← 背景の薄い白は残す */
+  border: 2px dashed transparent;        /* ← 枠を完全透明にする */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* hover時の変化（背景のみ強調、枠は透明のまま） */
+#courtSideLeft button:hover,
+#courtSideRight button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: transparent;
+}
+
+/* デフォルトボタン（中央） */
+#courtSideDefault {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  margin: auto;
+}
+
+/* デフォルトボタン共通デザイン：枠を透明に */
+#courtSideDefault button {
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;      /* ← 枠を透明に */
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1); /* ← 背景の淡い白は残す */
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* hover時：背景だけ明るく、枠は透明のまま */
+#courtSideDefault button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: transparent;
+}
+
+/* 試合画面_コート用親枠終り */
+
+/* 左右入れ替え時（コートが左に90°回転） */
+#outerContainer.swapped {
+  flex-direction: row-reverse !important;
+}
+
+/* ------------------- チーム名と選手名背景色変更スクロールバー始り ------------------- */
+.team-picker-wrapper {
+  width: 330px;
+  height: 30px;
+  margin: 2px auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  background: #222;
+  position: relative;
+}
+
+.team-picker-item {
+  height: 30px;
+  position: relative;
+  scroll-snap-align: center;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.team-picker-item.center {
+  transform: scale(1.22);
+  border: 2px solid #fff;
+}
+
+.team-scroll-bgA, .team-scroll-bgB {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+}
+.team-scroll-bgA { left: 0; }
+.team-scroll-bgB { right: 0; }
+
+.team-scroll-labelA, .team-scroll-labelB {
+  position: absolute;
+  top: 0; bottom: 0;
+  line-height: 30px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #000;
+  pointer-events: none;
+  font-family: "Kosugi Maru", sans-serif; /* フォント追加 */
+}
+.team-scroll-labelA { left: 4%; width: 50%; text-align: center; }
+.team-scroll-labelB { left: 46%; width: 50%; text-align: center; }
+
+.team-picker-wrapper::-webkit-scrollbar { display: none; }
+
+:root {
+  --teamB-bg-color: #ffd0ff;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--teamB-bg-color);
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* ------------------- チーム名と選手名背景色変更スクロールバー終り ------------------- */
+
+/* ------------------- 得点盤文字色とロゴ背景色の変更始り（中央修正） ------------------- */
+.scorePicker-wrap {
+  width: 330px;
+  height: 30px;
+  margin: 2px auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  border-radius:10px;
+  border: 2px solid #fff;
+  background:#222;
+  font-family: "Saira", sans-serif;
+  position:relative;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.scorePicker-item {
+  height: 30px;
+  scroll-snap-align: center;
+  position:relative;
+  margin:0;
+  border-radius:6px;
+  overflow:hidden;
+  transition: transform .22s;
+}
+
+.scorePicker-item.center {
+  transform: scale(1.22);
+  border:1px solid #fff;
+}
+
+/* 背景左右 */
+.scorePicker-bgA, .scorePicker-bgB {
+  position:absolute; top:0; bottom:0; width:50%;
+}
+.scorePicker-bgA { left:0; }
+.scorePicker-bgB { right:0; }
+
+/* ラベル左右：中央の白線が正しく中央に来るよう調整 */
+.scorePicker-labelA, .scorePicker-labelB {
+  position:absolute;
+  top:0; bottom:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#000;
+  border:1px solid #fff;
+  box-sizing:border-box;
+  font-weight:900;
+  z-index:8;
+  pointer-events:none;
+  width:50%;
+}
+
+/* 左右ぴったり半分に分割 */
+.scorePicker-labelA { left:0; }
+.scorePicker-labelB { right:0; }
+
+/* 数字部分（変形・縁取り） */
+.scorePicker-labelA span, .scorePicker-labelB span {
+  font-size:30px;
+  transform-origin:center;
+  display:inline-block;
+  transform: scaleX(2.8) scaleY(0.68);
+  line-height:1;
+  text-shadow:
+    0.6px 0.6px 0 #fff,
+    -0.6px -0.6px 0 #fff,
+    0.6px -0.6px 0 #fff,
+    -0.6px 0.6px 0 #fff;
+  padding:2px 6px;
+  border-radius:4px;
+}
+
+.scorePicker-wrap::-webkit-scrollbar { display:none; }
+
+/* ------------------- 中央拡大時の文字位置ズレ補正（追加部分） ------------------- */
+.scorePicker-item.center .scorePicker-labelA span {
+  transform: translateX(50%) scaleX(2.8) scaleY(0.68);
+}
+
+.scorePicker-item.center .scorePicker-labelB span {
+  transform: translateX(-50%) scaleX(2.8) scaleY(0.68);
+}
+/* ------------------- 得点盤文字色とロゴ背景色の変更終り（中央修正） ------------------- */
+
+/* ------------------- 背景とコートの色（始り） ------------------- */
+.picker-wrapper {
+  width: 330px;
+  height: 30px;
+  margin: 2px auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  background: #222;
+  position: relative;
+}
+
+.picker-item {
+  height: 30px;
+  position: relative;
+  scroll-snap-align: center;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.picker-item.center {
+  transform: scale(1.22);
+  border: 2px solid #fff;
+}
+
+/* 背景レイヤー */
+.bg-court, .bg-out {
+  position: absolute;
+  top: 0; bottom: 0;
+}
+.bg-court { left: 0; width: 60%; }
+.bg-out { right: 0; width: 40%; }
+
+/* 白線 */
+.divider, .divider-left {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: #fff;
+}
+.divider { right: 40%; }
+.divider-left { left: 162px; }
+
+/* 文字レイヤー（ノーマルに変更） */
+.label-court, .label-out {
+  position: absolute;
+  top: 0; bottom: 0;
+  line-height: 30px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #fff;
+  pointer-events: none;
+  text-shadow: none; /* 影なし */
+  font-family: "Kosugi Maru", sans-serif; /* フォント追加 */
+}
+.label-court { left: 0; width: 60%; text-align: center; }
+.label-out { left: 50%; right: 0; text-align: center; }
+
+.picker-wrapper::-webkit-scrollbar { display: none; }
+
+:root {
+  --out-color: #2E8B57; /* 初期アウト色 */
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-bottom);
+  background: var(--out-color);
+  z-index: 999;
+  pointer-events: none;
+}
+/* ------------------- 背景とコートの色（終り） ------------------- */
+
+/* ------------------- お気に入りスクロールバー ------------------- */
+.favorites-picker-wrapper {
+  width: 330px;
+  height: 30px;
+  margin: 2px auto;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border-radius: 10px;
+  border: 2px solid #fff;
+  background: #222;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+.favorites-picker-wrapper::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+.favorites-picker-item {
+  display: flex;
+  height: 30px;
+  line-height: 30px;
+  font-size: 10px;
+  font-family: "Kosugi Maru", sans-serif;
+  text-align: center;
+  cursor: pointer;
+  scroll-snap-align: center;
+  position: relative;
+  transition: transform 0.2s;
+}
+
+.favorites-picker-item span.number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.3);
+  font-weight: normal;
+  pointer-events: none;
+}
+
+.favorites-picker-item.active span.number {
+  color: #fff;
+  font-weight: bold;
+}
+
+.fav-color {
+  flex: 0 0 16.6666%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Kosugi Maru', sans-serif;
+  background: #444;
+}
+
+.fav-color.left { color: #000; }
+.fav-color.middle { background: #000; font-weight: bold; }
+.fav-color.right { color: #fff; }
+.fav-color.middle span { color: inherit; }
+
+/* 左から3番目と4番目の文字（A と D）横長＆白縁 */
+.favorites-picker-item > .fav-color:nth-of-type(3) span,
+.favorites-picker-item > .fav-color:nth-of-type(4) span {
+  font-family: 'Saira', sans-serif;
+  font-size: 16px;
+  transform: scaleX(1.8);
+  white-space: nowrap;
+
+  color: inherit;
+
+  /* 白縁を細く（0.5px） */
+  -webkit-text-stroke: 0.5px #ffffff;
+  text-stroke: 0.5px #ffffff;
+}
+
+/* 左から5番目と6番目（イン・アウト）は白固定 */
+.favorites-picker-item > .fav-color:nth-of-type(5) span,
+.favorites-picker-item > .fav-color:nth-of-type(6) span {
+  color: #fff !important;
+}
+/* ------------------- お気に入りスクロールバー終り ------------------- */
+
+/* リセットボタン（ぷっくり水色） */
+.reset-btn {
+  width: 161px;
+  height: 36px;
+  flex: 0 0 auto;
+  min-width: 120px;
+  max-width: 180px;
+  padding: 2px;
+  margin: 1px 0;
+  font-size: 18px;
+  border-radius: 12px; /* 角丸強めでぷっくり感 */
+  font-weight: bold;
+  border: none;
+  color: #ffffff; /* 白文字 */
+  text-align: center;
+  font-family: "Kosugi Maru", sans-serif;
+  cursor: pointer;
+
+  /* ぷっくり浮き出た感じ */
+  background: linear-gradient(to bottom, #a0dfff, #5eb8ff);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.25),        /* 外側影で浮き感 */
+    inset 0 2px 4px rgba(255,255,255,0.3), /* 内側上ハイライト */
+    inset 0 -2px 4px rgba(0,0,0,0.15);     /* 内側下影で丸み強調 */
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(to bottom, #87cefa, #5eb8ff);
+  box-shadow: 
+    0 5px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255,255,255,0.3),
+    inset 0 -2px 4px rgba(0,0,0,0.15);
+}
+
+.reset-btn:active {
+  background: linear-gradient(to bottom, #5eb8ff, #3a9fff);
+
+  /* 押し込み感を強く */
+  transform: translateY(3px); /* ← 1px → 3px に増量 */
+  
+  /* 外側影を薄く、内側影で凹みを表現 */
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2) inset,
+    inset 0 1px 2px rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+}
+
+/* 設定画面に戻るボタン（ぷっくりオレンジ） */
+.settings-btn {
+  width: 161px;
+  height: 36px;
+  flex: 0 0 auto;
+  min-width: 120px;
+  max-width: 180px;
+  padding: 2px;
+  margin: 1px 0;
+  font-size: 18px;
+  border-radius: 12px; /* 丸み強めでぷっくり感 */
+  font-weight: bold;
+  border: none;
+  color: #ffffff; /* 白文字 */
+  text-align: center;
+  font-family: "Kosugi Maru", sans-serif;
+  cursor: pointer;
+
+  /* ぷっくり浮き出た感じ */
+  background: linear-gradient(to bottom, #ffca7a, #ff8c00);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.25),        /* 外側影で浮き感 */
+    inset 0 2px 4px rgba(255,255,255,0.3), /* 内側上ハイライト */
+    inset 0 -2px 4px rgba(0,0,0,0.15);     /* 内側下影で丸み強調 */
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.settings-btn:hover {
+  background: linear-gradient(to bottom, #ffb84d, #ff7f00);
+  box-shadow: 
+    0 5px 8px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255,255,255,0.3),
+    inset 0 -2px 4px rgba(0,0,0,0.15);
+}
+
+.settings-btn:active {
+  background: linear-gradient(to bottom, #ff8c00, #ff6a00);
+
+  /* 押し込み感を強化 */
+  transform: translateY(3px); /* ← 1px → 3px に増量 */
+  
+  /* 内側影を強めて凹みを強調 */
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2) inset,
+    inset 0 1px 2px rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
+}
+
+/* 透明枠ボタン用の共通クラス(予備) */
+.extraControls {
+  text-align: center;   /* 中央揃え */
+  margin-top: 4px;      /* 上余白 */
+  background: transparent; /* 背景を透明 */
+}
+
+/* ===== 上から舞い落ちる紙吹雪（回転ランダム／サイン波揺れ／長時間版） ===== */
+.confetti {
+  position: fixed;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  opacity: 0.9;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: confettiFall linear forwards;
+}
+
+/* 🎐 落下中にサイン波の横揺れと回転ランダムを加える */
+@keyframes confettiFall {
+  0% {
+    transform: translateX(0) translateY(0) rotate(var(--start-rotate));
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(var(--drift) + sin(var(--t) * 3.1415) * var(--wind) * 1vw))
+               translateY(100vh)
+               rotate(calc(var(--start-rotate) + var(--rotate-speed) * 1turn));
+    opacity: 0.8;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- スケーリング対応 -->
+<div id="appScaleWrapper">
+
+<!-- アプリタイトル表示 -->
+<div id="titleWrapper">
+<div id="titleScreen">
+  <h1 id="titleText">
+    <span class="title-main-wrapper">
+      <!-- 左ボール -->
+      <span class="ball ball-left">●</span>
+      <!-- 着地影 -->
+      <span class="ball-shadow"></span>
+      <span class="title-main">ソフトテニス</span>
+    </span>
+    <span class="line">ダブルスマッチ</span>
+    <span class="line">スコアボードアプリ</span>
+  </h1>
+</div>
+</div>
+
+<!-- 設定画面全体 -->
+<div class="setup-block">
+  <div class="container" id="setupScreen">
+
+    <!-- 透明枠：上部余白（設定画面用） -->
+    <div id="setupExtraTop">
+      <span id="setupInfoText" class="setup-title">▲▽▲▽▲ 設定画面 ▲▽▲▽▲</span>
+    </div>
+
+<!-- 設定画面下余白表示 -->
+   <div id="setupSubFrame">
+      <!-- 設定画面_アナウンス大会名・チーム名・選手名点滅 -->
+      <span id="setupHintTextTop" class="blink-text" style="font-size:16px; color:white;">大会名・チーム名・選手名等を入力</span>
+    </div>
+
+    <!-- 設定画面_大会名入力フォーム（透明親枠つき） -->
+    <div class="tournament-wrapper">
+      <input type="text" id="tournamentNameInput" class="tournament-input" maxlength="20" placeholder="大会名">
+    </div>
+
+    <!-- 🟨 大会名保存エリア（透明枠） -->
+    <div class="tournament-save-wrapper" style="width:100%; max-width:400px; margin:4px auto; text-align:center;">
+      <!-- 大会名保存ボタン -->
+      <button id="saveTournamentButton" class="tournament-btn">▽</button>
+
+      <!-- 保存済み大会名リスト -->
+      <select id="tournamentList" class="tournament-select" style="margin:4px 0; width:100%;">
+        <option value="">-- 保存大会名選択 --</option>
+      </select>
+
+      <!-- 大会名呼び出しボタン -->
+      <button id="loadTournamentButton" class="tournament-btn">▲</button>
+    </div>
+
+    <!-- 🟩 A/Bチーム入力欄（透明の親枠で包む） -->
+    <div class="team-inputs-wrapper">
+      <div class="team-inputs">
+        <!-- Aチーム -->
+        <div class="team-column">
+          <input type="text" id="teamA" maxlength="10" placeholder="Aチーム名">
+          <input type="text" id="playerA1" maxlength="10" placeholder="A選手1">
+          <input type="text" id="playerA2" maxlength="10" placeholder="A選手2">
+          <button onclick="saveTeam('A')">▽ 保存</button>
+        </div>
+
+        <!-- Bチーム -->
+        <div class="team-column">
+          <input type="text" id="teamB" maxlength="10" placeholder="Bチーム名">
+          <input type="text" id="playerB1" maxlength="10" placeholder="B選手1">
+          <input type="text" id="playerB2" maxlength="10" placeholder="B選手2">
+          <button onclick="saveTeam('B')">▽ 保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🟦 チーム呼出し欄（透明の親枠で包む） -->
+    <div class="team-restore-wrapper">
+      <div class="team-restore-row">
+        <!-- 左端ボタン -->
+        <button onclick="applyToTeam('A')" class="team-restore-btn">▲</button>
+
+        <!-- 中央ドロップダウン -->
+        <select id="teamList" class="team-restore-select">
+          <option value="">-- 保存チーム・ペア選択 --</option>
+        </select>
+
+        <!-- 右端ボタン -->
+        <button onclick="applyToTeam('B')" class="team-restore-btn">▲</button>
+      </div>
+    </div>
+
+    <!-- チーム名・選手名初期化ボタン -->
+    <button id="resetTeamsButton" class="reset-button">チーム名・選手名を初期化</button>
+
+    <!-- 透明枠 -->
+    <div id="setupMessageFrame"></div>
+
+    <!-- ゲーム数選択案内 -->
+    <span id="setupHintTextBottom">何ゲームマッチか選び[ 試合開始 ]をタップ</span>
+
+   <!-- ゲーム数選択（透明親枠つき） -->
+  <div class="select-wrapper">
+  <select id="matchTypeSelect" class="match-type-select">
+    <option value="3">3ゲームマッチ（2ゲーム先取）</option>
+    <option value="5" selected>5ゲームマッチ（3ゲーム先取）</option>
+    <option value="7">7ゲームマッチ（4ゲーム先取）</option>
+    <option value="9">9ゲームマッチ（5ゲーム先取）</option>
+  </select>
+  </div>
+
+    <!-- 試合開始ボタン（透明親枠つき） -->
+    <div class="start-wrapper">
+      <button class="start-btn" onclick="startMatch()">試合開始</button>
+    </div>
+
+  </div> <!-- setupScreen閉じ -->
+</div> <!-- setup-block閉じ -->
+
+<!-- 試合画面トップ -->
+<div class="container" id="gameScreen" style="display:none;">
+  <div id="topBar" style="text-align:center;">
+
+<!-- ================== お天気と日時 ================== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+
+<div id="dateWeatherContainer">
+    <!-- 日時 -->
+    <div id="safeDateTimeBox"></div>
+
+    <!-- ★ 日時との間に必ず半角スペースを入れる（&nbsp;でもOK） -->
+    <div style="width:8px;"></div>
+
+    <!-- 天気 -->
+    <div id="weatherBox" style="cursor:pointer;"></div>
+</div>
+
+<!-- 住所入力モーダル -->
+<div id="addressModal">
+    <div id="addressModalContent">
+        <p>住所を入力してください</p>
+        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市">
+        <button id="addressSearchBtn">検索</button>
+        <button id="addressCancelBtn">キャンセル</button>
+    </div>
+</div>
+<!-- ================== お天気と日時 ================== -->
+
+<!-- 試合画面大会名表示 -->
+<div id="tournamentDisplay"></div>
+
+<!-- 試合画面チーム名とペア名表示 -->
+<div id="centerWrapper">
+  <div id="outerContainer">
+    
+    <div id="teamAInfo">
+      <div style="text-align:center;">
+        <div class="team-name-display bg-teamA" id="displayTeamA">Aチーム</div>
+        <div style="height:0px;"></div>
+        <p class="pair-name" id="pairA">選手1・選手2ペア</p>
+      </div>
+    </div>
+
+    <!-- 透明枠にvs（レディ）ボタン -->
+    <div class="ready-container">
+      <button id="readyButton" class="ready-btn">vs</button>
+    </div>
+
+    <div id="teamBInfo">
+      <div style="text-align:center;">
+        <div class="team-name-display bg-teamB" id="displayTeamB">Bチーム</div>
+        <div style="height:0px;"></div>
+        <p class="pair-name" id="pairB">選手1・選手2ペア</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ファイナル表示の固定枠（透明） -->
+<div id="finalDisplayWrapper">
+    <div id="finalDisplay" class="display-fixed"></div>
+</div>
+
+<!-- 試合画面ジャッジ表示 -->
+  <div id="deuceDisplay" class="display-fixed"></div>
+
+ <div id="extraArea">
+  <!-- ここに追加の要素が入る -->
+</div>
+
+<!-- 得点盤用の透明枠始め -->
+<div class="overlay-scale-wrapper">
+<div id="overlay-wrapper">
+    <div class="overlay-frame">
+      <!-- #1 -->
+      <div class="overlay-box">
+      <div class="overlay-inner" style="margin-top:15px;">
+      <div class="side-bar" id="barA"></div>
+      </div></div>
+      <!-- #2 -->
+      <div class="overlay-box">
+      <div class="overlay-inner" style="margin-top:15px;">
+      <div class="points-container">
+      <div class="flip-container" id="pointAFlip">
+      <div class="flipper">
+      <div class="front"><span>0</span></div>
+      <div class="back"><span>0</span></div>
+      </div></div></div></div></div>
+      <!-- #3（上下分割） -->
+      <div class="overlay-box split-box">
+      <!-- #3a 上段：A側ゲームポイント盤 -->
+      <div class="split-top">
+      <div class="overlay-inner" style="margin-top:20px;">
+      <div class="mini-game-container">
+      <div class="mini-flip-container">
+      <div class="mini-flipper">
+      <div class="mini-front" id="gameAFront">0</div>
+      <div class="mini-back" id="gameABack">0</div>
+      </div></div></div></div>
+      <!-- #3a 上段：B側ゲームポイント盤 -->
+      <div class="overlay-inner" style="margin-top:20px;">
+      <div class="mini-game-container">
+      <div class="mini-flip-container">
+      <div class="mini-flipper">
+      <div class="mini-front" id="gameBFront">0</div>
+      <div class="mini-back" id="gameBBack">0</div>
+      </div></div></div></div></div>
+      <!-- #3c 中段：サーバー表示 -->
+      <div class="split-middle">
+      <div class="overlay-inner">
+      <div class="middle-frame">
+      <div class="middle-box left">
+      <span class="middle-symbol">S</span>
+      </div>
+      <div class="middle-box right">
+      <span class="middle-symbol">S</span>
+      </div></div></div></div>
+      <!-- #3b 下段：ロゴテキスト用 -->
+      <div class="split-bottom">
+      <div class="overlay-inner" style="margin-top:0px;">
+      <div class="rogo-text" onclick="undoPoint(event)">Smash!!!!</div>
+      </div></div></div>
+      <!-- #4 -->
+      <div class="overlay-box">
+      <div class="overlay-inner" style="margin-top:15px;">
+      <div class="points-container">
+      <div class="flip-container" id="pointBFlip">
+      <div class="flipper">
+      <div class="front"><span>0</span></div>
+      <div class="back"><span>0</span></div>
+      </div></div></div></div></div>
+      <!-- #5 -->
+      <div class="overlay-box">
+      <div class="overlay-inner" style="margin-top:15px;">
+      <div class="side-bar" id="barB"></div>
+      </div></div></div></div>
+      </div>
+<!-- 得点盤用の透明枠終り -->
+
+<div id="independentTextFrame">
+  <span id="infoText" class="blink-text">
+    ① サーバーをタップ → ② [ vs ]をタップ
+  </span>
+</div>
+
+<!-- コート用親枠 -->
+<div class="court-wrapper">
+
+  <!-- 左側の透明ブロック -->
+  <div class="court-side left-side">
+    <!-- コート左に90度回転ボタン -->
+    <div id="courtSideLeft">
+      <button></button>
+    </div>
+  </div>
+
+  <!-- 中央（コートを配置する枠） -->
+  <div class="court-center">
+    <div id="courtContainer">
+
+      <div class="court-line baseline-top"></div>
+      <div class="court-line baseline-bottom"></div>
+      <div class="court-line double-left"></div>
+      <div class="court-line double-right"></div>
+      <div class="court-line single-left"></div>
+      <div class="court-line single-right"></div>
+      <div class="court-line service-top"></div>
+      <div class="court-line service-bottom"></div>
+      <div class="court-line center-line"></div>
+      <div class="court-line center-mark-top"></div>
+      <div class="court-line center-mark-bottom"></div>
+      <div class="court-line net"></div>
+
+      <!-- 選手ボックス -->
+      <div id="playerA1Display" class="player-box bg-teamA"></div>
+      <div id="playerA2Display" class="player-box bg-teamA"></div>
+      <div id="playerB1Display" class="player-box bg-teamB"></div>
+      <div id="playerB2Display" class="player-box bg-teamB"></div>
+
+      <!-- コート内チーム名 -->
+      <div id="courtTeamA" class="team-box bg-teamA"></div>
+      <div id="courtTeamB" class="team-box bg-teamB"></div>
+
+      <!-- コート回転デフォルトボタン -->
+      <div id="courtSideDefault">
+        <button onclick="resetCourtRotation()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右側の透明ブロック -->
+  <div class="court-side right-side">
+    <!-- コート右に90度回転ボタン -->
+    <div id="courtSideRight">
+      <button></button>
+    </div>
+  </div>
+
+</div>
+
+<!-- チーム名と選手名の背景色の変更 -->
+<div class="team-picker-wrapper" id="teamPicker"></div>
+
+<!-- 得点盤文字色とロゴ背景色の変更 -->
+<div class="scorePicker-wrap" id="scorePickerCustom"></div>
+
+<!-- 背景色とコート色の変更 -->
+<div class="picker-wrapper" id="picker"></div>
+
+ <!-- お気に入りスクロールバー -->
+  <div class="favorites-picker-wrapper" id="favoritesPicker"></div>
+
+<div class="controls-container" style="display:flex; align-items:center; gap:10px; justify-content:center;">
+
+<button class="reset-btn" onclick="resetMatch()">リセット</button>
+
+<button class="settings-btn" onclick="returnToSetup()">設定</button>
+
+</div>
+   
+<div class="extraControls">
+</div>
+
+<!-- コート上に余白 -->
+<div id="extraAreaTop" style="width:100%; height:20px; display:flex; justify-content:center; align-items:center; gap:5px;">
+</div>
+
+<!-- コート下に余白 -->
+<div id="extraAreaBottom" style="width:100%; height:20px;"></div>
+
+</div>
+</div>
+<script>
+// -------------------- 既存のゲームロジック --------------------
+// -------------------- 試合管理用変数 --------------------
+let pointA = 0;
+let pointB = 0;
+let scoreA = 0, scoreB = 0, gameA = 0, gameB = 0;
+let matchType = 7;  // デフォルト：7ゲームマッチ
+
+// -------------------- サーバー・レシーバー管理 --------------------
+// 選択されたサーバー（初期は未選択）
+let selectedServer = { team: '', name: '' };
+let serverIndicatorLocked = false;
+
+// 現在のサーバー／レシーバー
+let currentServerTeam = '';     // 現在サーブしているチーム（'A' or 'B'）
+let currentReceiverTeam = '';   // 現在レシーブしているチーム（'A' or 'B'）
+let currentServerName = '';     // 現在サーブしている選手名
+let currentReceiverName = '';   // 現在レシーブしている選手名
+
+// -------------------- 試合進行・履歴管理 --------------------
+let historyStack = [];
+let matchEnded = false;
+let deuceCount = 0;
+let finalInitDone = false;
+
+// -------------------- 表示・コート管理 --------------------
+let teamAName = 'Aチーム';
+let teamBName = 'Bチーム';
+let playerA1 = '選手1', playerA2 = '選手2';
+let playerB1 = '選手1', playerB2 = '選手2';
+let tournamentName = '';
+let courtRotation = 0;
+let independentRotation = 0; // 左右回転ボタン用
+let infoTextTimeout = null;
+
+// --------------------日時・お天気表示用 --------------------
+let safeDateInterval = null;
+let lastRegion = "地域";
+let lastSearchedRegion = localStorage.getItem("lastSearchedRegion") || "";
+let lastLat = 37.75;   // 初期値: 福島県福島市
+let lastLon = 140.47;  // 初期値: 福島県福島市
+let weatherInterval = null; // 10分更新用
+
+// -------------------- ファイナルゲーム管理 --------------------
+let totalPointsInFinal = 0;  // ファイナルゲーム中の合計ポイント数
+let wasDeuce = false;  // 既存の deuceCount と併用して「直前がデュース状態だったか」を判定するためのフラグ
+let lastTotalPoints = 0;     // 前回の累計ポイント（交代判定用）
+let lastChangeType = "";     // "サイズ" or "サービス"
+let lastGameCountA = 0;
+let lastGameCountB = 0;
+
+// --- オール表示中のサーバー固定 ---
+let currentServerFixed = false;
+
+// タイマー管理用（グローバル）
+let gameCountTimeout = null;
+let finalChangeTimeout = null;
+
+// ポイントなどの操作許可フラグ
+let matchControlsEnabled = false;
+
+// 保存用配列（localStorage連動）
+let favorites = JSON.parse(localStorage.getItem('favorites3bars') || '[]');
+let scrollTimeout = null;
+
+// vsボタンON・OFF用
+let vsButtonEnabled = true; // 押せる状態かどうか
+
+// グローバル（既にあるなら重複を避ける）
+let isBarSwapped = false; // true のとき barA と barB の見た目は入れ替わっている
+
+// === A/B入れ替え状態を保持 ===
+let isSwappedAB = false;
+
+// ★追加: 1ゲーム中のサーバー交代フラグ
+let serverChangedThisGame = false;
+
+let initialServerSelected = false;
+
+let initialServerTeam = null;
+
+let finalGameActive = false; // ファイナルゲーム中かどうか
+
+// 表示混線防止変数
+let displayVersion = 0;
+
+// ----------------------------アプリの基本プログラム --------------------------------
+window.onload = function() {
+  // 3秒後にタイトル「Smash!!!!」を表示
+  setTimeout(() => {
+    const titleScreen = document.getElementById('titleScreen');
+    titleScreen.innerHTML = `
+      <h1 id="smashText" style="
+        font-family: 'Rubik Doodle Shadow', system-ui;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 4rem;
+      ">
+        <span style="color:white;">Smash</span>
+        <span id="smashExclamations">!!!!</span>
+      </h1>
+    `;
+
+    // Smash!!!! 表示後5秒で設定画面に切り替え
+    setTimeout(() => {
+      titleScreen.style.display = 'none';
+      document.getElementById('setupScreen').style.display = 'flex';
+
+      blinkElement('setupHintTextTop');  // 上部メッセージ点滅
+      setTimeout(() => {
+        blinkElement('setupHintTextBottom');  // 下部メッセージ点滅
+      }, 4000);
+
+    }, 5000);
+  }, 3000);
+
+  setTimeout(()=>{window.scrollTo(0,1);},100);
+  updatePlayerPositions();
+  loadSavedTeams();
+  addLongPressToDropdown('teamList');
+
+  // --- コート回転ボタン ---
+  document.querySelector('#courtSideLeft button').addEventListener('click', () => rotateCourt(-90));
+  document.querySelector('#courtSideRight button').addEventListener('click', () => rotateCourt(90));
+
+ // --- チーム名タップでポジションチェンジ ---
+document.getElementById('courtTeamA').addEventListener('click', () => {
+  if (matchEnded) return;  // ← 追加
+  swapPlayers('A');
+});
+
+document.getElementById('courtTeamB').addEventListener('click', () => {
+  if (matchEnded) return;  // ← 追加
+  swapPlayers('B');
+});
+
+// ==================== 初期サーバー選択 ====================
+
+// Aチームのプレイヤータップ
+['playerA1Display', 'playerA2Display'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', () => {
+
+        if (matchEnded) return;  // ゲームセット中は無効
+
+        // デュースサイド制御（必要に応じて）
+        if (!isDeuceSide('A', id)) return;
+
+        // ユーザーが明示的に選択したのでロック解除
+        serverIndicatorLocked = false;
+
+        // 選択サーバー情報
+        const name = (id === 'playerA1Display') ? playerA1 : playerA2;
+        selectedServer.team = 'A';
+        selectedServer.name = name;
+
+        showServerBlink('A'); 
+        showInfo(`サーバー　${teamAName}　${name} さん`, "#ffffff");
+        adjustAllInfoFonts();  
+
+        // ✅ 初期サーバーを設定
+        initialServerTeam = 'A';
+
+        // ✅ 初回ゲームのサーバー計算
+        updateServerByGameCount();
+    });
+});
+
+// Bチームのプレイヤータップ
+['playerB1Display', 'playerB2Display'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', () => {
+
+        if (matchEnded) return;  // ゲームセット中は無効
+
+        if (!isDeuceSide('B', id)) return;
+
+        serverIndicatorLocked = false;
+
+        const name = (id === 'playerB1Display') ? playerB1 : playerB2;
+        selectedServer.team = 'B';
+        selectedServer.name = name;
+
+        showServerBlink('B'); 
+        showInfo(`サーバー　${teamBName}　${name} さん`, "#ffff00");
+        adjustAllInfoFonts();
+
+        initialServerTeam = 'B';
+
+        updateServerByGameCount();
+    });
+});
+
+  // --- サーバー選択メッセージを点滅 ---
+  const infoText = document.getElementById("infoText");
+  infoText.classList.add("blink-text");
+  setTimeout(() => infoText.classList.remove("blink-text"), 1000);
+};
+
+// --- ウィンドウサイズ変更時のプレイヤー位置再計算 ---
+window.addEventListener('resize', updatePlayerPositions);
+
+// A側ポイント盤クリック
+const pointAFlip = document.getElementById("pointAFlip");
+pointAFlip.addEventListener("click", () => {
+  pointA++;
+  updatePointDisplay('A');
+});
+
+// B側ポイント盤クリック
+const pointBFlip = document.getElementById("pointBFlip");
+pointBFlip.addEventListener("click", () => {
+  pointB++;
+  updatePointDisplay('B');
+});
+
+// --- 試合開始（Readyボタン）処理 ---
+document.getElementById('readyButton').addEventListener('click', () => {
+
+  if (!vsButtonEnabled) return; // 押せない場合は無視
+
+  if (!selectedServer.team) {
+      const infoText = document.getElementById("infoText");
+      infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+      infoText.style.color = "#ff8080";
+      infoText.classList.add("blink-text");
+
+      setTimeout(() => infoText.classList.remove("blink-text"), 1000);
+      return;
+  }
+
+  disableMatchDisplays();
+  enableMatchDisplays();
+
+  const matchTypeSelect = document.getElementById('matchTypeSelect');
+  let matchTypeText = matchTypeSelect.options[matchTypeSelect.selectedIndex].text;
+  matchTypeText = matchTypeText.replace(/（.*?）/g, '').trim();
+
+  const finalDisplay = document.getElementById('finalDisplay');
+  if (finalDisplay) {
+    finalDisplay.textContent = "レディ";
+    setTimeout(() => adjustFinalDisplayFont(), 0);
+
+    setTimeout(() => {
+      const serverTeam = selectedServer.team;
+      const serverTeamName = (serverTeam === 'A') ? teamAName : teamBName;
+      const serverPairBase = (serverTeam === 'A') ? `${playerA1}・${playerA2}` : `${playerB1}・${playerB2}`;
+      const serverPair = (serverPairBase.trim() === '・' || serverPairBase.trim() === '') ? 'ペア' : serverPairBase.trim() + 'ペア';
+      const serverColor = (serverTeam === 'A') ? "#ffffff" : "#ffff00";
+
+      const receiverTeam = (serverTeam === 'A') ? 'B' : 'A';
+      const receiverTeamName = (receiverTeam === 'A') ? teamAName : teamBName;
+      const receiverPairBase = (receiverTeam === 'A') ? `${playerA1}・${playerA2}` : `${playerB1}・${playerB2}`;
+      const receiverPair = (receiverPairBase.trim() === '・' || receiverPairBase.trim() === '') ? 'ペア' : receiverPairBase.trim() + 'ペア';
+      const recvColor = (receiverTeam === 'A') ? "#ffffff" : "#ffff00";
+
+      finalDisplay.textContent = `サービスサイド　${serverTeamName}　${serverPair}`;
+      finalDisplay.style.color = serverColor;
+      setTimeout(() => adjustFinalDisplayFont(), 0);
+
+      setTimeout(() => {
+        finalDisplay.textContent = `レシーブサイド　${receiverTeamName}　${receiverPair}`;
+        finalDisplay.style.color = recvColor;
+        setTimeout(() => adjustFinalDisplayFont(), 0);
+
+        setTimeout(() => {
+          finalDisplay.textContent = matchTypeText + "　プレーボール";
+          setTimeout(() => adjustFinalDisplayFont(), 0);
+
+          setTimeout(() => {
+            finalDisplay.textContent = "";
+            setTimeout(() => adjustFinalDisplayFont(), 0);
+          }, 5000);
+
+          currentServerTeam = selectedServer.team;
+          currentReceiverTeam = receiverTeam;
+
+          // showInfo("サーバー　" + serverTeamName + "　" + selectedServer.name + " さん", serverColor);
+          // adjustAllInfoFonts();
+          // updateServerIndicator();
+
+        }, 5000);
+      }, 5000);
+    }, 1500);
+  }
+
+  // Readyボタンを一度押したら無効化
+  vsButtonEnabled = false;
+  const readyBtn = document.getElementById('readyButton');
+  readyBtn.classList.add('inactive'); // CSSで水色にして押せない見た目
+});
+
+// --- Readyボタン再度有効化関数 ---
+function resetVsButton() {
+  vsButtonEnabled = true;
+  const readyBtn = document.getElementById('readyButton');
+  readyBtn.classList.remove('inactive');
+}
+
+// --- リセットや設定画面復帰時に呼ぶ ---
+function onResetOrReturnFromSettings() {
+  resetVsButton();
+  // 他のリセット処理があればここに追加
+}
+
+// -------------------- 試合開始 --------------------
+// --- 試合開始画面に移動 ---
+function startMatch() {
+
+    // 🔥 試合開始時に必ず false に戻す（安全）
+    matchEnded = false;
+
+    // 入力値取得
+    tournamentName = document.getElementById('tournamentNameInput').value || '';
+    teamAName = document.getElementById('teamA').value || 'Aチーム';
+    teamBName = document.getElementById('teamB').value || 'Bチーム';
+    playerA1 = document.getElementById('playerA1').value || '選手1';
+    playerA2 = document.getElementById('playerA2').value || '選手2';
+    playerB1 = document.getElementById('playerB1').value || '選手1';
+    playerB2 = document.getElementById('playerB2').value || '選手2';
+    matchType = parseInt(document.getElementById('matchTypeSelect').value);
+    
+    // ポイント盤関連の消灯
+    disableMatchDisplays();
+
+    // ゲーム情報リセット
+    gameA = gameB = scoreA = scoreB = 0;
+    historyStack = [];
+    matchEnded = false;
+    deuceCount = 0;
+    finalInitDone = false;
+
+    // サーバー情報初期化
+    selectedServer = { team: '', name: '' };
+    currentServer = 'A';
+    currentReceiver = 'B';
+
+    // コート回転初期化
+    courtRotation = 0;
+    independentRotation = 0;
+
+    // コート回転リセット（選手位置も初期化）
+    resetCourtRotation();
+
+    // 画面切替
+    document.getElementById('setupScreen').style.display = 'none';
+    document.getElementById('gameScreen').style.display = 'flex';
+    document.getElementById('tournamentDisplay').textContent = tournamentName;
+
+    // 描画後に位置を更新（重要: clientWidth/clientHeightが確定後）
+    setTimeout(() => {
+        updatePlayerPositions();
+        updateScore();
+    }, 0);
+
+    // 上部チーム名表示に文字数制限
+    const truncateName = (name, maxLen) => name.length > maxLen ? name.slice(0, maxLen) : name;
+    document.getElementById('displayTeamA').textContent = truncateName(teamAName, 5);
+    document.getElementById('displayTeamB').textContent = truncateName(teamBName, 5);
+
+    // ペア名更新
+    document.getElementById('pairA').textContent = `${truncateName(playerA1,3)}・${truncateName(playerA2,3)}ペア`;
+    document.getElementById('pairB').textContent = `${truncateName(playerB1,3)}・${truncateName(playerB2,3)}ペア`;
+
+    // サーバー案内表示
+    const infoText = document.getElementById("infoText");
+    infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+    infoText.style.color = "#ffffff";
+    infoText.classList.add("blink-text");
+    setTimeout(() => { infoText.classList.remove("blink-text"); }, 1000);
+}
+
+function preCheckFinal() {
+    const finalDisplay = document.getElementById('finalDisplay');
+    if (!finalDisplay) return;
+
+    // 3ゲームマッチはファイナルなし
+    if (matchType === 3) return;
+
+    const finalThreshold = (matchType === 5 ? 2 : matchType === 7 ? 3 : 4);
+
+    // ファイナルゲーム中のみ
+    if (gameA === finalThreshold && gameB === finalThreshold) {
+        // 現在の表示がチェンジ表示でなければ "ファイナルゲーム" を表示
+        if (!finalDisplay.textContent.includes("チェンジ")) {
+            finalDisplay.textContent = "ファイナルゲーム";
+            adjustFinalDisplayFont();
+        }
+    }
+}
+
+// 🎊 上から舞い落ちる紙吹雪（回転ランダム／サイン波揺れ／長時間版）
+function launchConfetti() {
+  const colors = [
+    '#ff4d4d', '#ffb84d', '#ffff4d', '#4dff4d',
+    '#4dffff', '#4d4dff', '#b84dff', '#ffffff', '#ff66b3'
+  ];
+  
+  const confettiCount = 300; // 豪華版
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+
+    // 🎨 ランダム設定
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.width = 6 + Math.random() * 8 + 'px';
+    confetti.style.height = 6 + Math.random() * 8 + 'px';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.opacity = 0.5 + Math.random() * 0.5;
+    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+
+    // ⏱ 落下時間と遅延を長く
+    confetti.style.animationDuration = (5 + Math.random() * 5) + 's'; // 5〜10秒
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+
+    // 🎐 横揺れ設定（-100〜+100px）
+    confetti.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+    confetti.style.setProperty('--wind', (Math.random() * 2 - 1).toFixed(2));
+
+    // サイン波用の時刻変数
+    confetti.style.setProperty('--t', Math.random().toFixed(2));
+
+    // 回転ランダム
+    confetti.style.setProperty('--start-rotate', (Math.random() * 360).toFixed(0) + 'deg');
+    confetti.style.setProperty('--rotate-speed', (1 + Math.random() * 2).toFixed(2)); // 1～3回転
+
+    document.body.appendChild(confetti);
+
+    // 🎬 アニメーション終了後に削除
+    setTimeout(() => confetti.remove(), 11000); // 10秒＋余裕
+  }
+}
+
+// -------------------- 情報テキスト表示（infoText制御） --------------------
+function showInfo(message, color = "#ffffff", duration = 5000) {
+  const infoText = document.getElementById("infoText");
+  if (!infoText) return;
+
+  // 既存タイマーがあればクリア
+  if (infoTextTimeout) {
+    clearTimeout(infoTextTimeout);
+    infoTextTimeout = null;
+  }
+
+  // メッセージ表示（改行を <br> に変換）
+  infoText.innerHTML = message.replace(/\n/g, "<br>");
+  infoText.style.color = color;
+
+  // フォントサイズ調整
+  infoText.style.fontSize = '18px';
+  infoText.style.lineHeight = '1.2';
+  if (message.length > 20) infoText.style.fontSize = '16px';
+
+  // 点滅アニメ開始
+  infoText.classList.add("blink-text");
+
+  // 1秒後に点滅停止
+  setTimeout(() => {
+    infoText.classList.remove("blink-text");
+  }, 1000);
+
+  // 指定時間後に自動で消去
+  infoTextTimeout = setTimeout(() => {
+    infoText.textContent = "";
+    infoTextTimeout = null;
+  }, duration);
+}
+
+// --- サーバーの選手を点滅表示 ---
+function showServerBlink(team) {
+  // すべてのプレイヤーの点滅を解除
+  ['playerA1Display','playerA2Display','playerB1Display','playerB2Display'].forEach(id => {
+    document.getElementById(id).classList.remove('blinking');
+  });
+
+  if (!team || team === '') return;
+
+  let targetId = null;
+
+  if (team === 'A') {
+    // Aチーム: 下側, 左=A1, 右=A2
+    targetId = (currentServer === 'A1') ? 'playerA1Display' : 'playerA2Display';
+  } else if (team === 'B') {
+    // Bチーム: 上側, 左=B2, 右=B1（入れ替え済み）
+    // currentServerが 'B1' の場合は右の B1Display
+    // currentServerが 'B2' の場合は左の B2Display
+    targetId = (currentServer === 'B1') ? 'playerB1Display' : 'playerB2Display';
+  }
+
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  // 点滅開始（3秒間）
+  let blinkCount = 0;
+  const blinkInterval = setInterval(() => {
+    el.classList.add('blinking');
+    setTimeout(() => el.classList.remove('blinking'), 600);
+    blinkCount++;
+    if (blinkCount >= 5) {
+      clearInterval(blinkInterval);
+      el.classList.remove('blinking');
+    }
+  }, 600);
+}
+
+function saveTeam(team) {
+    const teamList = document.getElementById('teamList');
+    let teamName, pairName;
+
+    if(team === 'A') {
+        teamName = document.getElementById('teamA').value || 'Aチーム';
+        pairName = `${document.getElementById('playerA1').value || '選手1'}・${document.getElementById('playerA2').value || '選手2'}`;
+    } else if(team === 'B') {
+        teamName = document.getElementById('teamB').value || 'Bチーム';
+        pairName = `${document.getElementById('playerB1').value || '選手1'}・${document.getElementById('playerB2').value || '選手2'}`;
+    }
+
+    const displayText = `${teamName} - ${pairName}`;
+
+    // 重複チェック
+    for(let i=0; i<teamList.options.length; i++){
+        if(teamList.options[i].value === displayText) return;
+    }
+
+    const option = document.createElement('option');
+    option.value = displayText;  // ← value にもフル文字列を入れる
+    option.text = displayText;
+    teamList.appendChild(option);
+
+    // localStorageに保存
+    saveTeamsToLocalStorage();
+}
+
+function saveTeamsToLocalStorage() {
+    const teamList = document.getElementById('teamList');
+    const teams = [];
+    for (let i = 0; i < teamList.options.length; i++) {
+        if(teamList.options[i].value) teams.push(teamList.options[i].value);
+    }
+    localStorage.setItem('savedTeams', JSON.stringify(teams));
+}
+
+function loadSavedTeams() {
+    const savedTeams = JSON.parse(localStorage.getItem('savedTeams') || '[]');
+    const teamList = document.getElementById('teamList');
+    savedTeams.forEach(teamText => {
+        const option = document.createElement('option');
+        option.value = teamText;
+        option.text = teamText;
+        teamList.appendChild(option);
+    });
+}
+
+function applyToTeam(teamSide) {
+    const teamList = document.getElementById('teamList');
+    const selected = teamList.value;
+    if (!selected) return;
+
+    const parts = selected.split(' - ');
+    if (parts.length !== 2) return;
+
+    const teamName = parts[0];
+    const pairName = parts[1];
+    const players = pairName.split('・');
+    if (players.length !== 2) return;
+
+    if(teamSide === 'A') {
+        document.getElementById('teamA').value = teamName;
+        document.getElementById('playerA1').value = players[0];
+        document.getElementById('playerA2').value = players[1];
+    } else {
+        document.getElementById('teamB').value = teamName;
+        document.getElementById('playerB1').value = players[0];
+        document.getElementById('playerB2').value = players[1];
+    }
+}
+
+// ドロップダウン長押しで選択項目を削除
+function addLongPressToDropdown(dropdownId) {
+    const selectEl = document.getElementById(dropdownId);
+    let timer = null;
+
+    selectEl.addEventListener('pointerdown', (e) => {
+        const idx = selectEl.selectedIndex;
+        if (idx <= 0) return; // デフォルト選択は削除不可
+
+        timer = setTimeout(() => {
+            const optionText = selectEl.options[idx].text;
+            if(confirm(`"${optionText}" を削除しますか？`)){
+                selectEl.remove(idx);
+                saveTeamsToLocalStorage();
+            }
+            timer = null;
+        }, 800); // 長押し0.8秒
+    });
+
+    const cancel = () => { if(timer){clearTimeout(timer); timer=null;} };
+    selectEl.addEventListener('pointerup', cancel);
+    selectEl.addEventListener('pointerleave', cancel);
+    selectEl.addEventListener('pointercancel', cancel);
+}
+
+// 設定画面_チーム名と選手名を初期化
+document.getElementById('resetTeamsButton').addEventListener('click', () => {
+  if (!confirm('チーム名と選手名を初期化しますか？')) return;
+
+  const fieldIds = [
+    'teamA', 'teamB',
+    'playerA1', 'playerA2',
+    'playerB1', 'playerB2'
+  ];
+
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      // HTMLの初期値 (value属性) に戻す
+      el.value = el.defaultValue;
+
+      // フォントを統一
+      el.style.fontSize = '16px';
+      el.style.fontFamily = '"Kosugi Maru", sans-serif';
+    }
+  });
+
+// ✅ 白丸Sリセット
+  currentServer = '';
+  selectedServer.team = '';
+  selectedServer.name = '';
+  updateServerIndicator();  // ←ここで白丸Sの表示をリセット
+
+  // showInfo('チーム名と選手名を初期化しました', '#ffffff');
+  // 文字数に応じて自動で縮小
+  adjustAllInfoFonts();
+});
+
+function blinkElement(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('blink-text');
+  setTimeout(() => {
+    el.classList.remove('blink-text');
+  }, 1000);
+}
+
+function isDeuceSide(team, playerId) {
+    if (team === 'A') {
+        // Aチーム: 右側 = A2
+        return playerId === 'playerA2Display';
+    } else if (team === 'B') {
+        // Bチーム: 右側 = B2（入れ替え済み）
+        return playerId === 'playerB2Display';
+    }
+    return false;
+}
+
+// --- 大会名保存 ---
+document.getElementById('saveTournamentButton').addEventListener('click', () => {
+    const name = document.getElementById('tournamentNameInput').value.trim();
+    if (!name) {
+        alert('大会名を入力してください。');
+        return;
+    }
+
+    let saved = JSON.parse(localStorage.getItem('savedTournaments') || '[]');
+
+    // 重複していたら何もせず終了（メッセージなし）
+    if (saved.includes(name)) {
+        return;
+    }
+
+    // 新規のみ保存
+    saved.push(name);
+    localStorage.setItem('savedTournaments', JSON.stringify(saved));
+    updateTournamentList();
+});
+
+// --- 大会名リスト更新 ---
+function updateTournamentList() {
+    const select = document.getElementById('tournamentList');
+    select.innerHTML = '<option value="">-- 保存された大会名を選択 --</option>';
+    const saved = JSON.parse(localStorage.getItem('savedTournaments') || '[]');
+    saved.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+    });
+}
+
+// --- 大会名呼び出し ---
+document.getElementById('loadTournamentButton').addEventListener('click', () => {
+    const selected = document.getElementById('tournamentList').value;
+    if (!selected) {
+        alert('大会名を選択してください。');
+        return;
+    }
+    document.getElementById('tournamentNameInput').value = selected;
+});
+
+// --- 大会名長押し削除 ---
+function addLongPressToTournamentDropdown(dropdownId) {
+    const selectEl = document.getElementById(dropdownId);
+    let timer = null;
+
+    selectEl.addEventListener('pointerdown', (e) => {
+        const idx = selectEl.selectedIndex;
+        if (idx <= 0) return; // デフォルト項目は削除不可
+
+        timer = setTimeout(() => {
+            const optionText = selectEl.options[idx].text;
+            if (confirm(`"${optionText}" を削除しますか？`)) {
+                selectEl.remove(idx);
+                saveTournamentsToLocalStorage();
+            }
+            timer = null;
+        }, 800); // 長押し0.8秒
+    });
+
+    const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    selectEl.addEventListener('pointerup', cancel);
+    selectEl.addEventListener('pointerleave', cancel);
+    selectEl.addEventListener('pointercancel', cancel);
+}
+
+// --- 大会名リストを localStorage に保存 ---
+function saveTournamentsToLocalStorage() {
+    const selectEl = document.getElementById('tournamentList');
+    const tournamentNames = [];
+    for (let i = 1; i < selectEl.options.length; i++) { // 0番目は初期項目スキップ
+        tournamentNames.push(selectEl.options[i].text);
+    }
+    localStorage.setItem('savedTournaments', JSON.stringify(tournamentNames));
+}
+
+// --- 初期読み込みでリスト更新と長押し設定 ---
+window.addEventListener('load', () => {
+    updateTournamentList();
+    addLongPressToTournamentDropdown('tournamentList');
+});
+
+// --- 試合画面_ポイントが2桁の時の縮尺用 ---
+document.addEventListener('DOMContentLoaded', () => {
+  updateFlipLength(); // 初期化時に実行
+});
+
+// --- 桁数更新関数 ---
+function updateFlipLength() {
+  document.querySelectorAll('.flip-container').forEach(el => {
+    const span = el.querySelector('.front span');
+    if (span) {
+      const num = span.textContent.trim().replace(/\D/g, ''); // 数字のみ取得
+      el.dataset.length = num.length;
+    }
+  });
+}
+
+// --- adjustFinalDisplayFont()：多段階スムーズ縮小（スケール対応） ---
+function adjustFinalDisplayFont() {
+    const el = document.getElementById("finalDisplay");
+    const wrap = document.getElementById("finalDisplayWrapper");
+    const app = document.getElementById("appScaleWrapper");
+    if (!el || !wrap || !app) return;
+
+    // ★ 現在の scale を取得
+    const style = window.getComputedStyle(app);
+    const matrix = style.transform;
+
+    let scale = 1;
+    if (matrix && matrix !== "none") {
+        const values = matrix.match(/matrix\\(([^)]+)\\)/);
+        if (values) {
+            const parts = values[1].split(",");
+            scale = parseFloat(parts[0]);  // X方向
+        }
+    }
+
+    // ★ 見た目の最大幅（スケール後）
+    const maxWidth = wrap.clientWidth;
+
+    // ★ 段階フォントサイズ（大→小へ）
+    const fontSteps = [20, 18, 16, 14, 12, 10];
+
+    for (let size of fontSteps) {
+        el.style.fontSize = size + "px";
+
+        // ★ scrollWidth（元サイズ）× scale = 見た目の幅
+        let visualWidth = el.scrollWidth * scale;
+
+        if (visualWidth <= maxWidth) {
+            return;  // ← このサイズで収まったので終了
+        }
+    }
+
+    // ★ 最低サイズでも収まらない場合 → 最低値で固定
+    el.style.fontSize = "10px";
+}
+
+
+// --- 大会名フォントサイズ自動調整 ---
+function adjustTournamentDisplayFont() {
+    const el = document.getElementById('tournamentDisplay');
+    if (!el) return;
+
+    // デフォルト21px
+    let fontSize = 21;
+
+    // 文字数が多ければ小さめに開始
+    if (el.textContent.length > 18) fontSize = 18;
+    if (el.textContent.length > 24) fontSize = 16;
+
+    el.style.fontSize = fontSize + "px";
+
+    // 横幅に収まるまで1pxずつ縮小（最低10px）
+    const maxWidth = el.clientWidth;
+    while (el.scrollWidth > maxWidth && fontSize > 10) {
+        fontSize--;
+        el.style.fontSize = fontSize + "px";
+    }
+}
+
+// --- 汎用：フォント自動縮小処理（大会名と同方式） ---
+function adjustAutoFont(id, baseSize = 18, minSize = 10) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let fontSize = baseSize;
+
+    // 文字数で開始サイズを調整（大会名と同じロジック）
+    if (el.textContent.length > 18) fontSize = baseSize - 2;
+    if (el.textContent.length > 24) fontSize = baseSize - 4;
+
+    el.style.fontSize = fontSize + "px";
+
+    // 要素幅に収まるまで1pxずつ縮小
+    const maxWidth = el.clientWidth;
+    while (el.scrollWidth > maxWidth && fontSize > minSize) {
+        fontSize--;
+        el.style.fontSize = fontSize + "px";
+    }
+}
+
+// --- 3つのアナウンス要素をまとめて調整 ---
+function adjustAllInfoFonts() {
+    adjustAutoFont("showInfo", 18, 10);
+    adjustAutoFont("infoText", 18, 10);
+}
+
+// --- ポイント盤タップでポイント追加ロジック ---
+function updatePointDisplay(team) {
+  if (team === 'A') {
+    const front = pointAFlip.querySelector(".front span");
+    const back  = pointAFlip.querySelector(".back span");
+    front.textContent = pointA;
+    back.textContent  = pointA;
+  } else if (team === 'B') {
+    const front = pointBFlip.querySelector(".front span");
+    const back  = pointBFlip.querySelector(".back span");
+    front.textContent = pointB;
+    back.textContent  = pointB;
+  }
+}
+
+// --- ポイント盤タップでポイント追加ロジック続き ---
+document.addEventListener("DOMContentLoaded", () => {
+    const pointAFlip = document.getElementById("pointAFlip");
+    if (pointAFlip) {
+        pointAFlip.addEventListener("click", () => addPoint("A"));
+    }
+
+    const pointBFlip = document.getElementById("pointBFlip");
+    if (pointBFlip) {
+        pointBFlip.addEventListener("click", () => addPoint("B"));
+    }
+});
+
+// --------------------- 白丸S点灯・消灯処理の為のコード（始め） ---------------------
+function updateServerIndicator() {
+  const aIndicator = document.querySelector('.middle-box.left');
+  const bIndicator = document.querySelector('.middle-box.right');
+  if (!aIndicator || !bIndicator) return;
+
+  // matchEnded → 消灯固定
+  if (matchEnded) {
+    aIndicator.classList.remove('active');
+    bIndicator.classList.remove('active');
+    aIndicator.style.opacity = 0.3;
+    bIndicator.style.opacity = 0.3;
+    return;
+  }
+
+  // --- 修正① ここを変更 ---
+  // serverIndicatorLocked のときは「状態を変更しない」
+  // → 消灯しないので不具合が起きない
+  if (serverIndicatorLocked) {
+    return;
+  }
+  // --------------------------------------
+
+  // 一旦全て消灯
+  aIndicator.classList.remove('active');
+  bIndicator.classList.remove('active');
+  aIndicator.style.opacity = 0.3;
+  bIndicator.style.opacity = 0.3;
+
+  // サーバー点灯
+  if (currentServerTeam === 'A') {
+    aIndicator.classList.add('active');
+    aIndicator.style.opacity = 1.0;
+  } else if (currentServerTeam === 'B') {
+    bIndicator.classList.add('active');
+    bIndicator.style.opacity = 1.0;
+  }
+
+  // --- 修正② 最終再点灯（DOM反映競合対策） ---
+  setTimeout(() => {
+    forceUpdateServerIndicator();
+  }, 0);
+}
+
+
+// DOM反映競合対策のための実行
+function forceUpdateServerIndicator() {
+  const aIndicator = document.querySelector('.middle-box.left');
+  const bIndicator = document.querySelector('.middle-box.right');
+  if (!aIndicator || !bIndicator) return;
+
+  // matchEnded の場合は点灯禁止
+  if (matchEnded) return;
+
+  // ロック中は触らない
+  if (serverIndicatorLocked) return;
+
+  // 再点灯
+  if (currentServerTeam === 'A') {
+    aIndicator.classList.add('active');
+    aIndicator.style.opacity = 1.0;
+    bIndicator.classList.remove('active');
+    bIndicator.style.opacity = 0.3;
+  } else if (currentServerTeam === 'B') {
+    bIndicator.classList.add('active');
+    bIndicator.style.opacity = 1.0;
+    aIndicator.classList.remove('active');
+    aIndicator.style.opacity = 0.3;
+  }
+}
+// --------------------- 白丸S点灯・消灯処理の為のコード（終り） ---------------------
+
+// --- 現在サーバーを取得（DOMに依存せず変数から取得） ---
+function getCurrentServerFromIndicator() {
+  return currentServerTeam; // currentServerTeam が 'A' または 'B' を保持
+}
+
+
+// --- 白丸Sの消灯処理 ---
+function resetServerIndicator() {
+  const aIndicator = document.querySelector('.middle-box.left');
+  const bIndicator = document.querySelector('.middle-box.right');
+  if (!aIndicator || !bIndicator) return;
+
+  aIndicator.classList.remove('active');
+  bIndicator.classList.remove('active');
+  aIndicator.style.opacity = 0.3;
+  bIndicator.style.opacity = 0.3;
+
+  currentServerTeam = 'A';
+  currentReceiverTeam = 'B';
+
+// 重要：白丸Sの自動点灯をロック（リセット直後は点灯させない）
+  serverIndicatorLocked = true;
+
+}
+
+// --- 得点ボタンの有効／無効制御 ---
+function disableScoreButtons(disable) {
+  const buttons = [document.getElementById('pointAFlip'), document.getElementById('pointBFlip')];
+  buttons.forEach(btn => {
+    if (!btn) return;
+    btn.style.pointerEvents = disable ? "none" : "auto";  // クリック可否
+    btn.style.opacity = disable ? "0.5" : "1";            // 見た目で無効化を表示
+  });
+}
+
+// --------------------------- コート回転 ---------------------------
+function rotateCourt(angle) {
+
+  // 🔥 ゲーム終了中は回転禁止（ここで完全に止める）
+  if (matchEnded) {
+    console.log("ゲーム終了中のため回転しません");
+    return;
+  }
+
+  courtRotation += angle;
+  const court = document.getElementById('courtContainer');
+  court.style.transform = `rotate(${courtRotation}deg)`;
+
+  updatePlayerPositions();
+  updateCourtLayout();
+  updateABSwapByRotation();
+}
+
+// --- コート独立回転 ---
+function rotateCourtIndependent(angle) {
+
+  // 🔥 ゲーム終了中は回転禁止
+  if (matchEnded) {
+    console.log("ゲーム終了中のため独立回転しません");
+    return;
+  }
+
+  independentRotation += angle;
+  const court = document.getElementById('courtContainer');
+  court.style.transform = `rotate(${courtRotation + independentRotation}deg)`;
+
+  updatePlayerPositions();
+  updateCourtLayout();
+  updateABSwapByRotation();
+}
+
+// --- コート・UIレイアウト更新 ---
+function updateCourtLayout() {
+  const outerContainer = document.getElementById('outerContainer');
+  const overlayWrapper = document.getElementById('overlay-wrapper');
+  const pointAFlip = document.getElementById('pointAFlip');
+  const pointBFlip = document.getElementById('pointBFlip');
+  const gameAFront = document.getElementById('gameAFront');
+  const gameBFront = document.getElementById('gameBFront');
+
+  if (!outerContainer || !overlayWrapper) return;
+
+}
+
+// --------------------------- コート回転 ---------------------------
+
+// --------------------- コート回転リセット ---------------------------
+function resetCourtRotation() {
+
+  // 🔥 ゲーム終了中はリセット禁止（回転処理を止める）
+  if (matchEnded) {
+    console.log("ゲーム終了中のためリセットしません");
+    return;
+  }
+
+  courtRotation = 0;
+  independentRotation = 0;
+
+  const court = document.getElementById('courtContainer');
+  if (court) court.style.transform = `rotate(0deg)`;
+
+  updatePlayerPositions();
+  updateCourtLayout();
+  updateABSwapByRotation();
+
+  // 外側UI強制解除
+  const outerContainer = document.getElementById('outerContainer');
+  const overlayWrapper = document.getElementById('overlay-wrapper');
+  if (outerContainer) outerContainer.classList.remove('swapped');
+  if (overlayWrapper) overlayWrapper.classList.remove('swapped');
+}
+
+function updatePlayerPositions(){
+  const court=document.getElementById('courtContainer');
+  const w=court.clientWidth, h=court.clientHeight;
+
+  const baselineTop = court.querySelector('.baseline-top').offsetTop;
+  const baselineBottom = court.querySelector('.baseline-bottom').offsetTop;
+
+  const endLineOffset = 0.15 * h;
+  const extraOffsetRatio = 0.115;
+  const extraOffset = h * extraOffsetRatio;
+
+  const aY = baselineBottom - endLineOffset;  
+  const bY = baselineTop + endLineOffset - extraOffset;
+
+  const spacing = 95;
+  const xCenter = w/2;
+
+  document.getElementById('playerA1Display').style.top = aY + 'px';
+  document.getElementById('playerA2Display').style.top = aY + 'px';
+  document.getElementById('playerA1Display').style.left = (xCenter - spacing/2 - 35) + 'px';
+  document.getElementById('playerA2Display').style.left = (xCenter + spacing/2 - 35) + 'px';
+
+  document.getElementById('playerB2Display').style.top = bY + 'px';
+  document.getElementById('playerB1Display').style.top = bY + 'px';
+  document.getElementById('playerB2Display').style.left = (xCenter - spacing/2 - 35) + 'px';
+  document.getElementById('playerB1Display').style.left = (xCenter + spacing/2 - 35) + 'px';
+
+  document.getElementById('playerA1Display').textContent = playerA1.slice(0, 5);
+  document.getElementById('playerA2Display').textContent = playerA2.slice(0, 5);
+  document.getElementById('playerB2Display').textContent = playerB2.slice(0, 5);
+  document.getElementById('playerB1Display').textContent = playerB1.slice(0, 5);
+
+
+  // コート内チーム名（修正：A下中央、B上中央）
+  // 文字数制限（最大5文字）
+  document.getElementById('courtTeamA').textContent = teamAName.length > 5 ? teamAName.slice(0,5) : teamAName;
+  document.getElementById('courtTeamB').textContent = teamBName.length > 5 ? teamBName.slice(0,5) : teamBName;
+  document.getElementById('courtTeamA').style.left = (xCenter - 35) + 'px';
+  document.getElementById('courtTeamA').style.top = (h*0.75 - 15) + 'px';
+  document.getElementById('courtTeamB').style.left = (xCenter - 35) + 'px';
+  document.getElementById('courtTeamB').style.top = (h*0.25 - 15) + 'px';
+
+  // 回転させる要素（画面上チーム名は含めない）
+  const allRotatable=['playerA1Display','playerA2Display','playerB1Display','playerB2Display','courtTeamA','courtTeamB'];
+  allRotatable.forEach(id=>{
+  // コート回転に逆回転させて常に正立表示
+  document.getElementById(id).style.transform=`rotate(${-courtRotation - independentRotation}deg)`;
+});
+
+// ウィンドウサイズ変更時も透明枠を追従
+window.addEventListener('resize', () => {
+    updatePlayerPositions();            // プレイヤー表示も更新
+});
+
+}
+
+// コート内ポジションチェンジ（枠内収まるよう自動縮小・完全対応）
+function swapPlayers(team) {
+    let message = "";
+    let color = "#ffffff";
+
+    if (team === 'A') {
+        [playerA1, playerA2] = [playerA2, playerA1];
+        updatePlayerPositions();
+        message = `${teamAName} の ${playerA2}さん デュースサイド に移動`;
+        color = "#ffffff";
+    } else if (team === 'B') {
+        [playerB1, playerB2] = [playerB2, playerB1];
+        updatePlayerPositions();
+        message = `${teamBName} の ${playerB2}さん デュースサイド に移動`;
+        color = "#ffff00";
+    }
+
+    const infoText = document.getElementById("infoText");
+    if (infoText) {
+        const maxWidth = infoText.clientWidth;
+        const maxHeight = infoText.clientHeight; // 1行高さ
+        let fontSize = 18; // 初期フォントサイズ
+        infoText.style.fontSize = fontSize + "px";
+        infoText.textContent = message;
+
+        // 枠内に収まるまでフォントサイズを調整
+        while ((infoText.scrollWidth > maxWidth || infoText.scrollHeight > maxHeight) && fontSize > 10) {
+            fontSize--;
+            infoText.style.fontSize = fontSize + "px";
+        }
+    }
+
+    // メッセージを表示（色指定）
+    showInfo(message, color);
+    // 文字数に応じて自動で縮小
+    adjustAllInfoFonts();
+
+    // サーバー点滅更新
+    showServerBlink(team);
+}
+
+function getServer(team) {
+  const p1 = document.getElementById(`player${team}1Display`);
+  const p2 = document.getElementById(`player${team}2Display`);
+  if (!p1 || !p2) {
+    // 要素が無い場合は右側（デフォルト）を返す
+    return (team === 'A') ? playerA2 : playerB2;
+  }
+
+  const r1 = p1.getBoundingClientRect();
+  const r2 = p2.getBoundingClientRect();
+  const center1 = r1.left + r1.width / 2;
+  const center2 = r2.left + r2.width / 2;
+  const rightIsP1 = center1 > center2;
+
+  const rotation = (courtRotation + independentRotation) % 360;
+  const flipped = (rotation === 180 || rotation === -180);
+
+  const nameP1 = (team === 'A') ? playerA1 : playerB1;
+  const nameP2 = (team === 'A') ? playerA2 : playerB2;
+
+  if (team === 'A') {
+    // Aチーム：右側 = A2
+    return flipped
+      ? (rightIsP1 ? nameP1 : nameP2)
+      : (rightIsP1 ? nameP2 : nameP1);
+  } else {
+    // Bチーム：右側 = B2（選手1と2を入れ替え済み）
+    return flipped
+      ? (rightIsP1 ? nameP1 : nameP2)
+      : (rightIsP1 ? nameP2 : nameP1);
+  }
+}
+
+/* ------------------- vs（レディ）ボタンを押す前の消灯と点灯演出（始り） ------------------- */
+
+// 試合開始画面表示時に消灯
+function disableMatchDisplays() {
+  // 1) ブロック盤
+  ["barA","barB"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.add("inactive");
+  });
+
+  // 2) ゲームカウント盤
+  ["gameAFront","gameABack","gameBFront","gameBBack"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.add("inactive");
+  });
+
+  // 3) ミニゲーム盤
+  document.querySelectorAll(".mini-game-container").forEach(container => {
+    container.classList.add("inactive");
+    container.querySelectorAll(".mini-flip-container, .mini-flipper, .mini-front, .mini-back")
+      .forEach(el => el.classList.add("inactive"));
+  });
+
+  // 4) 白丸
+  document.querySelectorAll(".middle-symbol").forEach(el => el.classList.add("inactive"));
+
+  // 5) ポイント盤（外枠 + 内部 front/back）
+  ["pointAFlip","pointBFlip"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.add("inactive");
+    el?.querySelectorAll(".flip-wrapper, .front, .back").forEach(f => f.classList.add("inactive"));
+  });
+
+  // 6) ロゴ
+  document.querySelectorAll(".rogo-text").forEach(el => el.classList.add("inactive"));
+
+  // 7) 操作禁止
+  matchControlsEnabled = false;
+
+  // 8) ポイントボタンも無効化
+  disableScoreButtons(true);
+}
+
+// vsボタン押下で点灯
+function enableMatchDisplays() {
+  // 1) ブロック盤
+  ["barA","barB"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.remove("inactive");
+  });
+
+  // 2) ゲームカウント盤
+  ["gameAFront","gameABack","gameBFront","gameBBack"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.remove("inactive");
+  });
+
+  // 3) ミニゲーム盤
+  document.querySelectorAll(".mini-game-container").forEach(container => {
+    container.classList.remove("inactive");
+    container.querySelectorAll(".mini-flip-container, .mini-flipper, .mini-front, .mini-back")
+      .forEach(el => el.classList.remove("inactive"));
+  });
+
+  // 4) 白丸
+  document.querySelectorAll(".middle-symbol").forEach(el => el.classList.remove("inactive"));
+
+  // 5) ポイント盤（外枠 + 内部 front/back）
+  ["pointAFlip","pointBFlip"].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.remove("inactive");
+    el?.querySelectorAll(".flip-wrapper, .front, .back").forEach(f => f.classList.remove("inactive"));
+  });
+
+  // 6) ロゴ
+  document.querySelectorAll(".rogo-text").forEach(el => el.classList.remove("inactive"));
+
+  // 7) 操作許可
+  matchControlsEnabled = true;
+
+  // 8) ポイントボタンも有効化
+  disableScoreButtons(false);
+}
+
+/* ------------------- vs（レディ）ボタンを押す前の消灯と点灯演出（終り） ------------------- */
+
+function updateScore() {
+  //----------------------------------------------------
+  // 1) 基本スコア（内部管理値）の反映
+  //----------------------------------------------------
+  const flipAFront = document.querySelector('#pointAFlip .front span');
+  const flipABack  = document.querySelector('#pointAFlip .back span');
+  const flipBFront = document.querySelector('#pointBFlip .front span');
+  const flipBBack  = document.querySelector('#pointBFlip .back span');
+
+  const pA = scoreA;
+  const pB = scoreB;
+
+  //----------------------------------------------------
+  // 2) 今のゲームがファイナルか？
+  //----------------------------------------------------
+  const finalThreshold = (matchType === 5 ? 2 : (matchType === 7 ? 3 : 4));
+  const isFinal = (gameA === finalThreshold && gameB === finalThreshold);
+
+  //----------------------------------------------------
+  // 3) デュース判定ライン
+  //----------------------------------------------------
+  const deuceBase = isFinal ? 6 : 3;
+
+  let dispA = pA;
+  let dispB = pB;
+
+  //----------------------------------------------------
+  // 4) デュース領域の処理
+  //----------------------------------------------------
+  if (pA >= deuceBase && pB >= deuceBase) {
+
+    if (pA === pB) {
+      // D - D （デュース）
+      dispA = "D";
+      dispB = "D";
+      if (pA === deuceBase) {
+        document.getElementById("deuceDisplay").textContent = "デュース";
+      } else {
+        document.getElementById("deuceDisplay").textContent = "デュースアゲイン";
+      }
+    } else if (pA === pB + 1) {
+      dispA = "A";
+      dispB = "D";
+      document.getElementById("deuceDisplay").textContent = "";
+    } else if (pB === pA + 1) {
+      dispA = "D";
+      dispB = "A";
+      document.getElementById("deuceDisplay").textContent = "";
+    } else {
+      dispA = pA;
+      dispB = pB;
+      document.getElementById("deuceDisplay").textContent = "";
+    }
+
+  } else {
+    dispA = pA;
+    dispB = pB;
+    document.getElementById("deuceDisplay").textContent = "";
+  }
+
+  //----------------------------------------------------
+  // 5) Flip 表示へ反映
+  //----------------------------------------------------
+  flipAFront.textContent = dispA;
+  flipABack.textContent  = dispA;
+  flipBFront.textContent = dispB;
+  flipBBack.textContent  = dispB;
+
+  //----------------------------------------------------
+  // 6) ゲームカウント表示
+  //----------------------------------------------------
+  document.getElementById('gameAFront').textContent = gameA;
+  document.getElementById('gameABack').textContent  = gameA;
+  document.getElementById('gameBFront').textContent = gameB;
+  document.getElementById('gameBBack').textContent  = gameB;
+
+  //----------------------------------------------------
+  // 7) 進捗バー更新（フラグに従って描画先を決める）
+  const rawBarA = document.getElementById('barA');
+  const rawBarB = document.getElementById('barB');
+  if (rawBarA && rawBarB) {
+  // フラグに応じて Aチームのブロックをどの DOM に書き込むか決定
+  const teamADest = isBarSwapped ? rawBarB : rawBarA;
+  const teamBDest = isBarSwapped ? rawBarA : rawBarB;
+
+  // クリア
+  teamADest.innerHTML = '';
+  teamBDest.innerHTML = '';
+
+  const maxPoints =
+    (gameA === Math.ceil(matchType / 2) - 1 &&
+     gameB === Math.ceil(matchType / 2) - 1)
+      ? 7
+      : 4;
+
+  // チーム色取得
+  let colorA = window.getComputedStyle(document.querySelector('.bg-teamA')).backgroundColor;
+  let colorB = window.getComputedStyle(document.querySelector('.bg-teamB')).backgroundColor;
+
+  // ★重要★ 見た目の入れ替え（isBarSwapped）に応じて色も入れ替える
+  if (isBarSwapped) {
+    [colorA, colorB] = [colorB, colorA];
+  }
+
+  for (let i = 0; i < maxPoints; i++) {
+    let blkA = document.createElement('div');
+    blkA.className = 'score-block';
+    blkA.style.background = (i < pA) ? colorA : 'rgba(255,255,255,0.2)';
+    teamADest.appendChild(blkA);
+
+    let blkB = document.createElement('div');
+    blkB.className = 'score-block';
+    blkB.style.background = (i < pB) ? colorB : 'rgba(255,255,255,0.2)';
+    teamBDest.appendChild(blkB);
+  }
+}
+
+  //----------------------------------------------------
+  // 8) 桁数に応じた縮小処理
+  //----------------------------------------------------
+  document.querySelectorAll('.flip-container').forEach(el => {
+    const span = el.querySelector('.front span');
+    if (span) {
+      const num = span.textContent.trim().replace(/\D/g, '');
+      el.dataset.length = num.length;
+    }
+  });
+
+  //----------------------------------------------------
+  // 9) サーバー優先のポイントコール（ゼロオール非表示対応）
+  //----------------------------------------------------
+  const pointCallDisplay = document.getElementById("currentPointCall");
+  const infoText = document.getElementById("infoText");
+  if (!pointCallDisplay || !infoText) return;
+
+  const map = ["ゼロ","ワン","ツー","スリー","フォー","ファイブ","シックス"];
+  let serverPoint, receiverPoint;
+
+  if (currentServerTeam === 'A') {
+    serverPoint = pA;
+    receiverPoint = pB;
+  } else {
+    serverPoint = pB;
+    receiverPoint = pA;
+  }
+
+  let pointCall = "";
+  if (!(serverPoint === 0 && receiverPoint === 0)) {
+    // 0-0 の場合は表示しない
+    pointCall = (serverPoint === receiverPoint)
+      ? `${map[serverPoint]}オール`
+      : `${map[serverPoint]} ${map[receiverPoint]}`;
+  }
+
+  pointCallDisplay.textContent = pointCall;
+  infoText.innerHTML = pointCall;
+  infoText.style.color = "#ffffff";
+}
+
+// --------------------　addPoint / undoPoint / reset の最初でインクリメント --------------------
+
+function bumpDisplayVersion() {
+    displayVersion++;
+}
+
+// -------------------- ポイント加算（安全版） --------------------
+function addPoint(team) {
+    bumpDisplayVersion();
+    if (!matchControlsEnabled || matchEnded) return;
+
+    const finalThreshold =
+        matchType === 5 ? 2 :
+        matchType === 7 ? 3 :
+        matchType === 9 ? 4 : null;
+
+    const inFinalGame =
+        finalThreshold !== null &&
+        gameA === finalThreshold &&
+        gameB === finalThreshold;
+
+    if (inFinalGame) totalPointsInFinal++;
+
+    // --- Undo用履歴保存 ---
+    historyStack.push({
+        scoreA, scoreB, gameA, gameB, deuceCount,
+        totalPointsInFinal, wasDeuce,
+        currentServerTeam, currentReceiverTeam,
+        currentServerFixed,
+        finalInitDone,
+        lastTotalPoints,
+        matchEnded,
+
+        // ★ 重要：finalGameActive を必ず保存
+        finalGameActive,
+
+        courtRotation,
+        independentRotation,
+        rotation: courtRotation + independentRotation,
+
+        finalText: document.getElementById("finalDisplay")?.textContent || "",
+        finalGradient:
+            document.getElementById("finalDisplay")
+                ?.classList.contains("final-gradient") || false,
+        deuceText: document.getElementById("deuceDisplay")?.textContent || "",
+        infoText: document.getElementById("infoText")?.textContent || ""
+    });
+
+    // --- ポイント加算 ---
+    if (team === "A") scoreA++;
+    else scoreB++;
+
+    // --- ファイナル開始時サーバー初期化 ---
+    let finalJustStarted = false;
+    if (
+        !finalInitDone &&
+        finalThreshold !== null &&
+        gameA === finalThreshold - 1 &&
+        gameB === finalThreshold - 1 &&
+        scoreA === 0 && scoreB === 0
+    ) {
+        const prevReceiver = currentReceiverTeam;
+        currentServerTeam = prevReceiver;
+        currentReceiverTeam = prevReceiver === "A" ? "B" : "A";
+
+        finalInitDone = true;
+        lastTotalPoints = 0;
+        updateServerIndicator();
+
+        finalJustStarted = true;
+    }
+
+    // --- 状態・UI更新 ---
+    checkGameStatus();
+    updateScore();
+    updatePointCall();
+    if (currentServerTeam) refereeCall();
+
+    const infoMsg =
+        (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
+    showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
+    adjustAllInfoFonts();
+
+    // --- ファイナル突入表示 ---
+    if (finalJustStarted) {
+        if (finalGameDisplayTimeout)
+            clearTimeout(finalGameDisplayTimeout);
+
+        finalGameDisplayTimeout = setTimeout(() => {
+            showFinalGameEntryDisplay();
+        }, 5000);
+    }
+}
+
+// -------------------- Undo ポイント（安全版） --------------------
+function undoPoint(event) {
+    bumpDisplayVersion();
+    if (event) event.stopPropagation();
+    if (historyStack.length === 0) return;
+
+    const last = historyStack.pop();
+
+    //----------------------------------------------------
+    // 1) 状態復元
+    //----------------------------------------------------
+    scoreA = last.scoreA;
+    scoreB = last.scoreB;
+    gameA  = last.gameA;
+    gameB  = last.gameB;
+
+    // ★ ここで再計算する
+    finalGameActive =
+    isFinalGameState(
+        gameA,
+        gameB,
+        getFinalThreshold(matchType)
+    );
+
+    deuceCount = last.deuceCount || 0;
+    totalPointsInFinal = last.totalPointsInFinal || 0;
+    wasDeuce = last.wasDeuce || false;
+
+    currentServerFixed = last.currentServerFixed ?? false;
+    matchEnded = last.matchEnded ?? false;
+
+    //----------------------------------------------------
+    // 2) サーバー復元
+    //----------------------------------------------------
+    currentServerTeam   = last.currentServerTeam || "";
+    currentReceiverTeam = last.currentReceiverTeam || "";
+    updateServerIndicator();
+
+    //----------------------------------------------------
+    // 3) Final 表示復元
+    //----------------------------------------------------
+    const finalDisplay = document.getElementById("finalDisplay");
+    if (finalDisplay) {
+        finalDisplay.textContent = last.finalText || "";
+        finalDisplay.classList.toggle(
+            "final-gradient",
+            !!last.finalGradient
+        );
+        adjustFinalDisplayFont();
+    }
+
+    //----------------------------------------------------
+    // 3.5) コート回転復元
+    //----------------------------------------------------
+    if (typeof last.rotation === "number") {
+        restoreCourtRotation(last.rotation);
+    }
+
+    //----------------------------------------------------
+    // 4) デュース表示
+    //----------------------------------------------------
+    const deuceDisplay = document.getElementById("deuceDisplay");
+    if (deuceDisplay) {
+        deuceDisplay.textContent = last.deuceText || "";
+    }
+
+    //----------------------------------------------------
+    // 5) スコア・コール
+    //----------------------------------------------------
+    updateScore();
+    updatePointCall();
+    if (currentServerTeam) refereeCall();
+
+    //----------------------------------------------------
+    // 6) 完全リセット時
+    //----------------------------------------------------
+    if (
+        scoreA === 0 && scoreB === 0 &&
+        gameA === 0  && gameB === 0
+    ) {
+        currentServerFixed = false;
+        finalGameActive = false; // ★ 念のため明示
+
+        document.querySelectorAll(".middle-symbol")
+            .forEach(el => el.classList.add("inactive"));
+
+        setTimeout(() => {
+            disableMatchDisplays();
+
+            currentServerTeam = "";
+            currentReceiverTeam = "";
+            updateServerIndicator();
+
+            if (selectedServer) {
+                selectedServer.team = "";
+                selectedServer.player = "";
+            }
+
+            const pointCall = document.getElementById("currentPointCall");
+            const infoText  = document.getElementById("infoText");
+
+            if (pointCall) pointCall.textContent = "";
+            if (infoText)  infoText.textContent  = "";
+            if (deuceDisplay) deuceDisplay.textContent = "";
+            if (finalDisplay) finalDisplay.textContent = "";
+
+            matchControlsEnabled = true;
+            vsButtonEnabled = true;
+            document.getElementById("readyButton")
+                ?.classList.remove("inactive");
+
+        }, 10);
+    } else {
+        enableMatchDisplays();
+    }
+
+    //----------------------------------------------------
+    // 7) Final 内部再判定
+    //----------------------------------------------------
+    preCheckFinal();
+
+    //----------------------------------------------------
+    // 8) ボタン復帰
+    //----------------------------------------------------
+    disableScoreButtons(false);
+
+    //----------------------------------------------------
+    // 9) 情報表示
+    //----------------------------------------------------
+    showInfo(last.infoText || "得点を1ポイント戻しました。");
+    adjustAllInfoFonts();
+}
+
+// --------------------------- 試合リセット関連 ---------------------------
+
+// -------------------- 試合リセット(共通) --------------------
+function resetMatchState() {
+    bumpDisplayVersion();
+    // ゲーム情報
+    gameA = gameB = scoreA = scoreB = 0;
+    historyStack = [];
+    matchEnded = false;
+    deuceCount = 0;
+    finalInitDone = false;
+
+    // ★ 追加（重要）
+    finalGameActive = false;
+    totalPointsInFinal = 0;
+
+    // サーバー情報
+    selectedServer = { team:'', name:'' };
+    currentServerTeam = 'A';
+    currentReceiverTeam = 'B';
+    currentServerFixed = false;
+    resetServerIndicator();
+
+    // コート・選手配置
+    resetCourtRotation();
+    updatePlayerPositions();
+    updateScore();
+
+    // 表示クリア
+    const finalDisplay = document.getElementById('finalDisplay');
+    if(finalDisplay) {
+        finalDisplay.textContent = '';
+        finalDisplay.classList.remove('final-gradient');
+        adjustFinalDisplayFont();
+    }
+    const deuceDisplay = document.getElementById('deuceDisplay');
+    if(deuceDisplay) deuceDisplay.textContent = '';
+
+    // 白丸S・ポイント・ゲームカウント消灯
+    disableMatchDisplays();
+
+    // Ready / 案内表示
+    vsButtonEnabled = true;
+    const readyBtn = document.getElementById('readyButton');
+    if (readyBtn) readyBtn.classList.remove('inactive');
+
+    const infoText = document.getElementById("infoText");
+    if (infoText) {
+        infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+        infoText.style.color = "#ffffff";
+        infoText.classList.add("blink-text");
+        setTimeout(()=>infoText.classList.remove("blink-text"),1000);
+    }
+
+    // showInfo タイマークリア
+    if(showInfo.timeout) {
+        clearTimeout(showInfo.timeout);
+        showInfo.timeout = null;
+    }
+}
+
+// -------------------- 試合リセットボタン --------------------
+
+function resetMatch() {
+    if(!confirm('試合をリセットしますか？')) return;
+    resetMatchState(); // 共通処理呼び出し
+}
+
+// -------------------- 試合画面（リセット）から設定画面に戻るボタン) --------------------
+function returnToSetup() {
+    if(!confirm('設定画面に戻りますか？試合データはリセットされます。')) return;
+    resetMatchState(); // 共通処理呼び出し
+    // 画面切替
+    document.getElementById('gameScreen').style.display = 'none';
+    document.getElementById('setupScreen').style.display = 'flex';
+}
+
+// --------------------------- 試合リセット関連 ---------------------------
+
+// ------------------------------------ ゲーム判定 ------------------------------------
+
+// ==================== 初期化 ====================
+function initializeMatch() {
+    scoreA = 0;
+    scoreB = 0;
+    gameA = 0;
+    gameB = 0;
+
+    currentServerTeam = '';
+    currentReceiverTeam = '';
+
+    initialServerTeam = null;
+
+    lastTotalPoints = 0; // ファイナル専用
+    matchEnded = false;
+    isBarSwapped = false;
+
+    updateServerIndicator();
+    updateScore();
+    setFinalDisplay("");
+}
+
+
+// ==================== メイン判定 ====================
+function checkGameStatus() {
+    if (matchEnded) return;
+
+    const finalThreshold = getFinalThreshold(matchType);
+    const isFinalGame = isFinalGameState(gameA, gameB, finalThreshold);
+    const winner = judgeGameWinner(scoreA, scoreB, isFinalGame);
+
+    // ---------- ファイナル中：2ポイント交代 ----------
+    if (handleFinalGameServerChange(isFinalGame)) {
+        updateABSwapByRotation();
+        updatePointCall();
+
+        const block = Math.floor((scoreA + scoreB) / 2);
+        const changeText =
+            (block % 2 === 1) ? "チェンジサイズ" : "チェンジサービス";
+
+        setFinalDisplay(changeText);
+        handleChangeSideDisplay(changeText);
+    }
+
+    // ---------- ゲーム勝者確定 ----------
+    if (winner) {
+
+        if (winner === 'A') gameA++;
+        else gameB++;
+
+        // ★ ゲーム数からサーバーを再計算（ここが唯一の交代箇所）
+        updateServerByGameCount();
+
+        updateABSwapByRotation();
+        updatePointCall();
+        refereeCall();
+
+        const totalGames = gameA + gameB;
+        const changeText =
+            (totalGames % 2 === 0)
+                ? "ゲーム　チェンジサービス"
+                : "ゲーム　チェンジサイズ";
+
+        setFinalDisplay(changeText);
+        handleChangeSideDisplay(changeText);
+
+        scoreA = 0;
+        scoreB = 0;
+        updateScore();
+
+        // ★ ゲームカウント表示
+        scheduleGameCountDisplay();
+
+        // ★ ファイナルゲーム突入表示
+        if (finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold) {
+            finalGameActive = true;  // ファイナルゲームフラグON
+            setTimeout(() => {
+                setFinalDisplay("ファイナルゲーム");
+            }, 8000); // ゲームカウント表示後に出るよう少し遅らせる
+        }
+    }
+
+    // ---------- マッチ終了 ----------
+    const matchResult = applyMatchEndLogic(matchType);
+
+    if (matchResult.ended) {
+
+        setFinalDisplay("ゲームセット");
+        disableScoreButtons(true);
+
+        currentServerTeam = '';
+        currentReceiverTeam = '';
+        updateServerIndicator();
+
+        setTimeout(() => {
+            const teamAName =
+                document.getElementById('displayTeamA')?.textContent || 'Aチーム';
+            const teamBName =
+                document.getElementById('displayTeamB')?.textContent || 'Bチーム';
+            const pairAName =
+                document.getElementById('pairA')?.textContent.replace('ペア','').trim();
+            const pairBName =
+                document.getElementById('pairB')?.textContent.replace('ペア','').trim();
+
+            setFinalDisplay(
+                matchResult.winner === 'A'
+                    ? `${teamAName}　${pairAName}ペア　の勝ちです`
+                    : `${teamBName}　${pairBName}ペア　の勝ちです`
+            );
+
+            launchConfetti();
+        }, 5000);
+    }
+}
+
+// ==================== 判定ロジック ====================
+function getFinalThreshold(matchType) {
+    switch (matchType) {
+        case 3: return null;
+        case 5: return 2;
+        case 7: return 3;
+        case 9: return 4;
+        default: return null;
+    }
+}
+
+function isFinalGameState(gameA, gameB, finalThreshold) {
+    return finalThreshold !== null &&
+           gameA === finalThreshold &&
+           gameB === finalThreshold;
+}
+
+function judgeGameWinner(scoreA, scoreB, isFinalGame) {
+    if (isFinalGame) {
+        if (scoreA >= 7 && scoreA - scoreB >= 2) return 'A';
+        if (scoreB >= 7 && scoreB - scoreA >= 2) return 'B';
+        return null;
+    }
+    if (scoreA >= 4 || scoreB >= 4) {
+        if (scoreA - scoreB >= 2) return 'A';
+        if (scoreB - scoreA >= 2) return 'B';
+    }
+    return null;
+}
+
+
+// ==================== ファイナル中交代 ====================
+function handleFinalGameServerChange(isFinalGame) {
+    if (!isFinalGame) return false;
+
+    const totalPoints = scoreA + scoreB;
+
+    if (totalPoints % 2 === 0 && totalPoints !== lastTotalPoints) {
+        [currentServerTeam, currentReceiverTeam] =
+            [currentReceiverTeam, currentServerTeam];
+        updateServerIndicator();
+        lastTotalPoints = totalPoints;
+        return true;
+    }
+
+    lastTotalPoints = totalPoints;
+    return false;
+}
+
+// ==================== マッチ終了 ====================
+function applyMatchEndLogic(matchType) {
+    const matchWin = Math.ceil(matchType / 2);
+
+    if (matchEnded) return { ended: false };
+
+    if (gameA >= matchWin || gameB >= matchWin) {
+        matchEnded = true;
+        currentServerTeam = '';
+        currentReceiverTeam = '';
+        return {
+            ended: true,
+            winner: (gameA > gameB) ? 'A' : 'B'
+        };
+    }
+    return { ended: false };
+}
+
+// ==================== 表示系 ====================
+function scheduleGameCountDisplay() {
+    if (matchEnded) return;
+
+    const myVersion = displayVersion;
+
+    if (gameCountTimeout) clearTimeout(gameCountTimeout);
+
+    gameCountTimeout = setTimeout(() => {
+        if (displayVersion !== myVersion) return; // ★ 古い命令は破棄
+        if (matchEnded) return;
+
+        const map = ["ゼロ","ワン","ツー","スリー","フォー","ファイブ","シックス"];
+        const all = Math.floor(matchType / 2);
+
+        const conv = (a,b) => {
+            if (a === b && a >= 1 && a <= all) return map[a] + "オール";
+            if (a === b && a > all) return "デュース";
+            return map[a] + map[b];
+        };
+
+        const text =
+            "ゲームカウント " +
+            ((currentServerTeam === 'A') ? conv(gameA,gameB) : conv(gameB,gameA));
+
+        setFinalDisplay(text);
+
+        setTimeout(() => {
+            if (displayVersion !== myVersion) return; // ★ ここも
+            if (!matchEnded) setFinalDisplay("");
+        }, 5000);
+
+    }, 5000);
+}
+
+// ==================== setFinalDisplay（最終安全版） ====================
+function setFinalDisplay(text) {
+    const el = document.getElementById("finalDisplay");
+    if (!el) return;
+
+    el.textContent = text;
+    adjustFinalDisplayFont();
+
+    const finalThreshold = getFinalThreshold(matchType);
+    const stillFinal =
+        finalThreshold !== null &&
+        gameA === finalThreshold &&
+        gameB === finalThreshold;
+
+    // ★ 本当にファイナル中のときだけ戻す
+    if (finalGameActive && stillFinal && text !== "ゲームセット") {
+        setTimeout(() => {
+            if (
+                finalGameActive &&
+                stillFinal &&
+                !matchEnded &&
+                el.textContent !== "ファイナルゲーム"
+            ) {
+                el.textContent = "ファイナルゲーム";
+                adjustFinalDisplayFont();
+            }
+        }, 5000);
+    }
+}
+
+function handleChangeSideDisplay(text) {
+    if (matchEnded) return;
+    if (text === "チェンジサイズ" || text === "ゲーム　チェンジサイズ") {
+        setTimeout(() => rotateCourt(180), 50);
+    }
+}
+
+// ==================== ゲーム数からサーバーを再計算 ====================
+function updateServerByGameCount() {
+    if (!initialServerTeam) return;
+
+    const finishedGames = gameA + gameB;
+
+    if (finishedGames % 2 === 0) {
+        currentServerTeam = initialServerTeam;
+        currentReceiverTeam = (initialServerTeam === 'A') ? 'B' : 'A';
+    } else {
+        currentServerTeam = (initialServerTeam === 'A') ? 'B' : 'A';
+        currentReceiverTeam = initialServerTeam;
+    }
+
+    updateServerIndicator();
+}
+
+// ------------------------------------ ゲーム判定 ------------------------------------
+
+/* ------ undopoint用コート回転を戻す関数 ------ */
+function restoreCourtRotation(rotationValue) {
+    if (typeof rotationValue !== "number") return;
+
+    courtRotation = rotationValue;
+
+    const court = document.getElementById("courtContainer");
+    if (court) {
+        court.style.transform = `rotate(${courtRotation}deg)`;
+    }
+
+    // プレイヤー位置・レイアウト・AB入れ替えも更新
+    updatePlayerPositions();
+    updateCourtLayout();
+    updateABSwapByRotation();
+}
+/* ------ undopoint用コート回転を戻す関数 ------ */
+
+// -------------------- ポイントコール修正版（統一版） --------------------
+function updatePointCall() {
+    if (matchEnded) return;
+    if (!currentServerTeam) return;
+
+    const pointCallDisplay = document.getElementById("currentPointCall");
+    const infoText = document.getElementById("infoText");
+    if (!pointCallDisplay || !infoText) return;
+
+    const serverPoint = currentServerTeam === 'A' ? scoreA : scoreB;
+    const receiverPoint = currentServerTeam === 'A' ? scoreB : scoreA;
+
+    // matchTypeに応じたファイナル閾値を取得（3ゲームマッチはnull）
+    const finalThreshold = getFinalThreshold(matchType);
+    const isFinal = finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold;
+    const deuceBase = isFinal ? 6 : 3;
+
+    let pointCall = "";
+
+    if (serverPoint >= deuceBase && receiverPoint >= deuceBase) {
+        if (serverPoint === receiverPoint) {
+            pointCall = "デュース";
+            wasDeuce = true;
+        } else if (Math.abs(serverPoint - receiverPoint) === 1) {
+            const leader = (serverPoint > receiverPoint) ? currentServerTeam : (currentServerTeam === 'A' ? 'B' : 'A');
+            pointCall = (leader === currentServerTeam)
+                ? "アドバンテージ サーバー"
+                : "アドバンテージ レシーバー";
+            wasDeuce = true;
+        } else {
+            pointCall = `${serverPoint} ${receiverPoint}`;
+            wasDeuce = false;
+        }
+    } else if (serverPoint === receiverPoint) {
+        pointCall = serverPoint + "オール";
+        wasDeuce = false;
+    } else {
+        pointCall = `${serverPoint} ${receiverPoint}`;
+        wasDeuce = false;
+    }
+
+    pointCallDisplay.textContent = pointCall;
+    infoText.textContent = pointCall;
+    infoText.style.color = "#ffffff";
+}
+
+// -------------------- 主審コール（統一版） --------------------
+function refereeCall() {
+    const display = document.getElementById('deuceDisplay');
+    if (!display || !currentServerTeam) return;
+    if (matchEnded) { display.textContent=""; return; }
+
+    const pA = scoreA;
+    const pB = scoreB;
+
+    // matchTypeに応じたファイナル閾値を取得（3ゲームマッチはnull）
+    const finalThreshold = getFinalThreshold(matchType);
+    const isFinal = finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold;
+    const deuceBase = isFinal ? 6 : 3;
+
+    if (pA === 0 && pB === 0) { display.textContent=""; return; }
+
+    if (pA >= deuceBase && pB >= deuceBase) {
+        if (pA === pB) {
+            display.textContent = ((!isFinal && pA===3) || (isFinal && pA===6)) ? "デュース" : "デュースアゲイン";
+            wasDeuce = true;
+        } else if (Math.abs(pA - pB)===1) {
+            const leader = pA>pB?'A':'B';
+            display.textContent = (leader===currentServerTeam) ? "アドバンテージ サーバー" : "アドバンテージ レシーバー";
+            wasDeuce = true;
+        } else {
+            display.textContent="";
+            wasDeuce=false;
+        }
+        return;
+    }
+
+    if (isFinal) {
+        const finalPoints = ["ゼロ","ワン","ツー","スリー","フォー","ファイブ","シックス"];
+        if (pA===pB && pA<=6) display.textContent = finalPoints[pA]+"オール";
+        else display.textContent = currentServerTeam==='A'? finalPoints[pA]+finalPoints[pB]:finalPoints[pB]+finalPoints[pA];
+        return;
+    }
+
+    const normalCall = {
+        "0,1":"ゼロワン","0,2":"ゼロツー","0,3":"ゼロスリー",
+        "1,0":"ワンゼロ","1,1":"ワンオール","1,2":"ワンツー","1,3":"ワンスリー",
+        "2,0":"ツーゼロ","2,1":"ツーワン","2,2":"ツーオール","2,3":"ツースリー",
+        "3,0":"スリーゼロ","3,1":"スリーワン","3,2":"スリーツー"
+    };
+
+    display.textContent = currentServerTeam==='A'? normalCall[`${pA},${pB}`]||"" : normalCall[`${pB},${pA}`]||"";
+}
+
+/* --------------------------- A/B自動入替えコード ---------------------------- */
+
+// === A/B を入れ替えるべきか判定するロジック ===
+function shouldSwapABByRotation(courtRotation, independentRotation) {
+    const totalRotation = (courtRotation + independentRotation) % 360;
+    const rotation = (totalRotation + 360) % 360; // 正規化
+    return rotation === 270;
+}
+
+// === 回転角から A/B を自動入れ替え（最終ロジック版） ===
+function updateABSwapByRotation() {
+    const shouldSwap = shouldSwapABByRotation(
+        courtRotation,
+        independentRotation
+    );
+
+    setABSwapState(shouldSwap);
+}
+
+// === A/B 入替え状態を設定する（ロジック専用） ===
+function setABSwapState(shouldBeSwapped) {
+    if (shouldBeSwapped === isSwappedAB) return;
+
+    // 状態を先に切り替える（重要）
+    isSwappedAB = shouldBeSwapped;
+
+    // 表示は必ず1回だけ呼ぶ
+    renderABSwapView();
+}
+
+function applyABSwap() {
+    setABSwapState(true);
+}
+
+function revertABSwap() {
+    setABSwapState(false);
+}
+
+// === A/B 入替え表示（View専用・最終形） ===
+function renderABSwapView() {
+
+    // ---- チーム名表示 ----
+    swapElements("#displayTeamA", "#displayTeamB");
+    swapBgColor(".bg-teamA", ".bg-teamB");
+
+    // ---- ペア名 ----
+    swapElements("#pairA", "#pairB");
+
+    // ---- ゲームカウント ----
+    swapElements("#gameAFront", "#gameBFront");
+    swapElements("#gameABack",  "#gameBBack");
+
+    // ---- ミニ盤 ----
+    swapElements(".mini-front.A", ".mini-front.B");
+    swapElements(".mini-back.A",  ".mini-back.B");
+
+    // ---- ポイント ----
+    swapElements("#pointAFlip", "#pointBFlip");
+
+    // ---- マージン（状態だけを見る） ----
+    const pointA = document.getElementById("pointAFlip");
+    const pointB = document.getElementById("pointBFlip");
+    if (pointA && pointB) {
+        if (isSwappedAB) {
+            pointA.style.marginLeft  = "15px";
+            pointA.style.marginRight = "0px";
+            pointB.style.marginLeft  = "0px";
+            pointB.style.marginRight = "15px";
+        } else {
+            pointA.style.marginLeft  = "0px";
+            pointA.style.marginRight = "15px";
+            pointB.style.marginLeft  = "15px";
+            pointB.style.marginRight = "0px";
+        }
+    }
+
+    // ---- 積み上げバー ----
+    swapBars();
+
+    // ---- サーブ表示 ----
+    swapElements(".middle-box.left", ".middle-box.right");
+}
+
+// === 要素の入れ替え（内容丸ごとスワップ） ===
+function swapElements(selA, selB) {
+    const a = document.querySelector(selA);
+    const b = document.querySelector(selB);
+    if (a && b) {
+        const temp = document.createElement("div");
+        a.parentNode.insertBefore(temp, a);
+
+        b.parentNode.insertBefore(a, b);
+        temp.parentNode.insertBefore(b, temp);
+
+        temp.remove();
+    }
+}
+
+// === 背景色を入れ替え（クラス単位で確実に切替） ===
+function swapBgColor(selA, selB) {
+    const elemsA = document.querySelectorAll(selA);
+    const elemsB = document.querySelectorAll(selB);
+
+    const count = Math.min(elemsA.length, elemsB.length);
+
+    for (let i = 0; i < count; i++) {
+        const a = elemsA[i];
+        const b = elemsB[i];
+
+        a.classList.toggle("bg-teamA");
+        a.classList.toggle("bg-teamB");
+
+        b.classList.toggle("bg-teamA");
+        b.classList.toggle("bg-teamB");
+    }
+}
+
+// === 積み上げバー専用スワップ（中身だけ入れ替え） ===
+function swapBars() {
+    const barA = document.getElementById('barA');
+    const barB = document.getElementById('barB');
+    if (!barA || !barB) return;
+
+    const tmp = barA.innerHTML;
+    barA.innerHTML = barB.innerHTML;
+    barB.innerHTML = tmp;
+
+    // ← ここで入れ替わったことを記録（重要）
+    isBarSwapped = !isBarSwapped;
+}
+
+/* --------------------------- A/B自動入替えコード ---------------------------- */
+
+/* ------------------- チーム名と選手名背景色変更スクロールバー始り ------------------- */
+const teamCombos = [
+  // デフォルト色（残す）
+  {teamA:"#ffffff", teamB:"#ffff00"}, 
+  {teamA:"#ffff00", teamB:"#ffffff"}, 
+
+ // --- Here Start: 追加100通り（濃いめパステル・Switch調） ---
+{teamA:"#ff9fbf", teamB:"#8fd3ff"},
+{teamA:"#8fd3ff", teamB:"#ff9fbf"},
+{teamA:"#ffb38a", teamB:"#9fc5ff"},
+{teamA:"#9fc5ff", teamB:"#ffb38a"},
+{teamA:"#ffd38f", teamB:"#a7a0ff"},
+{teamA:"#a7a0ff", teamB:"#ffd38f"},
+{teamA:"#ffa4cc", teamB:"#88e0c0"},
+{teamA:"#88e0c0", teamB:"#ffa4cc"},
+{teamA:"#ffc19a", teamB:"#98b8ff"},
+{teamA:"#98b8ff", teamB:"#ffc19a"},
+{teamA:"#ffabc2", teamB:"#90e5a8"},
+{teamA:"#90e5a8", teamB:"#ffabc2"},
+{teamA:"#ffcf8e", teamB:"#88b6ff"},
+{teamA:"#88b6ff", teamB:"#ffcf8e"},
+{teamA:"#ffa0a8", teamB:"#9fe0ff"},
+{teamA:"#9fe0ff", teamB:"#ffa0a8"},
+{teamA:"#ffc8a0", teamB:"#8ea0ff"},
+{teamA:"#8ea0ff", teamB:"#ffc8a0"},
+{teamA:"#ff95b8", teamB:"#8ef7c0"},
+{teamA:"#8ef7c0", teamB:"#ff95b8"},
+{teamA:"#ffb28c", teamB:"#98d8ff"},
+{teamA:"#98d8ff", teamB:"#ffb28c"},
+{teamA:"#ffdba0", teamB:"#92b4ff"},
+{teamA:"#92b4ff", teamB:"#ffdba0"},
+{teamA:"#ff9ac8", teamB:"#8feac0"},
+{teamA:"#8feac0", teamB:"#ff9ac8"},
+{teamA:"#ffc7a8", teamB:"#9fb0ff"},
+{teamA:"#9fb0ff", teamB:"#ffc7a8"},
+{teamA:"#ffadc5", teamB:"#82ebd0"},
+{teamA:"#82ebd0", teamB:"#ffadc5"},
+{teamA:"#ffd090", teamB:"#8abaff"},
+{teamA:"#8abaff", teamB:"#ffd090"},
+{teamA:"#ffaac0", teamB:"#93e9b8"},
+{teamA:"#93e9b8", teamB:"#ffaac0"},
+{teamA:"#ffce9c", teamB:"#8ec3ff"},
+{teamA:"#8ec3ff", teamB:"#ffce9c"},
+{teamA:"#ff94d0", teamB:"#86efd0"},
+{teamA:"#86efd0", teamB:"#ff94d0"},
+{teamA:"#ffc5a0", teamB:"#95b2ff"},
+{teamA:"#95b2ff", teamB:"#ffc5a0"},
+{teamA:"#ffb0d0", teamB:"#7fe0b0"},
+{teamA:"#7fe0b0", teamB:"#ffb0d0"},
+{teamA:"#ffd99e", teamB:"#8ab2ff"},
+{teamA:"#8ab2ff", teamB:"#ffd99e"},
+{teamA:"#ff92b4", teamB:"#9ae5ff"},
+{teamA:"#9ae5ff", teamB:"#ff92b4"},
+{teamA:"#ffba90", teamB:"#86b0ff"},
+{teamA:"#86b0ff", teamB:"#ffba90"},
+{teamA:"#ff85c2", teamB:"#7ff0bc"},
+{teamA:"#7ff0bc", teamB:"#ff85c2"},
+{teamA:"#ffb098", teamB:"#8dd0ff"},
+{teamA:"#8dd0ff", teamB:"#ffb098"},
+{teamA:"#ffcfa4", teamB:"#8ab8ff"},
+{teamA:"#8ab8ff", teamB:"#ffcfa4"},
+{teamA:"#ff94be", teamB:"#90e8d0"},
+{teamA:"#90e8d0", teamB:"#ff94be"},
+{teamA:"#ffc090", teamB:"#82c2ff"},
+{teamA:"#82c2ff", teamB:"#ffc090"},
+{teamA:"#ff99c8", teamB:"#7fd8c5"},
+{teamA:"#7fd8c5", teamB:"#ff99c8"},
+{teamA:"#ffc5a8", teamB:"#78b2ff"},
+{teamA:"#78b2ff", teamB:"#ffc5a8"},
+{teamA:"#ff86cc", teamB:"#90f0c0"},
+{teamA:"#90f0c0", teamB:"#ff86cc"},
+{teamA:"#ffcf8c", teamB:"#8ec0ff"},
+{teamA:"#8ec0ff", teamB:"#ffcf8c"},
+{teamA:"#ff96bb", teamB:"#89e9d0"},
+{teamA:"#89e9d0", teamB:"#ff96bb"},
+{teamA:"#ffca90", teamB:"#91c0ff"},
+{teamA:"#91c0ff", teamB:"#ffca90"},
+{teamA:"#ffa2c4", teamB:"#85e9c0"},
+{teamA:"#85e9c0", teamB:"#ffa2c4"},
+{teamA:"#ffd490", teamB:"#8dbbff"},
+{teamA:"#8dbbff", teamB:"#ffd490"},
+{teamA:"#ff8ec0", teamB:"#80e8c5"},
+{teamA:"#80e8c5", teamB:"#ff8ec0"},
+{teamA:"#ffb89c", teamB:"#8fc5ff"},
+{teamA:"#8fc5ff", teamB:"#ffb89c"},
+{teamA:"#ffd890", teamB:"#84bcff"},
+{teamA:"#84bcff", teamB:"#ffd890"},
+{teamA:"#ff9ad0", teamB:"#78e8c8"},
+{teamA:"#78e8c8", teamB:"#ff9ad0"},
+{teamA:"#ffc0a4", teamB:"#7ab2ff"},
+{teamA:"#7ab2ff", teamB:"#ffc0a4"},
+{teamA:"#ff8fb8", teamB:"#94e5d0"},
+{teamA:"#94e5d0", teamB:"#ff8fb8"},
+{teamA:"#ffbd90", teamB:"#92c8ff"},
+{teamA:"#92c8ff", teamB:"#ffbd90"},
+{teamA:"#ffabd4", teamB:"#80e2b8"},
+{teamA:"#80e2b8", teamB:"#ffabd4"},
+{teamA:"#ffd1a0", teamB:"#8ab0ff"},
+{teamA:"#8ab0ff", teamB:"#ffd1a0"},
+{teamA:"#ff98b4", teamB:"#8fe8ff"},
+{teamA:"#8fe8ff", teamB:"#ff98b4"},
+{teamA:"#ffc8aa", teamB:"#88b0ff"},
+{teamA:"#88b0ff", teamB:"#ffc8aa"},
+{teamA:"#ff9ed0", teamB:"#7ee0bc"},
+{teamA:"#7ee0bc", teamB:"#ff9ed0"},
+{teamA:"#ffd99c", teamB:"#82b8ff"},
+{teamA:"#82b8ff", teamB:"#ffd99c"},
+{teamA:"#ff92d0", teamB:"#7feed0"},
+{teamA:"#7feed0", teamB:"#ff92d0"},
+{teamA:"#ffc2a8", teamB:"#90bfff"},
+{teamA:"#90bfff", teamB:"#ffc2a8"},
+{teamA:"#ff8fb0", teamB:"#a0e8ff"},
+{teamA:"#a0e8ff", teamB:"#ff8fb0"},
+{teamA:"#ffd3a8", teamB:"#82cfff"},
+{teamA:"#82cfff", teamB:"#ffd3a8"},
+{teamA:"#ff8cc8", teamB:"#7fe5c0"},
+{teamA:"#7fe5c0", teamB:"#ff8cc8"},
+{teamA:"#ffb79c", teamB:"#88d0ff"},
+{teamA:"#88d0ff", teamB:"#ffb79c"},
+{teamA:"#ffd98a", teamB:"#8bb4ff"},
+{teamA:"#8bb4ff", teamB:"#ffd98a"},
+{teamA:"#ff97cc", teamB:"#80e0c5"},
+{teamA:"#80e0c5", teamB:"#ff97cc"},
+{teamA:"#ffc8a0", teamB:"#89baff"},
+{teamA:"#89baff", teamB:"#ffc8a0"},
+{teamA:"#ff9bc0", teamB:"#86e0ff"},
+{teamA:"#86e0ff", teamB:"#ff9bc0"},
+// --- 追加 50通り（ややビビッド・高コントラスト） ---
+{teamA:"#FF6F91", teamB:"#6EC1E4"},
+{teamA:"#6EC1E4", teamB:"#FF6F91"},
+
+{teamA:"#7FDBFF", teamB:"#FFB347"},
+{teamA:"#FFB347", teamB:"#7FDBFF"},
+
+{teamA:"#A2E4A4", teamB:"#FF9AA2"},
+{teamA:"#FF9AA2", teamB:"#A2E4A4"},
+
+{teamA:"#FFD47F", teamB:"#8ED1FC"},
+{teamA:"#8ED1FC", teamB:"#FFD47F"},
+
+{teamA:"#FF9C6E", teamB:"#B39DDB"},
+{teamA:"#B39DDB", teamB:"#FF9C6E"},
+
+{teamA:"#FFB6C1", teamB:"#4FC3F7"},
+{teamA:"#4FC3F7", teamB:"#FFB6C1"},
+
+{teamA:"#FFCC80", teamB:"#81C784"},
+{teamA:"#81C784", teamB:"#FFCC80"},
+
+{teamA:"#FF8A80", teamB:"#80D8FF"},
+{teamA:"#80D8FF", teamB:"#FF8A80"},
+
+{teamA:"#F5A623", teamB:"#64B5F6"},
+{teamA:"#64B5F6", teamB:"#F5A623"},
+
+{teamA:"#FF7043", teamB:"#AED581"},
+{teamA:"#AED581", teamB:"#FF7043"},
+
+{teamA:"#FFCA28", teamB:"#90CAF9"},
+{teamA:"#90CAF9", teamB:"#FFCA28"},
+
+{teamA:"#E57373", teamB:"#4DD0E1"},
+{teamA:"#4DD0E1", teamB:"#E57373"},
+
+{teamA:"#FFAB91", teamB:"#BA68C8"},
+{teamA:"#BA68C8", teamB:"#FFAB91"},
+
+{teamA:"#FFB74D", teamB:"#4DB6AC"},
+{teamA:"#4DB6AC", teamB:"#FFB74D"},
+
+{teamA:"#FF8F00", teamB:"#64FFDA"},
+{teamA:"#64FFDA", teamB:"#FF8F00"},
+
+{teamA:"#FF5252", teamB:"#40C4FF"},
+{teamA:"#40C4FF", teamB:"#FF5252"},
+
+{teamA:"#FF9E80", teamB:"#9575CD"},
+{teamA:"#9575CD", teamB:"#FF9E80"},
+
+{teamA:"#FFA726", teamB:"#81D4FA"},
+{teamA:"#81D4FA", teamB:"#FFA726"},
+
+{teamA:"#FF7043", teamB:"#B2DFDB"},
+{teamA:"#B2DFDB", teamB:"#FF7043"},
+
+{teamA:"#FFB300", teamB:"#4FC3F7"},
+{teamA:"#4FC3F7", teamB:"#FFB300"},
+
+// --- 残り10セット ---
+{teamA:"#FF6D00", teamB:"#90A4AE"},
+{teamA:"#90A4AE", teamB:"#FF6D00"},
+
+{teamA:"#FF5252", teamB:"#AED581"},
+{teamA:"#AED581", teamB:"#FF5252"},
+
+{teamA:"#FF4081", teamB:"#4DD0E1"},
+{teamA:"#4DD0E1", teamB:"#FF4081"},
+
+{teamA:"#FF8A65", teamB:"#4DB6AC"},
+{teamA:"#4DB6AC", teamB:"#FF8A65"},
+
+{teamA:"#FFD54F", teamB:"#7986CB"},
+{teamA:"#7986CB", teamB:"#FFD54F"},
+
+{teamA:"#FF7043", teamB:"#90CAF9"},
+{teamA:"#90CAF9", teamB:"#FF7043"},
+
+{teamA:"#FFB74D", teamB:"#CE93D8"},
+{teamA:"#CE93D8", teamB:"#FFB74D"},
+
+{teamA:"#FF8A80", teamB:"#64B5F6"},
+{teamA:"#64B5F6", teamB:"#FF8A80"},
+
+{teamA:"#FFA07A", teamB:"#8BC34A"},
+{teamA:"#8BC34A", teamB:"#FFA07A"},
+
+{teamA:"#FFB74D", teamB:"#42A5F5"},
+{teamA:"#42A5F5", teamB:"#FFB74D"}
+
+];
+// --- End 150通り ---
+
+
+const pickerWrapper = document.getElementById("teamPicker");
+const pickerItemHeight = 30;
+
+// アイテム作成（縦スクロール＆3周ループ）
+for (let loop = 0; loop < 3; loop++) {
+  teamCombos.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "team-picker-item";
+
+    const bgA = document.createElement("div");
+    bgA.className = "team-scroll-bgA";
+    bgA.style.background = c.teamA;
+
+    const bgB = document.createElement("div");
+    bgB.className = "team-scroll-bgB";
+    bgB.style.background = c.teamB;
+
+    const labelA = document.createElement("div");
+    labelA.className = "team-scroll-labelA";
+    labelA.textContent = "Aチーム";
+
+    const labelB = document.createElement("div");
+    labelB.className = "team-scroll-labelB";
+    labelB.textContent = "Bチーム";
+
+    div.appendChild(bgA);
+    div.appendChild(bgB);
+    div.appendChild(labelA);
+    div.appendChild(labelB);
+
+    pickerWrapper.appendChild(div);
+  });
+}
+
+
+// 保存値があれば初期スクロール位置を設定
+function setInitialScroll() {
+  const savedA = localStorage.getItem("teamAColor");
+  const savedB = localStorage.getItem("teamBColor");
+  const items = document.querySelectorAll("#teamPicker .team-picker-item");
+
+  if (savedA && savedB) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const cA = item.querySelector(".team-scroll-bgA").style.background;
+      const cB = item.querySelector(".team-scroll-bgB").style.background;
+
+      if (cA === savedA && cB === savedB) {
+        const targetIndex = i % teamCombos.length;
+        pickerWrapper.scrollTop = targetIndex * pickerItemHeight;
+        break;
+      }
+    }
+  } else {
+    pickerWrapper.scrollTop = teamCombos.length * pickerItemHeight;
+  }
+}
+
+
+// ===========================
+// A/B 入替え対応版
+// ===========================
+function updateTeamPickerCenter() {
+  const items = document.querySelectorAll("#teamPicker .team-picker-item");
+  const wrapperRect = pickerWrapper.getBoundingClientRect();
+  let closest = null;
+  let minDist = Infinity;
+
+  items.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    const itemCenter = rect.top + rect.height / 2;
+    const wrapperCenter = wrapperRect.top + wrapperRect.height / 2;
+    const dist = Math.abs(itemCenter - wrapperCenter);
+    if (dist < minDist) { minDist = dist; closest = item; }
+  });
+
+  items.forEach(it => it.classList.remove("center"));
+
+  if (closest) {
+    closest.classList.add("center");
+
+    // スクロールバー左右の色
+    const colorLeft = closest.querySelector(".team-scroll-bgA").style.background;
+    const colorRight = closest.querySelector(".team-scroll-bgB").style.background;
+
+    let finalA, finalB;
+
+    // ★ A/B 入替え状態に応じて左右を反転 ★
+    if (typeof isSwappedAB !== "undefined" && isSwappedAB) {
+      // 入れ替え後：左 = B、右 = A
+      finalA = colorRight;
+      finalB = colorLeft;
+    } else {
+      // 通常：左 = A、右 = B
+      finalA = colorLeft;
+      finalB = colorRight;
+    }
+
+    // チーム背景更新
+    document.querySelectorAll(".bg-teamA").forEach(el => el.style.background = finalA);
+    document.querySelectorAll(".bg-teamB").forEach(el => el.style.background = finalB);
+
+    // CSS変数更新
+    document.documentElement.style.setProperty('--teamB-bg-color', finalB);
+
+    // 保存
+    localStorage.setItem("teamAColor", finalA);
+    localStorage.setItem("teamBColor", finalB);
+
+    // スコアに応じたブロックバー更新
+    if (typeof updateScore === "function") updateScore();
+  }
+}
+
+
+// スクロールイベント（無限スクロール）
+pickerWrapper.addEventListener("scroll", () => {
+  const maxScroll = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
+
+  if (pickerWrapper.scrollTop < pickerItemHeight) {
+    pickerWrapper.scrollTop += teamCombos.length * pickerItemHeight;
+  } else if (pickerWrapper.scrollTop > maxScroll - pickerItemHeight) {
+    pickerWrapper.scrollTop -= teamCombos.length * pickerItemHeight;
+  }
+
+  updateTeamPickerCenter();
+});
+
+
+// 初期表示
+setInitialScroll();
+updateTeamPickerCenter();
+
+/* ------------------- チーム名と選手名背景色変更スクロールバー終り ------------------- */
+
+/* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
+(function(){
+  const scorePicker = document.getElementById('scorePickerCustom');
+  const ITEM_H = 40;
+  const LOOPS = 3;
+
+  let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
+  let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
+
+  function toRGB(color){
+    const div = document.createElement("div");
+    div.style.color = color;
+    document.body.appendChild(div);
+    const rgb = getComputedStyle(div).color;
+    document.body.removeChild(div);
+    return rgb;
+  }
+
+  function rgbToHex(rgb){
+    const result = rgb.match(/\d+/g);
+    if(!result) return '#000000';
+    return "#" + result.map(x=>parseInt(x).toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+
+const brightCombos = [
+  // ==============================
+  // デフォルト（青/緑）
+  // ==============================
+  ["#0000FF","#008000"], // 青 × 緑
+  ["#008000","#0000FF"], // 緑 × 青
+
+  // ==============================
+// エヴァ風（紫 / 赤 / 黄 / 緑 / 青紫）
+// ==============================
+["#7B00FF","#FFD700"],
+["#FFD700","#7B00FF"],
+
+["#FF0000","#00FF80"],
+["#00FF80","#FF0000"],
+
+["#FFC107","#3F51B5"],
+["#3F51B5","#FFC107"],
+
+["#8000FF","#00FF80"],
+["#00FF80","#8000FF"],
+
+["#FF3300","#1E90FF"],
+["#1E90FF","#FF3300"],
+
+["#FFEB3B","#673AB7"],
+["#673AB7","#FFEB3B"],
+
+["#4CAF50","#FF9800"],
+["#FF9800","#4CAF50"],
+
+["#9B4DFF","#FF8F00"],
+["#FF8F00","#9B4DFF"],
+
+["#D50000","#00BCD4"],
+["#00BCD4","#D50000"],
+
+["#FFCA28","#00C853"],
+["#00C853","#FFCA28"],
+
+["#66FFCC","#8E24AA"],
+["#8E24AA","#66FFCC"],
+
+["#E60000","#4CAF50"],
+["#4CAF50","#E60000"],
+
+["#FBC02D","#E91E63"],
+["#E91E63","#FBC02D"],
+
+["#00C853","#3F51B5"],
+["#3F51B5","#00C853"],
+
+["#7B00FF","#2196F3"],
+["#2196F3","#7B00FF"],
+
+["#00E676","#C62828"],
+["#C62828","#00E676"],
+
+["#FF1744","#8BC34A"],
+["#8BC34A","#FF1744"],
+
+["#00FF80","#FF6D00"],
+["#FF6D00","#00FF80"],
+
+["#FFD700","#1E90FF"],
+["#1E90FF","#FFD700"],
+
+["#7B00FF","#FF0000"],
+["#FF0000","#7B00FF"],
+
+// ==============================
+// スプラトゥーン風
+// ==============================
+["#FF3CAC","#00FFD4"],
+["#00FFD4","#FF3CAC"],
+
+["#FF9500","#1CE6FF"],
+["#1CE6FF","#FF9500"],
+
+["#FF1C1C","#B8FF1C"],
+["#B8FF1C","#FF1C1C"],
+
+["#FF6EC7","#6EFFA2"],
+["#6EFFA2","#FF6EC7"],
+
+["#FFEB3B","#00FF9D"],
+["#00FF9D","#FFEB3B"],
+
+// ==============================
+// マリオカート風
+// ==============================
+["#FF0000","#00CC00"],
+["#00CC00","#FF0000"],
+
+["#FF8800","#0088FF"],
+["#0088FF","#FF8800"],
+
+["#FFEE00","#CC00FF"],
+["#CC00FF","#FFEE00"],
+
+["#FF4444","#44FF44"],
+["#44FF44","#FF4444"],
+
+["#FFAA33","#33AAFF"],
+["#33AAFF","#FFAA33"],
+
+// ==============================
+// ゼルダ風
+// ==============================
+["#1B5E20","#FFD700"],
+["#FFD700","#1B5E20"],
+
+["#4CAF50","#FFEB3B"],
+["#FFEB3B","#4CAF50"],
+
+["#2E7D32","#FFC107"],
+["#FFC107","#2E7D32"],
+
+["#66BB6A","#FFEE58"],
+["#FFEE58","#66BB6A"],
+
+["#81C784","#FFF176"],
+["#FFF176","#81C784"],
+
+// ==============================
+// カービィ風
+// ==============================
+["#FF69B4","#FFD1DC"],
+["#FFD1DC","#FF69B4"],
+
+["#FF1493","#FFB6C1"],
+["#FFB6C1","#FF1493"],
+
+["#FF7F50","#FFE4E1"],
+["#FFE4E1","#FF7F50"],
+
+["#FF69B4","#FFC0CB"],
+["#FFC0CB","#FF69B4"],
+
+["#FF3399","#FF99CC"],
+["#FF99CC","#FF3399"],
+
+// ==============================
+// ヨッシー風
+// ==============================
+["#00FF00","#00CED1"],
+["#00CED1","#00FF00"],
+
+["#ADFF2F","#7FFFD4"],
+["#7FFFD4","#ADFF2F"],
+
+["#32CD32","#87CEFA"],
+["#87CEFA","#32CD32"],
+
+["#7CFC00","#40E0D0"],
+["#40E0D0","#7CFC00"],
+
+["#00FA9A","#00FFFF"],
+["#00FFFF","#00FA9A"],
+
+// ==============================
+// モンハン風
+// ==============================
+["#8B4513","#FF4500"],
+["#FF4500","#8B4513"],
+
+["#A0522D","#1E90FF"],
+["#1E90FF","#A0522D"],
+
+["#D2691E","#00CED1"],
+["#00CED1","#D2691E"],
+
+["#CD853F","#7B68EE"],
+["#7B68EE","#CD853F"],
+
+["#DEB887","#FF6347"],
+["#FF6347","#DEB887"],
+
+// ==============================
+// ミックス追加
+// ==============================
+["#FF4500","#00FF7F"],
+["#00FF7F","#FF4500"],
+
+["#FFD700","#FF1493"],
+["#FF1493","#FFD700"],
+
+["#00CED1","#FF6347"],
+["#FF6347","#00CED1"],
+
+["#ADFF2F","#FF69B4"],
+["#FF69B4","#ADFF2F"],
+
+["#1E90FF","#FFFF00"],
+["#FFFF00","#1E90FF"],
+
+["#FF8C00","#00FA9A"],
+["#00FA9A","#FF8C00"],
+
+["#7FFFD4","#FF00FF"],
+["#FF00FF","#7FFFD4"],
+
+["#FFB6C1","#00BFFF"],
+["#00BFFF","#FFB6C1"],
+
+["#FF4500","#00FFFF"],
+["#00FFFF","#FF4500"],
+
+["#FFD700","#00FF7F"],
+["#00FF7F","#FFD700"],
+
+// ==============================
+// 追加20パターン
+// ==============================
+["#FF6347","#7FFFD4"],
+["#7FFFD4","#FF6347"],
+
+["#00FA9A","#FF69B4"],
+["#FF69B4","#00FA9A"],
+
+["#1E90FF","#FF1493"],
+["#FF1493","#1E90FF"],
+
+["#FFD700","#8B0000"],
+["#8B0000","#FFD700"],
+
+["#FF8C00","#00CED1"],
+["#00CED1","#FF8C00"],
+
+["#ADFF2F","#FF4500"],
+["#FF4500","#ADFF2F"],
+
+["#32CD32","#FF00FF"],
+["#FF00FF","#32CD32"],
+
+["#7CFC00","#FF1493"],
+["#FF1493","#7CFC00"],
+
+["#00CED1","#FF8C00"],
+["#FF8C00","#00CED1"],
+
+["#D2691E","#00FFFF"],
+["#00FFFF","#D2691E"],
+];
+
+  // スクロール内容構築
+  function scorePickerBuild(){
+    scorePicker.innerHTML='';
+    for(let loop=0; loop<LOOPS; loop++){
+      brightCombos.forEach((c, idx)=>{
+        const item = document.createElement('div');
+        item.className='scorePicker-item';
+        item.dataset.baseIndex=idx;
+
+        const bgA = document.createElement('div');
+        bgA.className='scorePicker-bgA';
+        bgA.style.background=c[0];
+
+        const bgB = document.createElement('div');
+        bgB.className='scorePicker-bgB';
+        bgB.style.background=c[1];
+
+        const labelA = document.createElement('div');
+        labelA.className='scorePicker-labelA';
+        labelA.innerHTML='<span>A</span>';
+
+        const labelB = document.createElement('div');
+        labelB.className='scorePicker-labelB';
+        labelB.innerHTML='<span>D</span>';
+
+        item.appendChild(bgA);
+        item.appendChild(bgB);
+        item.appendChild(labelA);
+        item.appendChild(labelB);
+        scorePicker.appendChild(item);
+
+        // ★クリックで即反映
+        item.addEventListener('click', () => {
+          forceApplyScore(item);
+        });
+      });
+    }
+  }
+
+  // 中央色を即適用する処理（改良版）
+  function forceApplyScore(item){
+  if(!item) return;
+  const colorA = item.querySelector('.scorePicker-bgA').style.background || '#0000FF';
+  const colorB = item.querySelector('.scorePicker-bgB').style.background || '#008000';
+
+  const applyColors = () => {
+    document.querySelectorAll('#pointAFlip .front, #pointAFlip .back').forEach(el=>el.style.color=colorA);
+    document.querySelectorAll('#pointBFlip .front, #pointBFlip .back').forEach(el=>el.style.color=colorB);
+    document.querySelectorAll('#gameAFront, #gameABack').forEach(el=>el.style.color=colorA);
+    document.querySelectorAll('#gameBFront, #gameBBack').forEach(el=>el.style.color=colorB);
+
+    const lblA = item.querySelector('.scorePicker-labelA span');
+    const lblB = item.querySelector('.scorePicker-labelB span');
+    if(lblA) lblA.style.color=colorA;
+    if(lblB) lblB.style.color=colorB;
+
+    const rogo = document.querySelector('.rogo-text');
+    if(rogo){
+      rogo.style.background = `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
+      rogo.style.color='#fff';
+    }
+
+    localStorage.setItem('scoreLastColorA', colorA);
+    localStorage.setItem('scoreLastColorB', colorB);
+  };
+
+  requestAnimationFrame(applyColors);
+}
+
+  // 中央色更新（スクロール用）
+  function scorePickerUpdate(){
+    const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
+    if(items.length===0) return;
+
+    const wrapperRect = scorePicker.getBoundingClientRect();
+    let closest = null;
+    let minDist = Infinity;
+
+    items.forEach(it=>{
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height/2 - (wrapperRect.top+wrapperRect.height/2));
+      if(d < minDist){
+        minDist = d;
+        closest = it;
+      }
+    });
+
+    items.forEach(it=>it.classList.remove('center'));
+    if(!closest) return;
+    closest.classList.add('center');
+
+    // スクロールで色変更も即適用
+    forceApplyScore(closest);
+  }
+
+  function scorePickerSetInitial(){
+    requestAnimationFrame(()=>{
+      const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
+      if(savedA && savedB){
+        for(let i=0; i<items.length; i++){
+          const bgA = rgbToHex(toRGB(items[i].querySelector('.scorePicker-bgA').style.background));
+          const bgB = rgbToHex(toRGB(items[i].querySelector('.scorePicker-bgB').style.background));
+
+          if(bgA === savedA && bgB === savedB){
+            const baseIdx = items[i].dataset.baseIndex;
+            scorePicker.scrollTop = Number(baseIdx)*ITEM_H + brightCombos.length*ITEM_H;
+            scorePickerUpdate();
+            return;
+          }
+        }
+      }
+      scorePicker.scrollTop = brightCombos.length*ITEM_H;
+      scorePickerUpdate();
+    });
+  }
+
+  // スクロール無限ループ
+  scorePicker.addEventListener('scroll', ()=>{
+    const max = scorePicker.scrollHeight - scorePicker.clientHeight;
+    if(scorePicker.scrollTop < ITEM_H) scorePicker.scrollTop += brightCombos.length*ITEM_H;
+    else if(scorePicker.scrollTop > max - ITEM_H) scorePicker.scrollTop -= brightCombos.length*ITEM_H;
+    scorePickerUpdate();
+  });
+
+  scorePickerBuild();
+  scorePickerSetInitial();
+})();
+
+/* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
+
+/* ------------------- 背景とコートの色（テニス風パターン） ------------------- */
+const combos = [
+  // ===========================
+  // ✅ デフォルト（維持）
+  // ===========================
+  {court:"#228B22", out:"#006400"},
+  {court:"#32CD32", out:"#2E8B57"},
+
+  // ===========================
+  // ✅ ハード（青・緑）
+  // ===========================
+  {court:"#5F9EA0", out:"#2E8B57"},
+  {court:"#1E90FF", out:"#006400"},
+  {court:"#00BFFF", out:"#228B22"},
+  {court:"#4682B4", out:"#006400"},
+  {court:"#1E90FF", out:"#2E8B57"},
+  {court:"#4169E1", out:"#006400"},
+  {court:"#00CED1", out:"#2E8B57"},
+  {court:"#20B2AA", out:"#006400"},
+  {court:"#87CEEB", out:"#2E8B57"},
+  {court:"#4682B4", out:"#006400"}, // 逆パターン許可 → 残す
+
+  // ===========================
+  // ✅ クレー（茶・橙）
+  // ===========================
+  {court:"#D2691E", out:"#8B4513"},
+  {court:"#FF7F50", out:"#A0522D"},
+  {court:"#CD853F", out:"#8B4513"},
+  {court:"#FFA07A", out:"#A0522D"},
+  {court:"#FF8C00", out:"#8B4513"},
+  {court:"#E9967A", out:"#A0522D"},
+  {court:"#F4A460", out:"#8B4513"},
+  {court:"#FA8072", out:"#A0522D"},
+  {court:"#FF6347", out:"#8B4513"},
+  {court:"#FF4500", out:"#A0522D"},
+
+  // ===========================
+  // ✅ 芝（濃緑 / 薄緑）
+  // ===========================
+  {court:"#006400", out:"#228B22"},
+  {court:"#2E8B57", out:"#006400"},
+  {court:"#008000", out:"#006400"},
+  {court:"#3CB371", out:"#2E8B57"},
+  {court:"#228B22", out:"#2E8B57"},
+  {court:"#32CD32", out:"#006400"},
+
+  // ===========================
+  // ✅ 混合（実在しそう）
+  // ===========================
+  {court:"#1E90FF", out:"#8B4513"},
+  {court:"#D2691E", out:"#2E8B57"},
+  {court:"#FF7F50", out:"#006400"},
+  {court:"#228B22", out:"#A0522D"},
+  {court:"#4169E1", out:"#8B4513"},
+  {court:"#FF4500", out:"#2E8B57"},
+  {court:"#20B2AA", out:"#A0522D"},
+  {court:"#FFA07A", out:"#006400"},
+  {court:"#32CD32", out:"#8B4513"},
+  {court:"#CD853F", out:"#2E8B57"},
+
+  // ===========================================
+  // ✅ 明度調整版：青系（重複削除済み）
+  // ===========================================
+  {court:"#1C6FD1", out:"#2E8B57"},
+  {court:"#4A7EC1", out:"#006400"},
+  {court:"#3A5FB4", out:"#228B22"},
+  {court:"#2F4F4F", out:"#8B4513"},
+  {court:"#4F8FC1", out:"#2E8B57"},
+  {court:"#2E4FB4", out:"#006400"},
+  {court:"#6FA6D1", out:"#228B22"},
+  {court:"#5A4FB4", out:"#8B4513"},
+  {court:"#3E6F9A", out:"#2E8B57"},
+  {court:"#1A78D1", out:"#8B0000"},
+
+  // ===========================================
+  // ✅ 明度調整版：緑系
+  // ===========================================
+  {court:"#6BD600", out:"#006400"},
+  {court:"#82D682", out:"#2E8B57"},
+  {court:"#7AAE2E", out:"#228B22"},
+  {court:"#536D1F", out:"#8B4513"},
+  {court:"#4A5E2A", out:"#2E8B57"},
+  {court:"#2CBF2C", out:"#4B5320"},
+  {court:"#1E7A1E", out:"#7FFF00"},
+  {court:"#00B57A", out:"#2E8B57"},
+  {court:"#5FAE92", out:"#006400"},
+  {court:"#7AAE7A", out:"#2E8B57"},
+
+  // ===========================================
+  // ✅ 明度調整版：茶系（そのまま）
+  // ===========================================
+  {court:"#A0522D", out:"#5C4033"},
+  {court:"#8B4513", out:"#D2691E"},
+  {court:"#CD853F", out:"#A0522D"},
+  {court:"#DEB887", out:"#8B4513"},
+  {court:"#D2B48C", out:"#A0522D"},
+  {court:"#BC8F8F", out:"#8B4513"},
+  {court:"#C68E17", out:"#6B3E26"},
+  {court:"#E6A96B", out:"#8B4513"},
+  {court:"#F4A460", out:"#5A3316"},
+  {court:"#D2691E", out:"#3E1F0A"},
+
+  // ===========================================
+  // ✅ 青×茶 混合
+  // ===========================================
+  {court:"#1E78D1", out:"#A0522D"},
+  {court:"#3E6F9A", out:"#8B4513"},
+  {court:"#4F8FC1", out:"#A0522D"},
+  {court:"#009FCC", out:"#8B4513"},
+  {court:"#4A7EC1", out:"#D2691E"},
+  {court:"#3A5FB4", out:"#A0522D"},
+  {court:"#1C6FD1", out:"#8B4513"},
+  {court:"#2E4FB4", out:"#D2691E"},
+  {court:"#6FA6D1", out:"#8B4513"},
+  {court:"#2E8B57", out:"#1E78D1"},
+
+  // ===========================================
+  // ✅ 緑×茶
+  // ===========================================
+  {court:"#1E7A1E", out:"#A0522D"},
+  {court:"#2CBF2C", out:"#8B4513"},
+  {court:"#536D1F", out:"#D2691E"},
+  {court:"#4A5E2A", out:"#A0522D"},
+  {court:"#6BD600", out:"#8B4513"},
+  {court:"#2E9A2E", out:"#A0522D"},
+  {court:"#7AAE2E", out:"#8B4513"},
+  {court:"#7AAE7A", out:"#A0522D"},
+  {court:"#5E7A34", out:"#D2691E"},
+  {court:"#2E8B57", out:"#8B4513"},
+
+  // ===========================================
+  // ✅ 明るいスポーツ系（暗め版）
+  // ===========================================
+  {court:"#00C96A", out:"#006400"},
+  {court:"#5AAA00", out:"#8B4513"},
+  {court:"#00B57A", out:"#A0522D"},
+  {court:"#8BCF1F", out:"#2E8B57"},
+  {court:"#64C000", out:"#8B4513"},
+  {court:"#5DC8B4", out:"#006400"},
+  {court:"#2FB3A4", out:"#8B4513"},
+  {court:"#339A96", out:"#2E8B57"},
+  {court:"#1A8E8A", out:"#8B4513"},
+  {court:"#009CA0", out:"#006400"},
+
+  // ===========================================
+  // ✅ ダーク系
+  // ===========================================
+  {court:"#2F4F4F", out:"#32CD32"},
+  {court:"#1C1C1C", out:"#6B8E23"},
+  {court:"#2E2E2E", out:"#8B4513"},
+  {court:"#3A3A3A", out:"#228B22"},
+  {court:"#4F4F4F", out:"#D2691E"},
+  {court:"#262626", out:"#2E8B57"},
+  {court:"#323232", out:"#8B4513"},
+  {court:"#3C3C3C", out:"#228B22"},
+  {court:"#454545", out:"#6B8E23"},
+  {court:"#555555", out:"#A0522D"},
+
+  // ===========================================
+  // ✅ 安定系
+  // ===========================================
+  {court:"#1E78D1", out:"#006400"},
+  {court:"#228B22", out:"#2E8B57"},
+  {court:"#D2691E", out:"#8B4513"},
+  {court:"#32CD32", out:"#006400"},
+  {court:"#3E6F9A", out:"#2E8B57"},
+  {court:"#E07A00", out:"#A0522D"},
+  {court:"#009FCC", out:"#228B22"},
+  {court:"#2E9A2E", out:"#8B4513"},
+  {court:"#3A5FB4", out:"#006400"},
+  {court:"#5AAA00", out:"#2E8B57"}
+];
+
+const wrapper = document.getElementById("picker");
+const itemHeight = 30;
+
+// アイテム生成
+for(let loop=0; loop<3; loop++){
+  combos.forEach(c=>{
+    const div = document.createElement("div");
+    div.className = "picker-item";
+
+    const bgCourt = document.createElement("div");
+    bgCourt.className = "bg-court";
+    bgCourt.style.background = c.court;
+
+    const bgOut = document.createElement("div");
+    bgOut.className = "bg-out";
+    bgOut.style.background = c.out;
+
+    const divider = document.createElement("div");
+    divider.className = "divider";
+    const dividerLeft = document.createElement("div");
+    dividerLeft.className = "divider-left";
+
+    const labelCourt = document.createElement("div");
+    labelCourt.className = "label-court";
+    labelCourt.textContent = "イン";
+
+    const labelOut = document.createElement("div");
+    labelOut.className = "label-out";
+    labelOut.textContent = "アウト";
+
+    div.appendChild(bgCourt);
+    div.appendChild(bgOut);
+    div.appendChild(divider);
+    div.appendChild(dividerLeft);
+    div.appendChild(labelCourt);
+    div.appendChild(labelOut);
+
+    wrapper.appendChild(div);
+  });
+}
+
+// 中央アイテム判定
+function updateCenter(){
+  const items = document.querySelectorAll(".picker-item");
+  const wrapperRect = wrapper.getBoundingClientRect();
+  let closest = null;
+  let minDist = Infinity;
+  items.forEach(item=>{
+    const rect = item.getBoundingClientRect();
+    const itemCenter = rect.top + rect.height/2;
+    const wrapperCenter = wrapperRect.top + wrapperRect.height/2;
+    const dist = Math.abs(itemCenter - wrapperCenter);
+    if(dist<minDist){ minDist = dist; closest = item; }
+  });
+  items.forEach(it=>it.classList.remove("center"));
+  if(closest){
+    closest.classList.add("center");
+    const courtColor = closest.querySelector(".bg-court").style.background;
+    const outColor = closest.querySelector(".bg-out").style.background;
+
+    document.getElementById("courtContainer").style.background = courtColor;
+    document.body.style.background = outColor;
+
+    // PWA用 theme-color を更新
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if(metaTheme) metaTheme.setAttribute("content", outColor);
+
+    return {courtColor, outColor};
+  }
+}
+
+// 保存色に合わせて中央アイテムを初期選択
+function selectSavedItem(){
+  const savedCourt = localStorage.getItem('courtColor');
+  const savedOut = localStorage.getItem('outColor');
+  const savedScroll = localStorage.getItem('scrollTop');
+  const items = document.querySelectorAll(".picker-item");
+
+  if(savedScroll){
+    wrapper.scrollTop = parseInt(savedScroll,10);
+    updateCenter();
+    return;
+  }
+
+  if(savedCourt && savedOut){
+    for(let i=0; i<items.length; i++){
+      const item = items[i];
+      const cCourt = item.querySelector(".bg-court").style.background;
+      const cOut = item.querySelector(".bg-out").style.background;
+      if(cCourt === savedCourt && cOut === savedOut){
+        const targetIndex = i % combos.length;
+        wrapper.scrollTop = targetIndex * itemHeight;
+        updateCenter();
+        return;
+      }
+    }
+  }
+
+  // 保存なしの場合は従来通り中央アイテム
+  wrapper.scrollTop = combos.length * itemHeight;
+  updateCenter();
+}
+
+// 無限スクロール + 保存
+let scrollTimer;
+wrapper.addEventListener("scroll", ()=>{
+  const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
+  if(wrapper.scrollTop < itemHeight){
+    wrapper.scrollTop += combos.length*itemHeight;
+  } else if(wrapper.scrollTop > maxScroll - itemHeight){
+    wrapper.scrollTop -= combos.length*itemHeight;
+  }
+
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(()=>{
+    const colors = updateCenter();
+    if(colors){
+      localStorage.setItem('courtColor', colors.courtColor);
+      localStorage.setItem('outColor', colors.outColor);
+      localStorage.setItem('scrollTop', wrapper.scrollTop);
+    }
+  }, 150);
+});
+
+// 初期表示
+window.addEventListener("load", selectSavedItem);
+
+/* ------------------- 背景とコートの色（終り） ------------------- */
+
+/* ------------------- 色の組み合わせお気に入り ------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  const DEFAULT_FAVORITE = {
+    team_scroll_bgA: "#FFFFFF",
+    team_scroll_bgB: "#FFFF00",
+    scoreA_color: "#0000FF",
+    scoreB_color: "#008000",
+    court: "#228B22",
+    out: "#006400"
+  };
+  const MAX_FAVORITES = 5;
+  const ITEM_H = 30;
+  const SAVE_TIME = 2000;
+  const DELETE_THRESHOLD = 180;
+
+  const favWrapper = document.getElementById('favoritesPicker');
+  if (!favWrapper) return;
+
+  let favorites = JSON.parse(localStorage.getItem('favorites3bars')) || Array(MAX_FAVORITES).fill(null);
+  const TOTAL_ITEMS = MAX_FAVORITES + 1; // 0=★ + 5 favorites
+
+  function rgbToHex(rgb) {
+    if (!rgb) return "#000000";
+    if (rgb.startsWith("#")) return rgb.toUpperCase();
+    const m = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    if (!m) return "#000000";
+    return "#" + [1, 2, 3].map(i => parseInt(m[i]).toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+
+  function getFavoriteByDisplayIndex(displayIndex) {
+    return displayIndex === 0 ? DEFAULT_FAVORITE : favorites[displayIndex - 1];
+  }
+
+  function updateFavoritesActive() {
+    const displayIndex = getCenterFavoriteIndex();
+    favWrapper.querySelectorAll('.favorites-picker-item').forEach((item, idx) => {
+      item.classList.toggle('active', idx % TOTAL_ITEMS === displayIndex);
+    });
+  }
+
+  function getCenterFavoriteIndex() {
+    const scrollTop = favWrapper.scrollTop;
+    return Math.round(scrollTop / ITEM_H) % TOTAL_ITEMS;
+  }
+
+ function buildFavoritesPicker() {
+  const currentScroll = favWrapper.scrollTop;
+  favWrapper.innerHTML = '';
+  const LOOP_COUNT = 100;
+
+  for (let loop = 0; loop < LOOP_COUNT; loop++) {
+    for (let idx = 0; idx < TOTAL_ITEMS; idx++) {
+
+      const div = document.createElement('div');
+      div.className = 'favorites-picker-item';
+      div.dataset.index = idx;
+
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'number';
+      numberSpan.textContent = idx === 0 ? '★' : ['①', '②', '③', '④', '⑤'][idx - 1];
+      div.appendChild(numberSpan);
+
+      // ★ ここで新しいキー名で取得
+      const data = getFavoriteByDisplayIndex(idx);
+
+      const blocks = [
+        { key: 'team_scroll_bgA', text: 'Aチーム', cls: 'left' },
+        { key: 'team_scroll_bgB', text: 'Bチーム', cls: 'left' },
+        { key: 'scoreA_color', text: 'A', cls: 'middle' },
+        { key: 'scoreB_color', text: 'D', cls: 'middle' },
+        { key: 'court', text: 'イン', cls: 'right' },
+        { key: 'out', text: 'アウト', cls: 'right' }
+      ];
+
+      blocks.forEach((b, i) => {
+        const block = document.createElement('div');
+        block.className = `fav-color ${b.cls}`;
+
+        const span = document.createElement('span');
+        span.textContent = b.text;
+
+        if (data) {
+          if (b.cls === 'middle') {
+            // A/D の黒背景のまま上に色文字を乗せる
+            block.style.background = '#000';
+            span.style.color = data[b.key];
+          } else {
+            // レフト・ライト・イン・アウト
+            block.style.background = data[b.key];
+            span.style.color = (i >= 4) ? '#fff' : '#000';
+          }
+        }
+
+        block.appendChild(span);
+        div.appendChild(block);
+      });
+
+      // ★ スワイプ削除 ＆ 長押し保存（以前の仕様そのまま）
+      if (idx !== 0) {
+        div.style.position = 'relative';
+
+        /* 長押しによる保存バー（現在は透明水色） */
+        const saveBar = document.createElement('div');
+        saveBar.className = 'longpress-save';
+        saveBar.style.position = 'absolute';
+        saveBar.style.top = '0';
+        saveBar.style.left = '0';
+        saveBar.style.height = '100%';
+        saveBar.style.width = '0%';
+        saveBar.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.4), rgba(255,165,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,0,255,0.4), rgba(75,0,130,0.4), rgba(238,130,238,0.4))'; // ← ここを虹色に修正したい
+        saveBar.style.borderRadius = '2px';
+        div.appendChild(saveBar);
+
+
+        let saveTimer, saveInterval;
+
+        const startPress = () => {
+          const startTime = Date.now();
+          saveBar.style.width = '0%';
+
+          saveInterval = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
+          }, 50);
+
+          saveTimer = setTimeout(() => {
+            saveFavorite(idx - 1);
+            clearInterval(saveInterval);
+            saveBar.style.width = '0%';
+          }, SAVE_TIME);
+        };
+
+        const cancelPress = () => {
+          clearTimeout(saveTimer);
+          clearInterval(saveInterval);
+          saveBar.style.width = '0%';
+        };
+
+        div.addEventListener('mousedown', startPress);
+        div.addEventListener('mouseup', cancelPress);
+        div.addEventListener('mouseleave', cancelPress);
+        div.addEventListener('touchstart', startPress);
+        div.addEventListener('touchend', cancelPress);
+        div.addEventListener('touchcancel', cancelPress);
+
+        // スワイプ削除
+        let startX = 0, currentX = 0, isDragging = false;
+
+        const startDrag = x => {
+          startX = x;
+          currentX = x;
+          isDragging = true;
+          div.style.transition = 'none';
+        };
+
+        const moveDrag = x => {
+          if (!isDragging) return;
+          currentX = x;
+          div.style.transform = `translateX(${currentX - startX}px)`;
+        };
+
+        const endDrag = () => {
+          if (!isDragging) return;
+          isDragging = false;
+
+          const delta = currentX - startX;
+
+          if (Math.abs(delta) > DELETE_THRESHOLD) {
+            div.style.transition = '0.2s';
+            div.style.transform = `translateX(${delta > 0 ? 200 : -200}px)`;
+            setTimeout(() => deleteFavorite(idx - 1), 200);
+          } else {
+            div.style.transition = '0.2s';
+            div.style.transform = 'translateX(0)';
+          }
+        };
+
+        div.addEventListener('mousedown', e => startDrag(e.clientX));
+        document.addEventListener('mousemove', e => isDragging && moveDrag(e.clientX));
+        document.addEventListener('mouseup', endDrag);
+
+        div.addEventListener('touchstart', e => startDrag(e.touches[0].clientX));
+        div.addEventListener('touchmove', e => moveDrag(e.touches[0].clientX));
+        div.addEventListener('touchend', endDrag);
+      }
+
+      div.addEventListener('click', () => {
+        const realIndex = parseInt(div.dataset.index);
+        applyFavorite(realIndex);
+      });
+
+      favWrapper.appendChild(div);
+    }
+  }
+
+  requestAnimationFrame(() => {
+    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * ITEM_H : currentScroll;
+    updateFavoritesActive();
+  });
+}
+
+favWrapper.addEventListener('scroll', () => {
+  const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
+  const SAFE_ZONE = ITEM_H * 2;
+
+  if (favWrapper.scrollTop < SAFE_ZONE) {
+    requestAnimationFrame(() => {
+      favWrapper.scrollTop += TOTAL_ITEMS * ITEM_H;
+    });
+  } else if (favWrapper.scrollTop > maxScroll - SAFE_ZONE) {
+    requestAnimationFrame(() => {
+      favWrapper.scrollTop -= TOTAL_ITEMS * ITEM_H;
+    });
+  }
+
+  updateFavoritesActive();
+});
+
+  /* --------------------------------------------------------
+      得点盤にも1回クリックで全て反映
+     -------------------------------------------------------- */
+  function forceApplyScoreColor(lblA, lblB, f) {
+    if (!lblA || !lblB) return;
+
+    const colorA = f.scoreA_color;
+    const colorB = f.scoreB_color;
+
+    const applyColors = () => {
+      document.querySelectorAll('#pointAFlip .front, #pointAFlip .back').forEach(el => el.style.color = colorA);
+      document.querySelectorAll('#pointBFlip .front, #pointBFlip .back').forEach(el => el.style.color = colorB);
+      document.querySelectorAll('#gameAFront, #gameABack').forEach(el => el.style.color = colorA);
+      document.querySelectorAll('#gameBFront, #gameBBack').forEach(el => el.style.color = colorB);
+
+      lblA.style.color = colorA;
+      lblB.style.color = colorB;
+
+      const rogo = document.querySelector('.rogo-text');
+      if (rogo) {
+        rogo.style.background = `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
+        rogo.style.color = '#fff';
+      }
+
+      localStorage.setItem('scoreLastColorA', colorA);
+      localStorage.setItem('scoreLastColorB', colorB);
+    };
+
+    requestAnimationFrame(() => { applyColors(); requestAnimationFrame(applyColors); });
+  }
+
+  function applyFavorite(displayIndex) {
+    const f = getFavoriteByDisplayIndex(displayIndex);
+    if (!f) return;
+
+    // チーム
+    const teamWrapper = document.getElementById('teamPicker');
+    if (teamWrapper) {
+    const items = teamWrapper.querySelectorAll('.team-picker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const bgA = item.querySelector('.team-scroll-bgA');
+    const bgB = item.querySelector('.team-scroll-bgB');
+    if (bgA) bgA.style.background = f.team_scroll_bgA;
+    if (bgB) bgB.style.background = f.team_scroll_bgB;
+    teamWrapper.scrollTop = ITEM_H * centerIndex;
+    if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
+   }
+
+
+    // コート
+    const courtWrapper = document.getElementById('picker');
+    if (courtWrapper) {
+      const items = courtWrapper.querySelectorAll('.picker-item');
+      const centerIndex = Math.floor(items.length / 3);
+      const item = items[centerIndex];
+      const bgCourt = item.querySelector('.bg-court');
+      const bgOut = item.querySelector('.bg-out');
+      if (bgCourt) bgCourt.style.background = f.court;
+      if (bgOut) bgOut.style.background = f.out;
+      courtWrapper.scrollTop = ITEM_H * centerIndex;
+      if (typeof updateCenter === 'function') updateCenter();
+    }
+
+    // 得点盤
+    const scoreWrapper = document.getElementById('scorePickerCustom');
+    if (scoreWrapper) {
+      const items = scoreWrapper.querySelectorAll('.scorePicker-item');
+      const centerIndex = Math.floor(items.length / 3);
+      const item = items[centerIndex];
+      const lblA = item.querySelector('.scorePicker-labelA span');
+      const lblB = item.querySelector('.scorePicker-labelB span');
+
+      forceApplyScoreColor(lblA, lblB, f);
+
+      scoreWrapper.scrollTop = ITEM_H * centerIndex;
+    }
+  }
+
+  function deleteFavorite(realIndex) {
+    favorites[realIndex] = null;
+    localStorage.setItem('favorites3bars', JSON.stringify(favorites));
+    buildFavoritesPicker();
+  }
+
+function saveFavorite(realIndex) {
+
+  /* ------------------- スコアスクロールバーの色取得 ------------------- */
+  const scoreWrapper = document.getElementById('scorePickerCustom');
+  let colorA = '#FFFFFF', colorB = '#FFFFFF';
+
+  if (scoreWrapper) {
+    const wrapperRect = scoreWrapper.getBoundingClientRect();
+    const items = Array.from(scoreWrapper.querySelectorAll('.scorePicker-item'));
+    let closest = null, minDist = Infinity;
+
+    items.forEach(it => {
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+      if (d < minDist) { minDist = d; closest = it; }
+    });
+
+    if (closest) {
+      const lblA = closest.querySelector('.scorePicker-labelA span');
+      const lblB = closest.querySelector('.scorePicker-labelB span');
+      if (lblA) colorA = rgbToHex(lblA.style.color);
+      if (lblB) colorB = rgbToHex(lblB.style.color);
+    }
+  }
+
+
+  /* ------------------- チームスクロールバーの色取得（修正点） ------------------- */
+  const teamWrapper = document.getElementById('teamPicker');
+  let teamA = '#FF0000';
+  let teamB = '#00FF00';
+
+  if (teamWrapper) {
+    const wrapperRect = teamWrapper.getBoundingClientRect();
+    const items = Array.from(teamWrapper.querySelectorAll('.team-picker-item'));
+    let closest = null, minDist = Infinity;
+
+    items.forEach(it => {
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+      if (d < minDist) { minDist = d; closest = it; }
+    });
+
+    if (closest) {
+      const bgA = closest.querySelector('.team-scroll-bgA');
+      const bgB = closest.querySelector('.team-scroll-bgB');
+      if (bgA) teamA = rgbToHex(bgA.style.background);
+      if (bgB) teamB = rgbToHex(bgB.style.background);
+    }
+  }
+
+
+  /* ------------------- ローカル保存データ作成 ------------------- */
+  const colors = {
+    team_scroll_bgA: teamA,
+    team_scroll_bgB: teamB,
+    scoreA_color: colorA,
+    scoreB_color: colorB,
+    court: rgbToHex(document.getElementById('courtContainer')?.style.background) || '#444444',
+    out: rgbToHex(document.body.style.background) || '#222222'
+  };
+
+  favorites[realIndex] = colors;
+  localStorage.setItem('favorites3bars', JSON.stringify(favorites));
+
+  buildFavoritesPicker();
+}
+
+buildFavoritesPicker();
+
+});
+/* ------------------- 色の組み合わせお気に入り終り ------------------- */
+
+/* ------------------- お天気（改良版＋自動更新10分） ------------------- */
+
+// 日時表示
+function getSafeJapaneseDateTime() {
+    const d = new Date();
+    const y = d.getFullYear() - 2018;
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const w = ['日','月','火','水','木','金','土'][d.getDay()];
+    const h = String(d.getHours()).padStart(2,'0');
+    const min = String(d.getMinutes()).padStart(2,'0');
+    const sec = String(d.getSeconds()).padStart(2,'0');
+    return `令和${y}年${m}月${day}日（${w}） ${h}:${min}:${sec}`;
+}
+
+function startSafeDateTime() {
+    const box = document.getElementById("safeDateTimeBox");
+    if (!box) return;
+    if (safeDateInterval) clearInterval(safeDateInterval);
+    box.textContent = getSafeJapaneseDateTime();
+    safeDateInterval = setInterval(() => {
+        box.textContent = getSafeJapaneseDateTime();
+    }, 1000);
+}
+window.addEventListener("DOMContentLoaded", startSafeDateTime);
+
+
+// 天気コード変換（CSSカラー適用）
+function codeToWeather(code) {
+    const map = {
+        0:  {name: '快晴', icon: '<i class="wi wi-day-sunny"></i>'},
+        1:  {name: '晴れ', icon: '<i class="wi wi-day-sunny"></i>'},
+        2:  {name: '薄曇', icon: '<i class="wi wi-day-cloudy"></i>'},
+        3:  {name: '曇り', icon: '<i class="wi wi-cloud"></i>'},
+        45: {name: '霧', icon: '<i class="wi wi-fog"></i>'},
+        48: {name: '濃霧', icon: '<i class="wi wi-fog"></i>'},
+        51: {name: '霧雨（弱）', icon: '<i class="wi wi-sprinkle"></i>'},
+        53: {name: '霧雨', icon: '<i class="wi wi-sprinkle"></i>'},
+        55: {name: '霧雨（強）', icon: '<i class="wi wi-sprinkle"></i>'},
+        61: {name: '弱い雨', icon: '<i class="wi wi-showers"></i>'},
+        63: {name: '雨', icon: '<i class="wi wi-rain"></i>'},
+        65: {name: '強い雨', icon: '<i class="wi wi-rain-wind"></i>'},
+        66: {name: 'みぞれ（弱）', icon: '<i class="wi wi-sleet"></i>'},
+        67: {name: 'みぞれ（強）', icon: '<i class="wi wi-sleet"></i>'},
+        71: {name: '弱い雪', icon: '<i class="wi wi-snow"></i>'},
+        73: {name: '雪', icon: '<i class="wi wi-snow"></i>'},
+        75: {name: '大雪', icon: '<i class="wi wi-snowflake-cold"></i>'},
+        77: {name: '雪粒', icon: '<i class="wi wi-snowflake-cold"></i>'},
+        85: {name: 'にわか雪（弱）', icon: '<i class="wi wi-snow"></i>'},
+        86: {name: 'にわか雪（強）', icon: '<i class="wi wi-snow-wind"></i>'},
+        95: {name: '雷雨', icon: '<i class="wi wi-thunderstorm"></i>'},
+        96: {name: '雷雨（雹）', icon: '<i class="wi wi-hail"></i>'},
+        97: {name: '激しい雷雨', icon: '<i class="wi wi-storm-showers"></i>'},
+        default: {name:"不明", icon: ''}  // ← アイコンを空にして文字だけ表示
+    };
+    return map[code] || map.default;
+}
+
+// 地域名を「～市」前後で短縮表示（最大4文字）
+function shortenRegion(name) {
+    if (!name) return "不明";
+    const units = ["市","区","町","村"];
+    let found = "";
+    for (let unit of units) {
+        const idx = name.indexOf(unit);
+        if (idx !== -1) {
+            const start = Math.max(0, idx - 3);
+            found = name.slice(start, idx + 1);
+            break;
+        }
+    }
+    if (!found) {
+        const parts = name.split(/[ ,]/).filter(n => n);
+        found = parts[parts.length - 1];
+    }
+    if (found.length > 4) {
+        found = found.slice(0, 4) + "…";
+    }
+    return found;
+}
+
+// フォント自動縮小
+function adjustFontSize(el, max = 13, min = 8) {
+    let size = max;
+    el.style.fontSize = size + "px";
+    while (el.scrollWidth > el.clientWidth && size > min) {
+        size--;
+        el.style.fontSize = size + "px";
+    }
+}
+
+// お天気取得（降水確率対応）
+function loadWeather(lat, lon, regionName) {
+    lastLat = lat;
+    lastLon = lon;
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability&timezone=Asia/Tokyo`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            const w = data.current_weather;
+            const hour = new Date().getHours();
+            const precipProb = data.hourly.precipitation_probability[hour];
+            const info = codeToWeather(w.weathercode);
+
+            let displayRegion = shortenRegion(regionName || lastRegion);
+            lastRegion = displayRegion;
+
+            const weatherBox = document.getElementById("weatherBox");
+            weatherBox.innerHTML =
+                `<span class="region">${displayRegion}</span> ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%`;
+
+            adjustFontSize(weatherBox, 13, 8);
+
+            const icon = weatherBox.querySelector("i");
+            if (icon) {
+                const maxH = weatherBox.clientHeight - 4;
+                const size = Math.max(12, Math.min(16, maxH));
+                icon.style.fontSize = size + "px";
+            }
+        })
+        .catch(() => {
+            document.getElementById("weatherBox").textContent = "取得失敗";
+        });
+}
+
+// 住所 → 緯度経度
+function addressToLatLon(address) {
+    const q = "日本 " + address;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(q)}`;
+    return fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            if (data.length === 0) throw new Error("住所が見つかりません");
+            return { lat: data[0].lat, lon: data[0].lon, display_name: data[0].display_name };
+        });
+}
+
+// 自動更新（10分ごと）
+function startWeatherAutoUpdate() {
+    if (weatherInterval) clearInterval(weatherInterval);
+    weatherInterval = setInterval(() => {
+        loadWeather(lastLat, lastLon, lastRegion);
+    }, 10 * 60 * 1000);
+}
+
+// 初期読み込み
+if (lastSearchedRegion) {
+    addressToLatLon(lastSearchedRegion)
+        .then(pos => { loadWeather(pos.lat, pos.lon, pos.display_name); startWeatherAutoUpdate(); })
+        .catch(() => { loadWeather(lastLat, lastLon, lastRegion); startWeatherAutoUpdate(); });
+} else {
+    loadWeather(lastLat, lastLon, lastRegion);
+    startWeatherAutoUpdate();
+}
+
+// モーダル操作
+document.getElementById("weatherBox").onclick = () => {
+    const modal = document.getElementById("addressModal");
+    const addressInput = document.getElementById("addressInput");
+    addressInput.value = localStorage.getItem("lastSearchedRegion") || "";
+    modal.style.display = "flex";
+};
+
+document.getElementById("addressSearchBtn").onclick = () => {
+    const addr = document.getElementById("addressInput").value.trim();
+    if (!addr) return;
+
+    addressToLatLon(addr)
+        .then(pos => {
+            loadWeather(pos.lat, pos.lon, pos.display_name);
+            document.getElementById("addressModal").style.display = "none";
+            localStorage.setItem("lastSearchedRegion", addr);
+        })
+        .catch(() => alert("住所が見つかりませんでした"));
+};
+
+document.getElementById("addressInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("addressSearchBtn").click();
+    }
+});
+
+document.getElementById("addressCancelBtn").onclick = () => {
+    document.getElementById("addressModal").style.display = "none";
+};
+
+// ------------------- お天気（改良版＋自動更新10分）ここまで -------------------
+
+/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
+function applyAutoScale() {
+  const baseW = 400;   // 基準幅
+  const baseH = 800;   // 基準高さ
+
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+
+  // 横縦比を考慮して縮小
+  const scale = Math.min(screenW / baseW, screenH / baseH);
+
+  const app = document.getElementById("appScaleWrapper");
+  if (!app) return;
+
+  // transform と origin を明示
+  app.style.transform = `scale(${scale})`;
+  app.style.transformOrigin = "top left";
+  
+  // 中央配置
+  app.style.position = "fixed";   // ★ ← 修正！
+  app.style.left = `${(screenW - baseW * scale) / 2}px`;
+  app.style.top  = `${(screenH - baseH * scale) / 2}px`;
+}
+
+/* 軽量化：連続リサイズで処理を間引く */
+let resizeTimeout;
+function onResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(applyAutoScale, 50);
+}
+
+window.addEventListener('load', applyAutoScale);
+window.addEventListener('resize', onResize);
+/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
+
+/* =========================================================
+   Service Worker 制御（開発 / 本番 完全分離・最終版）
+   ========================================================= */
+
+// ---- ローカル判定（必要に応じて増やせます）----
+const isLocal =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1' ||
+  location.hostname === '0.0.0.0' ||
+  location.hostname.startsWith('192.168.') ||
+  location.hostname.startsWith('10.') ||
+  location.hostname.startsWith('172.16.');
+
+// ---- Service Worker 対応ブラウザか ----
+if ('serviceWorker' in navigator) {
+
+  if (isLocal) {
+    // =====================================================
+    // 🧪 開発環境：Service Worker を完全に無効化
+    // =====================================================
+    window.addEventListener('load', async () => {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) {
+        await reg.unregister();
+      }
+      console.log('SW disabled (development)');
+    });
+
+  } else {
+    // =====================================================
+    // 🚀 本番環境：Service Worker を登録
+    // =====================================================
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('SW registered (production)'))
+        .catch(err => console.log('SW error:', err));
+    });
+  }
+}
+// --------------------------------------------------------------------------
+
+</script>
+</body>
+</html>
