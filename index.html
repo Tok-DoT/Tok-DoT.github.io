@@ -2205,7 +2205,7 @@ body::after {
     </div>
 
     <div id="setupSubFrame">
-      <span id="setupHintTextTop" class="blink-text" style="font-size:16px; color:white;">大会名・チーム名・選手名等を入力</span>
+      <span id="setupHintTextTop" class="blink-text" style="font-size:16px; color:white;">大会名・チーム名・選手名等を入力・保存・呼出</span>
     </div>
 
     <div class="tournament-wrapper">
@@ -2258,10 +2258,10 @@ body::after {
 
     <div class="select-wrapper">
       <select id="matchTypeSelect" class="match-type-select">
-        <option value="3">3ゲームマッチ（2ゲーム先取）</option>
-        <option value="5" selected>5ゲームマッチ（3ゲーム先取）</option>
-        <option value="7">7ゲームマッチ（4ゲーム先取）</option>
-        <option value="9">9ゲームマッチ（5ゲーム先取）</option>
+        <option value="3">3ゲームマッチ（2ｹﾞｰﾑ先取）</option>
+        <option value="5" selected>5ゲームマッチ（3ｹﾞｰﾑ先取）</option>
+        <option value="7">7ゲームマッチ（4ｹﾞｰﾑ先取）</option>
+        <option value="9">9ゲームマッチ（5ｹﾞｰﾑ先取）</option>
       </select>
     </div>
 
@@ -4449,12 +4449,7 @@ function scheduleGameCountDisplay() {
 
         setFinalDisplay(text);
 
-        setTimeout(() => {
-            if (displayVersion !== myVersion) return; // ★ ここも
-            if (!matchEnded) setFinalDisplay("");
-        }, 5000);
-
-    }, 5000);
+    }, 8000);
 }
 
 // ==================== setFinalDisplay（最終安全版） ====================
@@ -4471,19 +4466,10 @@ function setFinalDisplay(text) {
         gameA === finalThreshold &&
         gameB === finalThreshold;
 
-    // ★ 本当にファイナル中のときだけ戻す
+    // ★ 本当にファイナル中かどうかの判定は残す
+    // ★ ただし「5秒後にファイナルゲームへ戻す処理」は行わない
     if (finalGameActive && stillFinal && text !== "ゲームセット") {
-        setTimeout(() => {
-            if (
-                finalGameActive &&
-                stillFinal &&
-                !matchEnded &&
-                el.textContent !== "ファイナルゲーム"
-            ) {
-                el.textContent = "ファイナルゲーム";
-                adjustFinalDisplayFont();
-            }
-        }, 5000);
+        // 何もしない（将来の拡張用に構造だけ残す）
     }
 }
 
@@ -5144,8 +5130,8 @@ const brightCombos = [
   // ==============================
   // デフォルト（青/緑）
   // ==============================
-  ["#0000FF","#008000"], // 青 × 緑
-  ["#008000","#0000FF"], // 緑 × 青
+  ["#00CED1","#D2691E"],
+  ["#D2691E","#00CED1"],
 
   // ==============================
 // エヴァ風（紫 / 赤 / 黄 / 緑 / 青紫）
@@ -5309,8 +5295,8 @@ const brightCombos = [
 ["#A0522D","#1E90FF"],
 ["#1E90FF","#A0522D"],
 
-["#D2691E","#00CED1"],
-["#00CED1","#D2691E"],
+["#0000FF","#008000"], // 青 × 緑
+["#008000","#0000FF"], // 緑 × 青
 
 ["#CD853F","#7B68EE"],
 ["#7B68EE","#CD853F"],
@@ -5685,7 +5671,22 @@ const combos = [
   {court:"#009FCC", out:"#228B22"},
   {court:"#2E9A2E", out:"#8B4513"},
   {court:"#3A5FB4", out:"#006400"},
-  {court:"#5AAA00", out:"#2E8B57"}
+  {court:"#5AAA00", out:"#2E8B57"},
+
+    // ===========================================
+  // ✅ 体育館系（明るい木床イメージ）
+  // ===========================================
+  {court:"#F6E9C6", out:"#E0E0E0"}, // 明るいメープル床 × 薄グレー
+  {court:"#F3E2B8", out:"#D6E4F0"}, // 木床 × 淡ブルーグレー
+  {court:"#F8EDCF", out:"#CFCFCF"}, // 白寄り木床 × 体育館壁
+  {court:"#EEDDB2", out:"#E8EEF3"}, // ナチュラル床 × 明るい空色
+  {court:"#F5E6BE", out:"#DADADA"}, // 王道体育館床
+  {court:"#EAD7A5", out:"#E3EDF5"}, // 少し濃い床 × クリーンブルー
+  {court:"#FFF1CC", out:"#E6E6E6"}, // 非常に明るい床 × 白壁
+  {court:"#F0DEB4", out:"#D9E2EC"}, // ウレタン床 × 淡ブルー
+  {court:"#E7D4A8", out:"#F0F0F0"}, // 体育館フロア × 白基調
+  {court:"#F9EAC2", out:"#D3DDE6"}  // 明るさ最大級・インドア向け
+
 ];
 
 const wrapper = document.getElementById("picker");
@@ -5822,8 +5823,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const DEFAULT_FAVORITE = {
     team_scroll_bgA: "#FFFFFF",
     team_scroll_bgB: "#FFFF00",
-    scoreA_color: "#0000FF",
-    scoreB_color: "#008000",
+    scoreA_color: "#00CED1",
+    scoreB_color: "#D2691E",
     court: "#228B22",
     out: "#006400"
   };
