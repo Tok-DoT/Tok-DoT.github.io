@@ -2805,6 +2805,9 @@ let finalGameActive = false; // ファイナルゲーム中かどうか
 // 表示混線防止変数
 let displayVersion = 0;
 
+// ---------------- 入力中フラグ（Android対策） ----------------
+let isTextInputActive = false;
+
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
   // タイトル演出を呼び出し
@@ -3283,6 +3286,7 @@ function showServerBlink(team) {
   }, 600);
 }
 
+// --------------------------------- チーム名と選手名を保存関連 ---------------------------------
 function saveTeam(team) {
     const teamList = document.getElementById('teamList');
     let teamName, pairName;
@@ -3361,24 +3365,48 @@ function addLongPressToDropdown(dropdownId) {
     let timer = null;
 
     selectEl.addEventListener('pointerdown', (e) => {
+
+        // ★ 入力中は long-press 無効（Android IME対策）
+        if (isTextInputActive) return;
+
         const idx = selectEl.selectedIndex;
-        if (idx <= 0) return; // デフォルト選択は削除不可
+        if (idx <= 0) return;
 
         timer = setTimeout(() => {
             const optionText = selectEl.options[idx].text;
-            if(confirm(`"${optionText}" を削除しますか？`)){
+            if (confirm(`"${optionText}" を削除しますか？`)) {
                 selectEl.remove(idx);
                 saveTeamsToLocalStorage();
             }
             timer = null;
-        }, 800); // 長押し0.8秒
+        }, 800);
     });
 
-    const cancel = () => { if(timer){clearTimeout(timer); timer=null;} };
+    const cancel = () => {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+    };
     selectEl.addEventListener('pointerup', cancel);
     selectEl.addEventListener('pointerleave', cancel);
     selectEl.addEventListener('pointercancel', cancel);
 }
+
+// --------------------------------- チーム名と選手名を保存関連 ---------------------------------
+
+// input / textarea にフォーカスがある間は true
+document.addEventListener('focusin', (e) => {
+  if (e.target.matches('input, textarea')) {
+    isTextInputActive = true;
+  }
+});
+
+document.addEventListener('focusout', (e) => {
+  if (e.target.matches('input, textarea')) {
+    isTextInputActive = false;
+  }
+});
 
 // 設定画面_チーム名と選手名を初期化
 document.getElementById('resetTeamsButton').addEventListener('click', () => {
@@ -3483,8 +3511,12 @@ function addLongPressToTournamentDropdown(dropdownId) {
     let timer = null;
 
     selectEl.addEventListener('pointerdown', (e) => {
+
+        // ★ 入力中は long-press 無効（Android IME対策）
+        if (isTextInputActive) return;
+
         const idx = selectEl.selectedIndex;
-        if (idx <= 0) return; // デフォルト項目は削除不可
+        if (idx <= 0) return;
 
         timer = setTimeout(() => {
             const optionText = selectEl.options[idx].text;
@@ -3493,10 +3525,15 @@ function addLongPressToTournamentDropdown(dropdownId) {
                 saveTournamentsToLocalStorage();
             }
             timer = null;
-        }, 800); // 長押し0.8秒
+        }, 800);
     });
 
-    const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    const cancel = () => {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+    };
     selectEl.addEventListener('pointerup', cancel);
     selectEl.addEventListener('pointerleave', cancel);
     selectEl.addEventListener('pointercancel', cancel);
