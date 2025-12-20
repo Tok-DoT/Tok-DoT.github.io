@@ -3366,8 +3366,11 @@ function addLongPressToDropdown(dropdownId) {
 
     selectEl.addEventListener('pointerdown', (e) => {
 
-        // ★ 入力中は long-press 無効（Android IME対策）
-        if (isTextInputActive) return;
+        // ★ 入力中 or 入力直後は完全に無効（Android IME対策）
+        if (isTextInputActive) {
+            e.preventDefault();   // ← ここが重要
+            return;
+        }
 
         const idx = selectEl.selectedIndex;
         if (idx <= 0) return;
@@ -3402,10 +3405,16 @@ document.addEventListener('focusin', (e) => {
   }
 });
 
+let inputBlurTimer = null;
+
 document.addEventListener('focusout', (e) => {
-  if (e.target.matches('input, textarea')) {
+  if (!e.target.matches('input, textarea')) return;
+
+  // ★ 入力終了を少し遅らせる（入力欄移動対策）
+  clearTimeout(inputBlurTimer);
+  inputBlurTimer = setTimeout(() => {
     isTextInputActive = false;
-  }
+  }, 300); // 300ms が Android で安定
 });
 
 // 設定画面_チーム名と選手名を初期化
@@ -3512,8 +3521,11 @@ function addLongPressToTournamentDropdown(dropdownId) {
 
     selectEl.addEventListener('pointerdown', (e) => {
 
-        // ★ 入力中は long-press 無効（Android IME対策）
-        if (isTextInputActive) return;
+        // ★ 入力中 or 入力直後は完全に無効（Android IME対策）
+        if (isTextInputActive) {
+            e.preventDefault();   // ← ここが重要
+            return;
+        }
 
         const idx = selectEl.selectedIndex;
         if (idx <= 0) return;
