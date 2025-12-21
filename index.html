@@ -637,14 +637,14 @@ button:hover{opacity:0.9;}
 .match-type-select {
   width:100%;               /* 親の幅に合わせる */
   height:38px;
-  font-size:16px;
+  font-size:18px;           /* 大きめフォント */
   font-family:"Kosugi Maru", sans-serif;
   border-radius:12px;
   border:none;
   padding:0 8px;
   text-align:center;
   background: linear-gradient(to bottom, #33AADD, #0077B6);
-  color:#000;
+  color:#fff;               /* 選択中の文字は白 */
   box-shadow: 0 4px 6px rgba(0,0,0,0.25),
               inset 0 2px 4px rgba(255,255,255,0.3),
               inset 0 -2px 4px rgba(0,0,0,0.18);
@@ -652,6 +652,12 @@ button:hover{opacity:0.9;}
   -moz-appearance: none;
   appearance: none;
   display:block;
+}
+
+/* ドロップダウンリスト内の文字は黒 */
+.match-type-select option {
+  color:#000;
+  background:#fff;
 }
 
 /* 試合開始ボタン */
@@ -3314,7 +3320,7 @@ function resetTeamFields(team) {
     ? ['teamA', 'playerA1', 'playerA2']
     : ['teamB', 'playerB1', 'playerB2'];
 
-  if (!window.confirm(`${label}のチーム名・ペア名を初期化しますか？`)) return;
+  if (!window.confirm(`チーム名・ペア名を初期化しますか？`)) return;
 
   fieldIds.forEach(id => {
     const el = document.getElementById(id);
@@ -5812,20 +5818,19 @@ const combos = [
   {court:"#3A5FB4", out:"#006400"},
   {court:"#5AAA00", out:"#2E8B57"},
 
-    // ===========================================
-  // ✅ 体育館系（明るい木床イメージ）
   // ===========================================
-  {court:"#F6E9C6", out:"#E0E0E0"}, // 明るいメープル床 × 薄グレー
-  {court:"#F3E2B8", out:"#D6E4F0"}, // 木床 × 淡ブルーグレー
-  {court:"#F8EDCF", out:"#CFCFCF"}, // 白寄り木床 × 体育館壁
-  {court:"#EEDDB2", out:"#E8EEF3"}, // ナチュラル床 × 明るい空色
-  {court:"#F5E6BE", out:"#DADADA"}, // 王道体育館床
-  {court:"#EAD7A5", out:"#E3EDF5"}, // 少し濃い床 × クリーンブルー
-  {court:"#FFF1CC", out:"#E6E6E6"}, // 非常に明るい床 × 白壁
-  {court:"#F0DEB4", out:"#D9E2EC"}, // ウレタン床 × 淡ブルー
-  {court:"#E7D4A8", out:"#F0F0F0"}, // 体育館フロア × 白基調
-  {court:"#F9EAC2", out:"#D3DDE6"}  // 明るさ最大級・インドア向け
-
+  // ✅ 体育館系（明るい木床イメージ・コントラスト強化）
+  // ===========================================
+  {court:"#D4B57A", out:"#505050"}, // メープル床 × 濃いグレー
+  {court:"#CDB078", out:"#406080"}, // 木床 × 濃いブルーグレー
+  {court:"#D9C092", out:"#505050"}, // 白寄り木床 × 濃いグレー
+  {court:"#CBB67E", out:"#4070A0"}, // ナチュラル床 × 濃い空色
+  {court:"#D6C184", out:"#505050"}, // 王道体育館床 × 濃いグレー
+  {court:"#CCB072", out:"#3060A0"}, // 少し濃い床 × 濃いクリーンブルー
+  {court:"#E0D19A", out:"#505050"}, // 明るめ床 × 濃いグレー
+  {court:"#D8C48C", out:"#4070A0"}, // ウレタン床 × 濃いブルー
+  {court:"#CCB072", out:"#505050"}, // 体育館フロア × 濃いグレー
+  {court:"#D9D09A", out:"#306080"}  // 明るさ高め床 × 濃いブルーグレー
 ];
 
 const wrapper = document.getElementById("picker");
