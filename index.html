@@ -2595,14 +2595,18 @@ let displayVersion = 0;
 // ---------------- 入力中フラグ（Android対策） ----------------
 let isTextInputActive = false;
 
+let updatingPositions = false;
+let resizeTimer = null;
+
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
+
   // タイトル演出を呼び出し
   playTitleSequence();
 
   // 以下、既存の処理はそのまま
   setTimeout(() => { window.scrollTo(0,1); }, 100);
-  updatePlayerPositions();
+  setTimeout(updatePlayerPositions, 300);
   loadSavedTeams();
 
   // --- コート回転ボタン ---
@@ -2624,7 +2628,14 @@ window.onload = function() {
 };
 
 // ----------------------------------- ウィンドウ・ポイント・Ready ボタン処理 -----------------------------------
-window.addEventListener('resize', updatePlayerPositions);
+window.addEventListener('resize', () => {
+  if (isTextInputActive) return;
+
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    updatePlayerPositions();
+  }, 200);
+});
 
 document.getElementById("pointAFlip").addEventListener("click", () => { pointA++; updatePointDisplay('A'); });
 document.getElementById("pointBFlip").addEventListener("click", () => { pointB++; updatePointDisplay('B'); });
@@ -2633,6 +2644,7 @@ document.getElementById('readyButton').addEventListener('click', handleReadyButt
 
 // ----------------------------------- タイトル演出関数 -----------------------------------
 function playTitleSequence() {
+  if (isTextInputActive) return; // ★追加
   const titleWrapper = document.getElementById('titleWrapper');
   const titleScreen = document.getElementById('titleScreen');
   titleWrapper.style.display = 'flex';
@@ -2768,7 +2780,7 @@ function swapPlayers(team) {
         color = "#ffff00";
     }
 
-    updatePlayerPositions();
+    setTimeout(updatePlayerPositions, 0);
     showInfo(message, color);
     adjustAllInfoFonts();
     showServerBlink(team);
@@ -2875,6 +2887,19 @@ function onResetOrReturnFromSettings() {
 // --- 試合開始画面に移動 ---
 function startMatch() {
 
+  // ★ 入力中なら試合開始しない
+  if (isTextInputActive) {
+  document.activeElement?.blur();
+  if (startMatch._retrying) return;
+  startMatch._retrying = true;
+  setTimeout(() => {
+    startMatch._retrying = false;
+    startMatch();
+  }, 300);
+  return;
+}
+
+
     // 🔥 試合開始時に必ず false に戻す（安全）
     matchEnded = false;
 
@@ -2910,6 +2935,9 @@ function startMatch() {
     // コート回転リセット（選手位置も初期化）
     resetCourtRotation();
 
+  // ★ 念のため全 input / textarea のフォーカス解除
+  document.querySelectorAll('input, textarea').forEach(el => el.blur());
+
     // 画面切替
     document.getElementById('setupScreen').style.display = 'none';
     document.getElementById('gameScreen').style.display = 'flex';
@@ -2919,7 +2947,7 @@ function startMatch() {
     setTimeout(() => {
         updatePlayerPositions();
         updateScore();
-    }, 0);
+    }, 300);
 
     // 上部チーム名表示に文字数制限
     const truncateName = (name, maxLen) => name.length > maxLen ? name.slice(0, maxLen) : name;
@@ -3012,6 +3040,7 @@ function showInfo(message, color = "#ffffff", duration = 5000) {
   }
 
   // メッセージ表示（改行を <br> に変換）
+  if (isTextInputActive) return;
   infoText.innerHTML = message.replace(/\n/g, "<br>");
   infoText.style.color = color;
 
@@ -3074,6 +3103,15 @@ function showServerBlink(team) {
 
 // --------------------------------- チーム名と選手名を保存関連 ---------------------------------
 function saveTeam(team) {
+
+    // ★ 入力中ならフォーカスを外す（Android対策）
+    if (isTextInputActive) {
+        document.activeElement?.blur();
+    }
+
+// ★ blur完了（300ms）を待ってからDOM操作
+setTimeout(() => {
+
     const teamList = document.getElementById('teamList');
     let teamName, pairName;
 
@@ -3087,18 +3125,19 @@ function saveTeam(team) {
 
     const displayText = `${teamName} - ${pairName}`;
 
-    // 重複チェック
-    for(let i=0; i<teamList.options.length; i++){
+    for(let i = 0; i < teamList.options.length; i++) {
         if(teamList.options[i].value === displayText) return;
     }
 
     const option = document.createElement('option');
-    option.value = displayText;  // ← value にもフル文字列を入れる
+    option.value = displayText;
     option.text = displayText;
     teamList.appendChild(option);
 
-    // localStorageに保存
     saveTeamsToLocalStorage();
+
+}, 300);
+
 }
 
 function saveTeamsToLocalStorage() {
@@ -3121,7 +3160,14 @@ function loadSavedTeams() {
     });
 }
 
-function applyToTeam(teamSide) {
+function applyToTeam(teamSide, retry = false) {
+
+    if (isTextInputActive && !retry) {
+        document.activeElement?.blur();
+        setTimeout(() => applyToTeam(teamSide, true), 300);
+        return;
+    }
+
     const teamList = document.getElementById('teamList');
     const selected = teamList.value;
     if (!selected) return;
@@ -3188,17 +3234,20 @@ document.addEventListener('focusout', (e) => {
 
 // 設定画面_大会名を初期化
 document.getElementById('resetTournamentButton').addEventListener('click', () => {
-  if (!confirm('入力した大会名を初期化しますか？')) return;
-
   const tournamentInput = document.getElementById('tournamentNameInput');
-  if (tournamentInput) {
-    // HTMLの初期値 (value属性) に戻す
-    tournamentInput.value = tournamentInput.defaultValue;
+  if (!tournamentInput) return;
 
-    // フォントを統一（必要なら）
+  // ★ 先にフォーカスを外す
+tournamentInput.blur();
+
+setTimeout(() => {
+    if (!window.confirm('入力した大会名を初期化しますか？')) return;
+
+    tournamentInput.value = tournamentInput.defaultValue;
     tournamentInput.style.fontSize = '16px';
     tournamentInput.style.fontFamily = '"Kosugi Maru", sans-serif';
-  }
+}, 300);
+
 });
 
 // 設定画面_チーム名と選手名を初期化
@@ -3633,59 +3682,74 @@ function resetCourtRotation() {
 }
 
 function updatePlayerPositions(){
-  const court=document.getElementById('courtContainer');
-  const w=court.clientWidth, h=court.clientHeight;
 
-  const baselineTop = court.querySelector('.baseline-top').offsetTop;
-  const baselineBottom = court.querySelector('.baseline-bottom').offsetTop;
+  // ★ 多重実行防止
+  if (updatingPositions) return;
+  updatingPositions = true;
 
-  const endLineOffset = 0.15 * h;
-  const extraOffsetRatio = 0.115;
-  const extraOffset = h * extraOffsetRatio;
+  requestAnimationFrame(() => {
 
-  const aY = baselineBottom - endLineOffset;  
-  const bY = baselineTop + endLineOffset - extraOffset;
+    const court = document.getElementById('courtContainer');
+    if (!court) {
+      updatingPositions = false;
+      return;
+    }
 
-  const spacing = 95;
-  const xCenter = w/2;
+    const w = court.clientWidth;
+    const h = court.clientHeight;
 
-  document.getElementById('playerA1Display').style.top = aY + 'px';
-  document.getElementById('playerA2Display').style.top = aY + 'px';
-  document.getElementById('playerA1Display').style.left = (xCenter - spacing/2 - 35) + 'px';
-  document.getElementById('playerA2Display').style.left = (xCenter + spacing/2 - 35) + 'px';
+    const baselineTop = court.querySelector('.baseline-top')?.offsetTop ?? 0;
+    const baselineBottom = court.querySelector('.baseline-bottom')?.offsetTop ?? h;
 
-  document.getElementById('playerB2Display').style.top = bY + 'px';
-  document.getElementById('playerB1Display').style.top = bY + 'px';
-  document.getElementById('playerB2Display').style.left = (xCenter - spacing/2 - 35) + 'px';
-  document.getElementById('playerB1Display').style.left = (xCenter + spacing/2 - 35) + 'px';
+    const endLineOffset = 0.15 * h;
+    const extraOffset = h * 0.115;
 
-  document.getElementById('playerA1Display').textContent = playerA1.slice(0, 5);
-  document.getElementById('playerA2Display').textContent = playerA2.slice(0, 5);
-  document.getElementById('playerB2Display').textContent = playerB2.slice(0, 5);
-  document.getElementById('playerB1Display').textContent = playerB1.slice(0, 5);
+    const aY = baselineBottom - endLineOffset;
+    const bY = baselineTop + endLineOffset - extraOffset;
 
+    const spacing = 95;
+    const xCenter = w / 2;
 
-  // コート内チーム名（修正：A下中央、B上中央）
-  // 文字数制限（最大5文字）
-  document.getElementById('courtTeamA').textContent = teamAName.length > 5 ? teamAName.slice(0,5) : teamAName;
-  document.getElementById('courtTeamB').textContent = teamBName.length > 5 ? teamBName.slice(0,5) : teamBName;
-  document.getElementById('courtTeamA').style.left = (xCenter - 35) + 'px';
-  document.getElementById('courtTeamA').style.top = (h*0.75 - 15) + 'px';
-  document.getElementById('courtTeamB').style.left = (xCenter - 35) + 'px';
-  document.getElementById('courtTeamB').style.top = (h*0.25 - 15) + 'px';
+    const setPos = (id, top, left) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.top = top + 'px';
+      el.style.left = left + 'px';
+    };
 
-  // 回転させる要素（画面上チーム名は含めない）
-  const allRotatable=['playerA1Display','playerA2Display','playerB1Display','playerB2Display','courtTeamA','courtTeamB'];
-  allRotatable.forEach(id=>{
-  // コート回転に逆回転させて常に正立表示
-  document.getElementById(id).style.transform=`rotate(${-courtRotation - independentRotation}deg)`;
-});
+    setPos('playerA1Display', aY, xCenter - spacing/2 - 35);
+    setPos('playerA2Display', aY, xCenter + spacing/2 - 35);
+    setPos('playerB2Display', bY, xCenter - spacing/2 - 35);
+    setPos('playerB1Display', bY, xCenter + spacing/2 - 35);
 
-// ウィンドウサイズ変更時も透明枠を追従
-window.addEventListener('resize', () => {
-    updatePlayerPositions();            // プレイヤー表示も更新
-});
+    document.getElementById('playerA1Display').textContent = playerA1.slice(0,5);
+    document.getElementById('playerA2Display').textContent = playerA2.slice(0,5);
+    document.getElementById('playerB1Display').textContent = playerB1.slice(0,5);
+    document.getElementById('playerB2Display').textContent = playerB2.slice(0,5);
 
+    document.getElementById('courtTeamA').textContent =
+      teamAName.length > 5 ? teamAName.slice(0,5) : teamAName;
+    document.getElementById('courtTeamB').textContent =
+      teamBName.length > 5 ? teamBName.slice(0,5) : teamBName;
+
+    setPos('courtTeamA', h*0.75 - 15, xCenter - 35);
+    setPos('courtTeamB', h*0.25 - 15, xCenter - 35);
+
+    const allRotatable = [
+      'playerA1Display','playerA2Display',
+      'playerB1Display','playerB2Display',
+      'courtTeamA','courtTeamB'
+    ];
+
+    allRotatable.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.transform =
+        `rotate(${-courtRotation - independentRotation}deg)`;
+    });
+
+    updatingPositions = false;
+  });
 }
 
 /* ------------------- vs（レディ）ボタンを押す前の消灯と点灯演出（始り） ------------------- */
