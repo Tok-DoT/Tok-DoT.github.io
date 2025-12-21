@@ -4123,7 +4123,6 @@ function addPoint(team) {
             document.getElementById("finalDisplay")
                 ?.classList.contains("final-gradient") || false,
         deuceText: document.getElementById("deuceDisplay")?.textContent || "",
-        infoText: document.getElementById("infoText")?.textContent || ""
     });
 
     // --- ポイント加算 ---
@@ -4301,7 +4300,7 @@ function undoPoint(event) {
     //----------------------------------------------------
     // 9) 情報表示
     //----------------------------------------------------
-    showInfo(last.infoText || "得点を1ポイント戻しました。");
+    showInfo("1ポイント戻しました");
     adjustAllInfoFonts();
 }
 
@@ -4463,7 +4462,7 @@ function checkGameStatus() {
             finalGameActive = true;  // ファイナルゲームフラグON
             setTimeout(() => {
                 setFinalDisplay("ファイナルゲーム");
-            }, 8000); // ゲームカウント表示後に出るよう少し遅らせる
+            }, 16000); // ゲームカウント表示後に出るよう少し遅らせる
         }
     }
 
