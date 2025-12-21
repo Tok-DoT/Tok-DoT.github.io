@@ -339,7 +339,7 @@ button:hover{opacity:0.9;}
 /* 上部透明枠 */
 #setupExtraTop {
   width:100%;
-  height:100px; /* 少し広げた */
+  height:80px; /* 少し縮めた */
   display:flex;
   justify-content:center;
   align-items:center;
@@ -356,7 +356,7 @@ button:hover{opacity:0.9;}
 /* 下余白透明枠 */
 #setupSubFrame {
   width:100%;
-  height:12px; /* 少し広げた */
+  height:8px; /* 少し縮めた */
   display:flex;
   justify-content:center;
   align-items:center;
@@ -366,8 +366,8 @@ button:hover{opacity:0.9;}
 /* アナウンス上段 */
 #setupHintTextTop {
   width:100%;
-  height:32px;
-  margin:8px 0; /* 少し広げた */
+  height:28px;
+  margin:4px 0;
   pointer-events:none;
   text-align:center;
   color:white;
@@ -379,7 +379,7 @@ button:hover{opacity:0.9;}
 .tournament-wrapper {
   width:100%;
   max-width:400px;
-  margin:4px auto; /* 少し広げた */
+  margin:4px auto;
 }
 
 #tournamentNameInput{
@@ -401,10 +401,11 @@ button:hover{opacity:0.9;}
   align-items:center;
   width:100%;
   max-width:400px;
-  margin:6px auto; /* 少し広げた */
+  margin:4px auto; /* 縦間隔調整 */
   gap:4px;
 }
 
+/* 青系ボタン */
 .tournament-btn {
   flex:0 0 38px;
   height:38px;
@@ -427,17 +428,28 @@ button:hover{opacity:0.9;}
 
 .tournament-btn:hover {
   background: linear-gradient(to bottom, #4BBBEA, #1490CC);
-  box-shadow: 0 5px 8px rgba(0,0,0,0.3),
-              inset 0 2px 4px rgba(255,255,255,0.3),
-              inset 0 -2px 4px rgba(0,0,0,0.18);
 }
 
 .tournament-btn:active {
   background: linear-gradient(to bottom, #1490CC, #006AA3);
   transform: translateY(3px);
-  box-shadow: inset 0 1px 2px rgba(255,255,255,0.2),
-              inset 0 -2px 4px rgba(0,0,0,0.28),
-              0 1px 2px rgba(0,0,0,0.15) inset;
+}
+
+/* オレンジ系ボタン用（保存・チーム初期化など） */
+.orange-btn, .save-button {
+  background: linear-gradient(to bottom, #FFB733, #FF8C00);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25),
+              inset 0 2px 4px rgba(255,255,255,0.3),
+              inset 0 -2px 4px rgba(0,0,0,0.18);
+}
+
+.orange-btn:hover, .save-button:hover {
+  background: linear-gradient(to bottom,  #FFC54D, #FF9A33);
+}
+
+.orange-btn:active, .save-button:active {
+  background: linear-gradient(to bottom, #FF9A33, #FF7A00);
+  transform: translateY(3px);
 }
 
 /* 大会名リスト */
@@ -457,7 +469,7 @@ button:hover{opacity:0.9;}
 .team-inputs-wrapper {
   width:100%;
   max-width:400px;
-  margin:4px auto; /* 少し広げた */
+  margin:4px auto;
 }
 
 .team-inputs {
@@ -470,7 +482,7 @@ button:hover{opacity:0.9;}
   width:49%;
   display:flex;
   flex-direction:column;
-  gap:4px; /* 少し広げた */
+  gap:4px;
 }
 
 .team-column input {
@@ -485,28 +497,29 @@ button:hover{opacity:0.9;}
   box-sizing:border-box;
 }
 
+/* チーム列のボタンはオレンジ系に統一 */
 .team-column button {
   width:100%;
-  height:32px;
-  border-radius:10px;
+  height:38px; /* 高さ調整済み */
+  border-radius:12px;
   border:none;
   font-size:16px;
   font-weight:bold;
   font-family:"Kosugi Maru", sans-serif;
   color:#fff;
   cursor:pointer;
-  background: linear-gradient(to bottom, #FF9A76, #FF6347);
+  background: linear-gradient(to bottom, #FFB733, #FF8C00);
   box-shadow: 0 4px 6px rgba(0,0,0,0.25),
               inset 0 2px 4px rgba(255,255,255,0.3),
               inset 0 -2px 4px rgba(0,0,0,0.18);
 }
 
 .team-column button:hover {
-  background: linear-gradient(to bottom, #FFB39A, #FF7A5C);
+  background: linear-gradient(to bottom, #FFC54D, #FF9A33);
 }
 
 .team-column button:active {
-  background: linear-gradient(to bottom, #FF7A5C, #FF573D);
+  background: linear-gradient(to bottom, #FF9A33, #FF7A00);
   transform: translateY(3px);
 }
 
@@ -514,14 +527,14 @@ button:hover{opacity:0.9;}
 .team-restore-wrapper {
   width:100%;
   max-width:400px;
-  margin:4px auto; /* 少し広げた */
+  margin:4px auto;
 }
 
 .team-restore-row {
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:4px; /* 少し広げた */
+  gap:4px;
 }
 
 .team-restore-select {
@@ -536,6 +549,7 @@ button:hover{opacity:0.9;}
   width:calc(100% - 2px);
 }
 
+/* チーム呼出しボタンは青系に */
 .team-restore-btn {
   flex:0 0 36px;
   height:36px;
@@ -548,10 +562,20 @@ button:hover{opacity:0.9;}
   display:flex;
   align-items:center;
   justify-content:center;
-  background: linear-gradient(to bottom, #FFB733, #FF8C00);
+  background: linear-gradient(to bottom, #33AADD, #0077B6);
   box-shadow: 0 4px 6px rgba(0,0,0,0.25),
               inset 0 2px 4px rgba(255,255,255,0.3),
               inset 0 -2px 4px rgba(0,0,0,0.18);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.15s ease;
+}
+
+.team-restore-btn:hover {
+  background: linear-gradient(to bottom, #4BBBEA, #1490CC);
+}
+
+.team-restore-btn:active {
+  background: linear-gradient(to bottom, #1490CC, #006AA3);
+  transform: translateY(3px);
 }
 
 /* 削除・リセットボタン */
@@ -566,57 +590,76 @@ button:hover{opacity:0.9;}
   border-radius:12px;
   border:none;
   cursor:pointer;
-  margin:4px auto; /* 少し広げた */
+  margin:4px auto;
   display:block;
 }
 
 .delete-button {
-  background: linear-gradient(to bottom, #d9534f, #b52b27);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.25),
-              inset 0 2px 4px rgba(255,255,255,0.25),
-              inset 0 -2px 4px rgba(0,0,0,0.18);
+  background: linear-gradient(to bottom, #d9534f, #b52b27) !important;
 }
 
-.delete-button:hover { background: linear-gradient(to bottom, #e06660, #c33b30); }
-.delete-button:active { background: linear-gradient(to bottom, #b52b27, #8c1e1b); transform: translateY(3px); }
+.delete-button:hover { 
+  background: linear-gradient(to bottom, #e06660, #c33b30) !important; 
+}
+
+.delete-button:active { 
+  background: linear-gradient(to bottom, #b52b27, #8c1e1b) !important; 
+  transform: translateY(3px); 
+}
 
 .reset-button {
-  background: linear-gradient(to bottom, #7a7a7a, #555555);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.25),
-              inset 0 2px 4px rgba(255,255,255,0.25),
-              inset 0 -2px 4px rgba(0,0,0,0.18);
+  background: linear-gradient(to bottom, #7a7a7a, #555555) !important;
 }
 
-.reset-button:hover { background: linear-gradient(to bottom, #8a8a8a, #666666); }
-.reset-button:active { background: linear-gradient(to bottom, #666666, #4d4d4d); transform: translateY(3px); }
+.reset-button:hover { 
+  background: linear-gradient(to bottom, #8a8a8a, #666666) !important; 
+}
 
+.reset-button:active { 
+  background: linear-gradient(to bottom, #666666, #4d4d4d) !important; 
+  transform: translateY(3px); 
+}
+
+/* 大会名入力フォーム */
+.tournament-wrapper {
+  width:100%;
+  max-width:400px;
+  margin:4px auto;
+}
+
+/* ゲームマッチリスト */
 .select-wrapper {
-  width: 100%;
-  max-width: 400px;
-  padding: 0;
-  display: flex;
-  justify-content: stretch;
-  box-sizing: border-box;
-  margin:4px auto; /* 少し広げた */
+  width:100%;
+  max-width:400px; /* 大会名入力フォームと同じ横幅 */
+  margin:4px auto;
 }
 
 .match-type-select {
-  width: 100%;
-  height: 38px;
-  font-size: 18px;
-  border-radius: 8px;
-  text-align: center;
-  text-align-last: center;
-  font-family: "Kosugi Maru", sans-serif;
-  box-sizing: border-box;
+  width:100%;               /* 親の幅に合わせる */
+  height:38px;
+  font-size:16px;
+  font-family:"Kosugi Maru", sans-serif;
+  border-radius:12px;
+  border:none;
+  padding:0 8px;
+  text-align:center;
+  background: linear-gradient(to bottom, #33AADD, #0077B6);
+  color:#000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.25),
+              inset 0 2px 4px rgba(255,255,255,0.3),
+              inset 0 -2px 4px rgba(0,0,0,0.18);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display:block;
 }
 
-/* 試合開始ボタン（元のサイズ・ぷっくり保持） */
+/* 試合開始ボタン */
 .start-wrapper { width:100%; display:flex; justify-content:center; margin:4px 0; }
 .start-btn {
   width:100%;
   max-width:400px;
-  height:38px;
+  height:38px; /* 元サイズ維持 */
   font-size:18px;
   font-weight:bold;
   font-family:"Kosugi Maru", sans-serif;
@@ -624,18 +667,25 @@ button:hover{opacity:0.9;}
   border-radius:12px;
   border:none;
   cursor:pointer;
-  background: linear-gradient(to bottom, #FF9A76, #FF6347);
+  background: linear-gradient(to bottom, #FFB733, #FF8C00);
   box-shadow: 0 4px 6px rgba(0,0,0,0.25),
               inset 0 2px 4px rgba(255,255,255,0.3),
               inset 0 -2px 4px rgba(0,0,0,0.15);
 }
 
-.start-btn:hover { background: linear-gradient(to bottom, #FFB39A, #FF7A5C); }
-.start-btn:active { background: linear-gradient(to bottom, #FF7A5C, #FF573D); transform: translateY(3px); }
+.start-btn:hover { 
+  background: linear-gradient(to bottom, #FFC54D, #FF9A33); 
+}
 
-/* 透明枠・アナウンス */
+.start-btn:active { 
+  background: linear-gradient(to bottom, #FF9A33, #FF7A00); 
+  transform: translateY(3px); 
+}
+
+/* 下アナウンス */
 #setupMessageFrame { width:100%; text-align:center; height:20px; margin-bottom:0px; color:white; font-size:0px; pointer-events:none; }
-#setupHintTextBottom { width:100%; height:20px; margin:8px 0; text-align:center; color:white; font-size:16px; line-height:18px; }
+#setupHintTextBottom { width:100%; height:20px; margin:4px 0; text-align:center; color:white; font-size:16px; line-height:18px; }
+
 
 /* ------------------------------------------- 設定画面全体 ------------------------------------------- */
 
@@ -2212,46 +2262,53 @@ body::after {
       <input type="text" id="tournamentNameInput" maxlength="20" placeholder="大会名">
     </div>
 
-    <div class="tournament-save-wrapper">
-      <button id="saveTournamentButton" class="tournament-btn">▽</button>
-      <select id="tournamentList" class="tournament-select">
-        <option value="">-- 保存大会名選択 --</option>
-      </select>
-      <button id="loadTournamentButton" class="tournament-btn">▲</button>
+    <button id="resetTournamentButton" class="reset-button">大会名初期化</button>
+
+<div class="tournament-save-wrapper">
+  <button id="saveTournamentButton" class="tournament-btn orange-btn">▽</button>
+  <select id="tournamentList" class="tournament-select">
+    <option value="">-- 大会名を選択 --</option>
+  </select>
+  <button id="loadTournamentButton" class="tournament-btn">▲</button>
+</div>
+
+    <button onclick="deleteSelectedOption('tournamentList', saveTournamentsToLocalStorage)" class="delete-button">大会名削除</button>
+
+<div class="team-inputs-wrapper">
+  <div class="team-inputs">
+    <!-- Aチーム -->
+    <div class="team-column">
+      <input type="text" id="teamA" maxlength="10" placeholder="Aチーム名">
+      <input type="text" id="playerA1" maxlength="10" placeholder="A選手1">
+      <input type="text" id="playerA2" maxlength="10" placeholder="A選手2">
+      <!-- Aチーム個別初期化 -->
+      <button id="resetTeamAButton" class="reset-button">チーム・ペア初期化</button>
+      <button onclick="saveTeam('A')" class="save-button">▽ 保存</button>
     </div>
 
-    <button onclick="deleteSelectedOption('tournamentList', saveTournamentsToLocalStorage)" class="delete-button">リストから保存大会名を削除</button>
-    <button id="resetTournamentButton" class="reset-button">入力した大会名を初期化</button>
-
-    <div class="team-inputs-wrapper">
-      <div class="team-inputs">
-        <div class="team-column">
-          <input type="text" id="teamA" maxlength="10" placeholder="Aチーム名">
-          <input type="text" id="playerA1" maxlength="10" placeholder="A選手1">
-          <input type="text" id="playerA2" maxlength="10" placeholder="A選手2">
-          <button onclick="saveTeam('A')">▽ 保存</button>
-        </div>
-        <div class="team-column">
-          <input type="text" id="teamB" maxlength="10" placeholder="Bチーム名">
-          <input type="text" id="playerB1" maxlength="10" placeholder="B選手1">
-          <input type="text" id="playerB2" maxlength="10" placeholder="B選手2">
-          <button onclick="saveTeam('B')">▽ 保存</button>
-        </div>
-      </div>
+    <!-- Bチーム -->
+    <div class="team-column">
+      <input type="text" id="teamB" maxlength="10" placeholder="Bチーム名">
+      <input type="text" id="playerB1" maxlength="10" placeholder="B選手1">
+      <input type="text" id="playerB2" maxlength="10" placeholder="B選手2">
+      <!-- Bチーム個別初期化 -->
+      <button id="resetTeamBButton" class="reset-button">チーム・ペア初期化</button>
+      <button onclick="saveTeam('B')" class="save-button">▽ 保存</button>
     </div>
+  </div>
+</div>
 
     <div class="team-restore-wrapper">
       <div class="team-restore-row">
         <button onclick="applyToTeam('A')" class="team-restore-btn">▲</button>
         <select id="teamList" class="team-restore-select">
-          <option value="">-- 保存チーム・ペア選択 --</option>
+          <option value="">-- チーム・ペアを選択 --</option>
         </select>
         <button onclick="applyToTeam('B')" class="team-restore-btn">▲</button>
       </div>
     </div>
 
-    <button onclick="deleteSelectedOption('teamList', saveTeamsToLocalStorage)" class="delete-button">リストから保存チーム名・ペア名を削除</button>
-    <button id="resetTeamsButton" class="reset-button">入力したチーム名・ペア名を初期化</button>
+    <button onclick="deleteSelectedOption('teamList', saveTeamsToLocalStorage)" class="delete-button">チーム・ペア削除</button>
 
     <div id="setupMessageFrame"></div>
     <span id="setupHintTextBottom">何ゲームマッチか選び[ 試合開始 ]をタップ</span>
@@ -3193,95 +3250,108 @@ function applyToTeam(teamSide, retry = false) {
 
 // --------------------------------- チーム名と選手名を保存関連 ---------------------------------
 
-// --------------------------------- チーム名と選手名を削除関連 ---------------------------------
+// --------------------------------- チーム名・選手名 削除共通処理 ---------------------------------
 function deleteSelectedOption(selectId, saveFn) {
-    const select = document.getElementById(selectId);
-    if (!select) return;
+  const select = document.getElementById(selectId);
+  if (!select) return;
 
-    const idx = select.selectedIndex;
-    if (idx <= 0) {
-        alert('リストから選択してください');
-        return;
-    }
+  const idx = select.selectedIndex;
+  if (idx <= 0) {
+    alert('リストから選択してください');
+    return;
+  }
 
-    const text = select.options[idx].text;
-    if (!confirm(`"${text}" を削除しますか？`)) return;
+  const text = select.options[idx].text;
+  if (!window.confirm(`「${text}」を削除しますか？`)) return;
 
-    select.remove(idx);
-    saveFn();
+  select.remove(idx);
+  saveFn?.();
 }
+// --------------------------------- チーム名・選手名 削除共通処理 ---------------------------------
 
-// --------------------------------- チーム名と選手名を削除関連 ---------------------------------
+// --------------------------------- 入力中フラグ制御（Android 対策） ---------------------------------
+let inputBlurTimer = null;
 
-// input / textarea にフォーカスがある間は true
 document.addEventListener('focusin', (e) => {
   if (e.target.matches('input, textarea')) {
-    isTextInputActive = true;
+    isTextInputActive = true; // グローバル変数を使用
   }
 });
-
-let inputBlurTimer = null;
 
 document.addEventListener('focusout', (e) => {
   if (!e.target.matches('input, textarea')) return;
 
-  // ★ 入力終了を少し遅らせる（入力欄移動対策）
   clearTimeout(inputBlurTimer);
   inputBlurTimer = setTimeout(() => {
     isTextInputActive = false;
   }, 300); // 300ms が Android で安定
 });
+// --------------------------------- 入力中フラグ制御（Android 対策） ---------------------------------
 
-// 設定画面_大会名を初期化
-document.getElementById('resetTournamentButton').addEventListener('click', () => {
+// --------------------------------- 設定画面：大会名 初期化 ---------------------------------
+document.getElementById('resetTournamentButton')?.addEventListener('click', () => {
   const tournamentInput = document.getElementById('tournamentNameInput');
   if (!tournamentInput) return;
 
-  // ★ 先にフォーカスを外す
-tournamentInput.blur();
+  tournamentInput.blur(); // Android対策
 
-setTimeout(() => {
+  setTimeout(() => {
     if (!window.confirm('入力した大会名を初期化しますか？')) return;
 
     tournamentInput.value = tournamentInput.defaultValue;
     tournamentInput.style.fontSize = '16px';
     tournamentInput.style.fontFamily = '"Kosugi Maru", sans-serif';
-}, 300);
-
+  }, 300);
 });
+// --------------------------------- 設定画面：大会名 初期化 ---------------------------------
 
-// 設定画面_チーム名と選手名を初期化
-document.getElementById('resetTeamsButton').addEventListener('click', () => {
-  if (!confirm('入力したチーム名・ペア名を初期化しますか？')) return;
+// --------------------------------- 設定画面：チーム名・選手名 初期化 共通関数 ---------------------------------
+function resetTeamFields(team) {
+  const isA = team === 'A';
+  const label = isA ? 'Aチーム' : 'Bチーム';
 
-  const fieldIds = [
-    'teamA', 'teamB',
-    'playerA1', 'playerA2',
-    'playerB1', 'playerB2'
-  ];
+  const fieldIds = isA
+    ? ['teamA', 'playerA1', 'playerA2']
+    : ['teamB', 'playerB1', 'playerB2'];
+
+  if (!window.confirm(`${label}のチーム名・ペア名を初期化しますか？`)) return;
 
   fieldIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      // HTMLの初期値 (value属性) に戻す
-      el.value = el.defaultValue;
+    if (!el) return;
 
-      // フォントを統一
-      el.style.fontSize = '16px';
-      el.style.fontFamily = '"Kosugi Maru", sans-serif';
-    }
+    el.value = el.defaultValue;
+    el.style.fontSize = '16px';
+    el.style.fontFamily = '"Kosugi Maru", sans-serif';
   });
 
-// ✅ 白丸Sリセット
+  updatePlayerPositions?.();
+  adjustAllInfoFonts?.();
+}
+// --------------------------------- 設定画面：チーム名・選手名 初期化 共通関数 ---------------------------------
+
+// --------------------------------- 設定画面：Aチーム個別初期化ボタン ---------------------------------
+document.getElementById('resetTeamAButton')?.addEventListener('click', () => {
+  resetTeamFields('A');
+});
+// --------------------------------- 設定画面：Bチーム個別初期化ボタン ---------------------------------
+document.getElementById('resetTeamBButton')?.addEventListener('click', () => {
+  resetTeamFields('B');
+});
+
+// --------------------------------- 設定画面：チーム名・選手名 一括初期化（従来の resetTeamsButton 用） ---------------------------------
+document.getElementById('resetTeamsButton')?.addEventListener('click', () => {
+  ['A','B'].forEach(team => resetTeamFields(team));
+
+  // 白丸S（サーバー）リセット
   currentServer = '';
   selectedServer.team = '';
   selectedServer.name = '';
-  updateServerIndicator();  // ←ここで白丸Sの表示をリセット
+  updateServerIndicator?.();
 
-  // showInfo('チーム名と選手名を初期化しました', '#ffffff');
-  // 文字数に応じて自動で縮小
-  adjustAllInfoFonts();
+  adjustAllInfoFonts?.();
 });
+// --------------------------------- 設定画面：チーム名・選手名 一括初期化 ---------------------------------
 
 function blinkElement(id) {
   const el = document.getElementById(id);
@@ -3327,7 +3397,12 @@ document.getElementById('saveTournamentButton').addEventListener('click', () => 
 // --- 大会名リスト更新 ---
 function updateTournamentList() {
     const select = document.getElementById('tournamentList');
-    select.innerHTML = '<option value="">-- 保存された大会名を選択 --</option>';
+
+    // 既存 option（HTMLの初期1件）以外を削除
+    while (select.options.length > 1) {
+        select.remove(1);
+    }
+
     const saved = JSON.parse(localStorage.getItem('savedTournaments') || '[]');
     saved.forEach(name => {
         const opt = document.createElement('option');
