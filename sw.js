@@ -1,4 +1,4 @@
-const CACHE_NAME = "softtennis-cache-v10";
+const CACHE_NAME = "softtennis-cache-v11";
 const ASSETS = [
   "./",
   "./index.html",

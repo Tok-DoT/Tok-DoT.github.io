@@ -2570,30 +2570,70 @@ body::after {
 </div>
 </div>
 
-<!-- ==================== 終了確認ダイアログ ==================== -->
+<!-- ==================== 終了確認ダイアログ（アプリ風） ==================== -->
 <div id="exitConfirm" style="
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.6);
+  background:linear-gradient(
+    rgba(0,0,0,0.65),
+    rgba(0,0,0,0.75)
+  );
   z-index:9999;
   align-items:center;
   justify-content:center;
+  backdrop-filter: blur(6px);
 ">
   <div style="
-    background:#222;
-    padding:20px;
-    border-radius:12px;
+    background:linear-gradient(135deg,#1e3c72,#2a5298);
+    padding:22px 18px;
+    border-radius:18px;
     text-align:center;
     color:white;
-    width:80%;
-    max-width:320px;
+    width:82%;
+    max-width:340px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.45);
   ">
-    <p style="margin-bottom:20px;">アプリを終了しますか？</p>
-    <button onclick="exitApp()" style="margin-right:10px;">OK</button>
-    <button onclick="closeExitConfirm()">キャンセル</button>
+    <div style="
+      font-size:1.2rem;
+      font-weight:600;
+      margin-bottom:22px;
+    ">
+      アプリを終了しますか？
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <button onclick="closeExitConfirm()" style="
+        flex:1;
+        padding:12px 0;
+        border-radius:12px;
+        border:none;
+        font-size:1rem;
+        font-weight:600;
+        background:#ffffff;
+        color:#2a5298;
+        box-shadow:0 4px 10px rgba(0,0,0,0.25);
+      ">
+        キャンセル
+      </button>
+
+      <button onclick="exitApp()" style="
+        flex:1;
+        padding:12px 0;
+        border-radius:12px;
+        border:none;
+        font-size:1rem;
+        font-weight:600;
+        background:linear-gradient(135deg,#ff416c,#ff4b2b);
+        color:white;
+        box-shadow:0 4px 12px rgba(255,75,43,0.45);
+      ">
+        終了
+      </button>
+    </div>
   </div>
 </div>
+<!-- ==================== 終了確認ダイアログ（アプリ風） ==================== -->
 
 <script>
 // -------------------- 既存のゲームロジック --------------------
@@ -2688,6 +2728,9 @@ let updatingPositions = false;
 let resizeTimer = null;
 
 let finalGameTimeoutId = null;
+
+let allowExit = false;
+
 
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
@@ -2824,6 +2867,8 @@ setTimeout(() => {
         setTimeout(() => {
           titleWrapper.style.display = 'none';
           document.getElementById('setupScreen').style.display = 'flex';
+          allowExit = false; // 戻るボタン対策
+          history.pushState(null, '', location.href);// 戻るボタン対策
           blinkElement('setupHintTextTop');
           setTimeout(() => blinkElement('setupHintTextBottom'), 4000);
         }, 5000);
@@ -2981,6 +3026,9 @@ function onResetOrReturnFromSettings() {
 // -------------------- 試合開始 --------------------
 // --- 試合開始画面に移動 ---
 function startMatch() {
+
+  allowExit = false;
+  history.pushState(null, '', location.href);
 
   // ★ 入力中なら試合開始しない
   if (isTextInputActive) {
@@ -6684,6 +6732,7 @@ if ('serviceWorker' in navigator) {
 // --------------------------------------------------------------------------
 
 <!-- ==================== 戻るボタン終了防止 ==================== -->
+
   // 起動時にダミー履歴を1つ追加
   window.addEventListener('load', () => {
     history.pushState(null, '', location.href);
@@ -6692,7 +6741,10 @@ if ('serviceWorker' in navigator) {
   // 戻るボタン検知
   window.addEventListener('popstate', () => {
 
-    // 履歴を戻させない
+    // ★ OKが押された後は本当に戻らせる
+    if (allowExit) return;
+
+    // 通常時は戻らせない
     history.pushState(null, '', location.href);
 
     // 終了確認を表示
@@ -6710,8 +6762,9 @@ if ('serviceWorker' in navigator) {
   }
 
   function exitApp() {
-    // 実際に終了させる
-    window.removeEventListener('popstate', () => {});
+    // ★ 終了を許可してから戻る
+    allowExit = true;
+    closeExitConfirm();
     history.back();
   }
 <!-- ==================== 戻るボタン終了防止 ==================== -->
