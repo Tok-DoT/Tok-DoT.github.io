@@ -2569,6 +2569,32 @@ body::after {
 
 </div>
 </div>
+
+<!-- ==================== 終了確認ダイアログ ==================== -->
+<div id="exitConfirm" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+">
+  <div style="
+    background:#222;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    color:white;
+    width:80%;
+    max-width:320px;
+  ">
+    <p style="margin-bottom:20px;">アプリを終了しますか？</p>
+    <button onclick="exitApp()" style="margin-right:10px;">OK</button>
+    <button onclick="closeExitConfirm()">キャンセル</button>
+  </div>
+</div>
+
 <script>
 // -------------------- 既存のゲームロジック --------------------
 // -------------------- 試合管理用変数 --------------------
@@ -2660,6 +2686,8 @@ let isTextInputActive = false;
 
 let updatingPositions = false;
 let resizeTimer = null;
+
+let finalGameTimeoutId = null;
 
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
@@ -2813,6 +2841,10 @@ function attachServerSelection(team, id) {
   if (!el) return;
   el.addEventListener('click', () => {
     if (matchEnded) return;
+
+    // ★ 追加：サーバータップ可能か
+    if (!canSelectServerOnCourt()) return;
+
     if (!isDeuceSide(team, id)) return;
     serverIndicatorLocked = false;
     const name = (id.endsWith('1Display')) ? ((team==='A')?playerA1:playerB1) : ((team==='A')?playerA2:playerB2);
@@ -4415,6 +4447,9 @@ function checkGameStatus() {
     const isFinalGame = isFinalGameState(gameA, gameB, finalThreshold);
     const winner = judgeGameWinner(scoreA, scoreB, isFinalGame);
 
+    // ★ ここに追加（唯一正解）
+    finalGameActive = isFinalGame && !matchEnded;
+
     // ---------- ファイナル中：2ポイント交代 ----------
     if (handleFinalGameServerChange(isFinalGame)) {
         updateABSwapByRotation();
@@ -4459,17 +4494,38 @@ function checkGameStatus() {
 
         // ★ ファイナルゲーム突入表示
         if (finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold) {
-            finalGameActive = true;  // ファイナルゲームフラグON
-            setTimeout(() => {
-                setFinalDisplay("ファイナルゲーム");
-            }, 16000); // ゲームカウント表示後に出るよう少し遅らせる
-        }
+
+    finalGameActive = true;
+
+    // ★ 既存タイマーを必ず破棄
+    if (finalGameTimeoutId) {
+        clearTimeout(finalGameTimeoutId);
+        finalGameTimeoutId = null;
+    }
+
+    finalGameTimeoutId = setTimeout(() => {
+
+        // ★ 実行時に再確認（二重保険）
+        if (!finalGameActive || matchEnded) return;
+
+        setFinalDisplay("ファイナルゲーム");
+
+    }, 16000);
+}
     }
 
     // ---------- マッチ終了 ----------
     const matchResult = applyMatchEndLogic(matchType);
 
     if (matchResult.ended) {
+
+        finalGameActive = false;
+
+    // ★ 追加：予約されたファイナル表示を完全抹消
+    if (finalGameTimeoutId) {
+        clearTimeout(finalGameTimeoutId);
+        finalGameTimeoutId = null;
+    }
 
         setFinalDisplay("ゲームセット");
         disableScoreButtons(true);
@@ -4600,6 +4656,9 @@ function scheduleGameCountDisplay() {
 function setFinalDisplay(text) {
     const el = document.getElementById("finalDisplay");
     if (!el) return;
+
+    // ★ ゲームセット後は「ファイナルゲーム」だけ表示禁止
+    if (matchEnded && text === "ファイナルゲーム") return;
 
     el.textContent = text;
     adjustFinalDisplayFont();
@@ -4754,6 +4813,27 @@ function refereeCall() {
 
     display.textContent = currentServerTeam==='A'? normalCall[`${pA},${pB}`]||"" : normalCall[`${pB},${pA}`]||"";
 }
+
+/* --------------------------- コート内サーバータップの可否 ---------------------------- */
+
+function canSelectServerOnCourt() {
+
+  if (matchEnded) return false;
+
+  // ★ ゲーム・ポイントが完全初期なら無条件でOK
+  if (
+    gameA === 0 &&
+    gameB === 0 &&
+    scoreA === 0 &&
+    scoreB === 0
+  ) return true;
+
+  // それ以外は vs前のみOK
+  return !vsButtonPressed;
+}
+
+// サーバーは「試合開始前」または「完全初期状態」のみ変更可能
+/* --------------------------- コート内サーバータップの可否 ---------------------------- */
 
 /* --------------------------- A/B自動入替えコード ---------------------------- */
 
@@ -6602,6 +6682,39 @@ if ('serviceWorker' in navigator) {
   }
 }
 // --------------------------------------------------------------------------
+
+<!-- ==================== 戻るボタン終了防止 ==================== -->
+  // 起動時にダミー履歴を1つ追加
+  window.addEventListener('load', () => {
+    history.pushState(null, '', location.href);
+  });
+
+  // 戻るボタン検知
+  window.addEventListener('popstate', () => {
+
+    // 履歴を戻させない
+    history.pushState(null, '', location.href);
+
+    // 終了確認を表示
+    showExitConfirm();
+  });
+
+  function showExitConfirm() {
+    const overlay = document.getElementById('exitConfirm');
+    if (overlay) overlay.style.display = 'flex';
+  }
+
+  function closeExitConfirm() {
+    const overlay = document.getElementById('exitConfirm');
+    if (overlay) overlay.style.display = 'none';
+  }
+
+  function exitApp() {
+    // 実際に終了させる
+    window.removeEventListener('popstate', () => {});
+    history.back();
+  }
+<!-- ==================== 戻るボタン終了防止 ==================== -->
 
 </script>
 </body>
