@@ -2599,7 +2599,7 @@ body::after {
       font-weight:600;
       margin-bottom:22px;
     ">
-      アプリを終了しますか？
+      アプリをリロードしますか？
     </div>
 
     <div style="display:flex; gap:12px;">
@@ -2628,7 +2628,7 @@ body::after {
         color:white;
         box-shadow:0 4px 12px rgba(255,75,43,0.45);
       ">
-        終了
+        リロード
       </button>
     </div>
   </div>
@@ -2867,8 +2867,6 @@ setTimeout(() => {
         setTimeout(() => {
           titleWrapper.style.display = 'none';
           document.getElementById('setupScreen').style.display = 'flex';
-          allowExit = false; // 戻るボタン対策
-          history.pushState(null, '', location.href);// 戻るボタン対策
           blinkElement('setupHintTextTop');
           setTimeout(() => blinkElement('setupHintTextBottom'), 4000);
         }, 5000);
@@ -3026,9 +3024,6 @@ function onResetOrReturnFromSettings() {
 // -------------------- 試合開始 --------------------
 // --- 試合開始画面に移動 ---
 function startMatch() {
-
-  allowExit = false;
-  history.pushState(null, '', location.href);
 
   // ★ 入力中なら試合開始しない
   if (isTextInputActive) {
@@ -6733,23 +6728,21 @@ if ('serviceWorker' in navigator) {
 
 <!-- ==================== 戻るボタン終了防止 ==================== -->
 
-  // 起動時にダミー履歴を1つ追加
-  window.addEventListener('load', () => {
-    history.pushState(null, '', location.href);
-  });
+ // ★ DOM構築完了時点で履歴を1つ追加
+document.addEventListener('DOMContentLoaded', () => {
+  history.pushState({ app: 'root' }, '', location.href);
+});
 
-  // 戻るボタン検知
-  window.addEventListener('popstate', () => {
+// 戻るボタン検知
+window.addEventListener('popstate', () => {
 
-    // ★ OKが押された後は本当に戻らせる
-    if (allowExit) return;
+  if (allowExit) return;
 
-    // 通常時は戻らせない
-    history.pushState(null, '', location.href);
+  // 戻らせない
+  history.pushState({ app: 'lock' }, '', location.href);
 
-    // 終了確認を表示
-    showExitConfirm();
-  });
+  showExitConfirm();
+});
 
   function showExitConfirm() {
     const overlay = document.getElementById('exitConfirm');
@@ -6762,11 +6755,10 @@ if ('serviceWorker' in navigator) {
   }
 
   function exitApp() {
-    // ★ 終了を許可してから戻る
-    allowExit = true;
-    closeExitConfirm();
-    history.back();
-  }
+  allowExit = true;
+  closeExitConfirm();
+  location.reload();
+}
 <!-- ==================== 戻るボタン終了防止 ==================== -->
 
 </script>
