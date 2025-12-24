@@ -9,9 +9,11 @@
 <title>ソフトテニス ダブルスマッチ スコアボードアプリ</title>
 
 <!-- 既存フォント -->
+<!-- Google Fonts Preconnect -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=RocknRoll+One&family=Seymour+One&family=Rubik+Doodle+Shadow&family=Saira:ital,wght@0,100..900;1,100..900&family=BBH+Hegarty&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=RocknRoll+One&family=Seymour+One&family=Rubik+Doodle+Shadow&family=Saira:ital,wght@0,100..900;1,100..900&family=BBH+Hegarty&family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
 
 <!-- PWA用 -->
 <meta name="theme-color" content="#006400">
@@ -2427,30 +2429,31 @@ body::after {
 </div>
 
 <!-- 住所入力モーダル -->
-<div id="addressModal">
-    <div id="addressModalContent">
+<div id="addressModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+    <div id="addressModalContent" style="background:#fff; padding:20px; border-radius:8px; width:300px;">
         <p>住所を入力してください</p>
 
-        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市">
+        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市" style="width:100%; padding:6px; margin-bottom:10px; box-sizing:border-box;">
 
-        <!-- 検索・キャンセルボタン -->
-        <button id="addressSearchBtn">検索</button>
+        <!-- 横並びボタン -->
+        <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end; margin-bottom:10px;">
+            <button id="addressSearchBtn" style="background-color:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px;">検索</button>
+            <button id="addressConfirmBtn" disabled style="background-color:#008CBA; color:white; border:none; padding:6px 12px; border-radius:4px;">決定</button>
+            <button id="addressCancelBtn" style="background-color:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px;">キャンセル</button>
+        </div>
 
-        <button id="addressConfirmBtn" disabled>この住所で決定</button>
-
-        <button id="addressCancelBtn">キャンセル</button>
-
-        <!-- ★ 自動判定された住所の表示エリア（ボタンの下に配置） -->
+        <!-- 自動判定された住所の表示エリア -->
         <div id="resolvedAddress" style="
             margin-top:10px;
             padding-top:6px;
             font-size:12px;
-            color:#ccc;
+            color:#000080; /* 紺色 */
             line-height:1.4;
-            border-top:1px solid rgba(255,255,255,0.25);
+            border-top:1px solid rgba(0,0,0,0.15);
         "></div>
     </div>
 </div>
+
 <!-- ================== お天気と日時 ================== -->
 
 <!-- 試合画面大会名表示 -->
@@ -3025,49 +3028,58 @@ function playTitleSequence() {
   const titleScreen = document.getElementById('titleScreen');
   titleWrapper.style.display = 'flex';
 
-// ① 会社名表示（フェードイン + ズーム）
-titleScreen.innerHTML = `<h1 id="companyName" style="
-  position: fixed;
-  top: 42%;
-  left: 40%;
-  transform: translate(-50%, -50%) scale(0.8);
-  font-family: 'BBH Hegarty', sans-serif;
-  font-size: 2.5rem;
-  color: #fff;
-  text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
-  opacity: 0;
-  z-index: 999;
-  transition: opacity 1s ease, transform 1s ease;
-  text-align: center;
-  letter-spacing: 0.05em;
-">
-  <div>Tok<span style="color:#FF8C00;">.</span>DoT</div>
-  <div id="companySub" style="
-    margin-top: 6px;
-    font-size: 1.1rem;              /* ← 少し大きく */
-    letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.8);
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.55);
-    transform: translateX(-30px);   /* ← 左にオフセット */
+  // ① 会社名表示（フェードイン + ズーム）
+  titleScreen.innerHTML = `
+  <style>
+    /* サブタイトル専用フォント */
+    #companySub {
+      font-family: 'Comfortaa', sans-serif;
+      margin-top: 6px;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.55);
+      transform: translateX(-30px);
+      opacity: 0;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+  </style>
+
+  <h1 id="companyName" style="
+    position: fixed;
+    top: 42%;
+    left: 40%;
+    transform: translate(-50%, -50%) scale(0.8);
+    font-family: 'BBH Hegarty', sans-serif;
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
     opacity: 0;
-    transition: transform 0.8s ease, opacity 0.8s ease;
-  ">ok to Do.</div>
-</h1>`;
+    z-index: 999;
+    transition: opacity 1s ease, transform 1s ease;
+    text-align: center;
+    letter-spacing: 0.05em;
+  ">
+    <div>Tok<span style="color:#FF8C00;">.</span>DoT</div>
+    <div id="companySub">Take Your Step</div>
+  </h1>
+  `;
 
- const company = document.getElementById('companyName');
-const sub = document.getElementById('companySub');
+  const company = document.getElementById('companyName');
+  const sub = document.getElementById('companySub');
 
-setTimeout(() => {
-  company.style.opacity = 1;
-  company.style.transform = 'scale(1.1)';
-
-  // ok to do. を左からスッと出す
   setTimeout(() => {
-    sub.style.opacity = 1;
-    sub.style.transform = 'translateX(0)';
-  }, 300);
+    // 会社名フェードイン + ズーム
+    company.style.opacity = 1;
+    company.style.transform = 'scale(1.1)';
 
-}, 100);
+    // サブタイトルを左からスッと出す
+    setTimeout(() => {
+      sub.style.opacity = 1;
+      sub.style.transform = 'translateX(0)';
+    }, 300);
+
+  }, 100);
 
   // 会社名表示後、フェードアウト + 縮小
   setTimeout(() => {
@@ -3110,7 +3122,7 @@ setTimeout(() => {
           titleWrapper.style.display = 'none';
           document.getElementById('setupScreen').style.display = 'flex';
 
-          //戻るボタン対処
+          // 戻るボタン対処
           history.pushState({ screen: 'setup' }, '', location.href);
 
           blinkElement('setupHintTextTop');
@@ -6949,25 +6961,34 @@ document.getElementById("addressSearchBtn").onclick = ()=>{
     const addr = document.getElementById("addressInput").value.trim();
     if(!addr) return;
 
-    addressToLatLon(addr)
-        .then(pos=>{
-            const fullAddr = formatFullAddress(pos.address);
-            const cityAddr = formatCityAddress(pos.address);
-            loadWeather(pos.lat,pos.lon,cityAddr);
+addressToLatLon(addr)
+    .then(pos=>{
+        const fullAddr = formatFullAddress(pos.address);
+        const cityAddr = formatCityAddress(pos.address);
+        loadWeather(pos.lat,pos.lon,cityAddr);
 
-            const resolved = document.getElementById("resolvedAddress");
-            if(resolved) resolved.textContent = "※ 表示地点（自動判定）：" + fullAddr;
+        const resolved = document.getElementById("resolvedAddress");
+        if(resolved){
+            resolved.textContent = "※ 表示地点（自動判定）：" + fullAddr;
+            resolved.style.color = "#000080"; // 紺色に設定
+        }
 
-            const confirmBtn = document.getElementById("addressConfirmBtn");
-            if(confirmBtn) confirmBtn.disabled = false;
+        const confirmBtn = document.getElementById("addressConfirmBtn");
+        if(confirmBtn) confirmBtn.disabled = false;
 
-            // 検索済みフル住所を保存
-            window._pendingAddress = fullAddr;
-        })
-        .catch(()=>{
-            const resolved = document.getElementById("resolvedAddress");
-            if(resolved) resolved.textContent = "住所が見つかりません";
-        });
+        // 検索済みフル住所を保存
+        window._pendingAddress = fullAddr;
+    })
+
+// 住所検索に失敗したとき
+.catch(()=>{
+    const resolved = document.getElementById("resolvedAddress");
+    if(resolved){
+        resolved.textContent = "住所が見つかりません";
+        resolved.style.color = "#000080"; // 紺色に設定
+    }
+});
+
 };
 
 // Enterキー
