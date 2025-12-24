@@ -625,13 +625,13 @@ button:hover { opacity: 0.9; }
 
 .team-restore-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 6px;
 }
 
 .team-restore-select {
   flex: 1;
+  min-width: 0;
   height: 38px;
   font-size: 16px;
   text-align: center;
@@ -1432,9 +1432,12 @@ button:hover { opacity: 0.9; }
   width: fit-content;
   transform: translateX(0px);
   text-align: center;
-  font-family: "Rubik Doodle Shadow", system-ui;
+
+  /* ★ フォント変更 */
+  font-family: 'BBH Hegarty', sans-serif;
   font-size: 17px;
   font-weight: bold;
+
   color: #FFFFFF;
   letter-spacing: 0px;
 
@@ -1444,7 +1447,7 @@ button:hover { opacity: 0.9; }
   padding: 2px 6px;
   border-radius: 6px;
 
-  /* ★ ぷっくり影（背景を変えずに立体感） */
+  /* ★ ぷっくり影 */
   box-shadow:
     0 3px 6px rgba(0,0,0,0.35),
     inset 0 2px 3px rgba(255,255,255,0.25),
@@ -1455,7 +1458,6 @@ button:hover { opacity: 0.9; }
   top: 6px;
   cursor: pointer;
 
-  /* アニメーション */
   transition:
     transform 0.12s ease,
     box-shadow 0.12s ease;
@@ -2072,6 +2074,7 @@ body::after {
   scroll-snap-align: center;
   position: relative;
   transition: transform 0.2s;
+
 }
 
 .favorites-picker-item span.number {
@@ -2124,6 +2127,12 @@ body::after {
 .favorites-picker-item > .fav-color:nth-of-type(6) span {
   color: #fff !important;
 }
+
+/* タブレット長押し保存対応用 */
+#favoritesPicker {
+  touch-action: pan-y;
+}
+
 /* ------------------- お気に入りスクロールバー終り ------------------- */
 
 /* リセットボタン（ぷっくり水色） */
@@ -2413,7 +2422,7 @@ body::after {
     <!-- ★ 日時との間に必ず半角スペースを入れる（&nbsp;でもOK） -->
     <div style="width:8px;"></div>
 
-    <!-- 天気 -->
+    <!-- 天気（クリックで住所入力） -->
     <div id="weatherBox" style="cursor:pointer;"></div>
 </div>
 
@@ -2421,9 +2430,25 @@ body::after {
 <div id="addressModal">
     <div id="addressModalContent">
         <p>住所を入力してください</p>
+
         <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市">
+
+        <!-- 検索・キャンセルボタン -->
         <button id="addressSearchBtn">検索</button>
+
+        <button id="addressConfirmBtn" disabled>この住所で決定</button>
+
         <button id="addressCancelBtn">キャンセル</button>
+
+        <!-- ★ 自動判定された住所の表示エリア（ボタンの下に配置） -->
+        <div id="resolvedAddress" style="
+            margin-top:10px;
+            padding-top:6px;
+            font-size:12px;
+            color:#ccc;
+            line-height:1.4;
+            border-top:1px solid rgba(255,255,255,0.25);
+        "></div>
     </div>
 </div>
 <!-- ================== お天気と日時 ================== -->
@@ -2521,7 +2546,7 @@ body::after {
       <!-- #3b 下段：ロゴテキスト用 -->
       <div class="split-bottom">
       <div class="overlay-inner" style="margin-top:0px;">
-      <div class="rogo-text" onclick="undoPoint(event)">Smash!!!!</div>
+      <div class="rogo-text" onclick="undoPoint(event)">Tok<span style="color:#FF8C00;">.</span>DoT</div>
       </div></div></div>
       <!-- #4 -->
       <div class="overlay-box">
@@ -2666,7 +2691,25 @@ body::after {
       アプリをリロードしますか？
     </div>
 
+    <!-- ★ ボタン配置：リロード（左） / キャンセル（右） -->
     <div style="display:flex; gap:12px;">
+
+      <!-- リロード（左） -->
+      <button onclick="exitApp()" style="
+        flex:1;
+        padding:12px 0;
+        border-radius:12px;
+        border:none;
+        font-size:1rem;
+        font-weight:600;
+        background:linear-gradient(135deg,#ff416c,#ff4b2b);
+        color:white;
+        box-shadow:0 4px 12px rgba(255,75,43,0.45);
+      ">
+        リロード
+      </button>
+
+      <!-- キャンセル（右） -->
       <button onclick="closeExitConfirm()" style="
         flex:1;
         padding:12px 0;
@@ -2681,19 +2724,6 @@ body::after {
         キャンセル
       </button>
 
-      <button onclick="exitApp()" style="
-        flex:1;
-        padding:12px 0;
-        border-radius:12px;
-        border:none;
-        font-size:1rem;
-        font-weight:600;
-        background:linear-gradient(135deg,#ff416c,#ff4b2b);
-        color:white;
-        box-shadow:0 4px 12px rgba(255,75,43,0.45);
-      ">
-        リロード
-      </button>
     </div>
   </div>
 </div>
@@ -2728,7 +2758,25 @@ body::after {
       この操作を実行しますか？
     </div>
 
+    <!-- ★ ボタン配置：OK（左） / キャンセル（右） -->
     <div style="display:flex; gap:12px;">
+      
+      <!-- OK（左） -->
+      <button onclick="okConfirm()" style="
+        flex:1;
+        padding:10px 0;
+        border-radius:12px;
+        border:none;
+        font-size:1rem;
+        font-weight:600;
+        background:linear-gradient(135deg,#00c6ff,#0072ff);
+        color:white;
+        box-shadow:0 4px 12px rgba(0,114,255,0.45);
+      ">
+        OK
+      </button>
+
+      <!-- キャンセル（右） -->
       <button onclick="closeConfirm()" style="
         flex:1;
         padding:10px 0;
@@ -2743,23 +2791,9 @@ body::after {
         キャンセル
       </button>
 
-      <button onclick="okConfirm()" style="
-        flex:1;
-        padding:10px 0;
-        border-radius:12px;
-        border:none;
-        font-size:1rem;
-        font-weight:600;
-        background:linear-gradient(135deg,#00c6ff,#0072ff);
-        color:white;
-        box-shadow:0 4px 12px rgba(0,114,255,0.45);
-      ">
-        OK
-      </button>
     </div>
   </div>
 </div>
-
 <!-- ==================== 確認ダイアログ（OK / キャンセル） ==================== -->
 
 <!-- ==================== シンプル確認ダイアログ（OK / キャンセル） ==================== -->
@@ -2785,16 +2819,11 @@ body::after {
     <div id="simpleConfirmMessage" style="margin-bottom:16px; font-size:1rem;">
       メッセージ
     </div>
+
+    <!-- ★ ボタン配置：OK（左） / キャンセル（右） -->
     <div style="display:flex; gap:12px; justify-content:center;">
-      <button onclick="simpleCancel()" style="
-        flex:1;
-        padding:10px 0;
-        border:none;
-        border-radius:10px;
-        background:#e0e0e0;
-        font-weight:600;
-        color:#333;
-      ">キャンセル</button>
+
+      <!-- OK（左） -->
       <button onclick="simpleOK()" style="
         flex:1;
         padding:10px 0;
@@ -2804,6 +2833,18 @@ body::after {
         color:white;
         font-weight:600;
       ">OK</button>
+
+      <!-- キャンセル（右） -->
+      <button onclick="simpleCancel()" style="
+        flex:1;
+        padding:10px 0;
+        border:none;
+        border-radius:10px;
+        background:#e0e0e0;
+        font-weight:600;
+        color:#333;
+      ">キャンセル</button>
+
     </div>
   </div>
 </div>
@@ -2879,14 +2920,6 @@ let tournamentName = '';
 let courtRotation = 0;
 let independentRotation = 0; // 左右回転ボタン用
 let infoTextTimeout = null;
-
-// --------------------日時・お天気表示用 --------------------
-let safeDateInterval = null;
-let lastRegion = "地域";
-let lastSearchedRegion = localStorage.getItem("lastSearchedRegion") || "";
-let lastLat = 37.75;   // 初期値: 福島県福島市
-let lastLon = 140.47;  // 初期値: 福島県福島市
-let weatherInterval = null; // 10分更新用
 
 // -------------------- ファイナルゲーム管理 --------------------
 let totalPointsInFinal = 0;  // ファイナルゲーム中の合計ポイント数
@@ -3008,7 +3041,7 @@ titleScreen.innerHTML = `<h1 id="companyName" style="
   text-align: center;
   letter-spacing: 0.05em;
 ">
-  <div>Tok.DoT</div>
+  <div>Tok<span style="color:#FF8C00;">.</span>DoT</div>
   <div id="companySub" style="
     margin-top: 6px;
     font-size: 1.1rem;              /* ← 少し大きく */
@@ -3460,35 +3493,42 @@ function saveTeam(team) {
         document.activeElement?.blur();
     }
 
-// ★ blur完了（300ms）を待ってからDOM操作
-setTimeout(() => {
+    // ★ blur完了（300ms）を待ってからDOM操作
+    setTimeout(() => {
 
-    const teamList = document.getElementById('teamList');
-    let teamName, pairName;
+        const teamList = document.getElementById('teamList');
+        let teamName, pairName;
 
-    if(team === 'A') {
-        teamName = document.getElementById('teamA').value || 'Aチーム';
-        pairName = `${document.getElementById('playerA1').value || '選手1'}・${document.getElementById('playerA2').value || '選手2'}`;
-    } else if(team === 'B') {
-        teamName = document.getElementById('teamB').value || 'Bチーム';
-        pairName = `${document.getElementById('playerB1').value || '選手1'}・${document.getElementById('playerB2').value || '選手2'}`;
-    }
+        if (team === 'A') {
+            teamName = document.getElementById('teamA').value || 'Aチーム';
+            pairName = `${document.getElementById('playerA1').value || '選手1'}・${document.getElementById('playerA2').value || '選手2'}`;
+        } else if (team === 'B') {
+            teamName = document.getElementById('teamB').value || 'Bチーム';
+            pairName = `${document.getElementById('playerB1').value || '選手1'}・${document.getElementById('playerB2').value || '選手2'}`;
+        }
 
-    const displayText = `${teamName} - ${pairName}`;
+        const displayText = `${teamName} - ${pairName}`;
 
-    for(let i = 0; i < teamList.options.length; i++) {
-        if(teamList.options[i].value === displayText) return;
-    }
+        // ★ 重複チェック
+        for (let i = 0; i < teamList.options.length; i++) {
+            if (teamList.options[i].value === displayText) {
+                showSimpleAlert('そのチーム・ペアは<br>保存されています');
+                return;
+            }
+        }
 
-    const option = document.createElement('option');
-    option.value = displayText;
-    option.text = displayText;
-    teamList.appendChild(option);
+        // ★ 新規のみ追加
+        const option = document.createElement('option');
+        option.value = displayText;
+        option.text = displayText;
+        teamList.appendChild(option);
 
-    saveTeamsToLocalStorage();
+        saveTeamsToLocalStorage();
 
-}, 300);
+        // ★ 保存完了メッセージ
+        showSimpleAlert('チーム・ペアを保存しました');
 
+    }, 300);
 }
 
 function saveTeamsToLocalStorage() {
@@ -3521,7 +3561,12 @@ function applyToTeam(teamSide, retry = false) {
 
     const teamList = document.getElementById('teamList');
     const selected = teamList.value;
-    if (!selected) return;
+
+    // ★ 未選択時：既存のシンプルOKダイアログを使用
+    if (!selected) {
+        showSimpleAlert('チーム・ペアを選択してください');
+        return;
+    }
 
     const parts = selected.split(' - ');
     if (parts.length !== 2) return;
@@ -3531,7 +3576,7 @@ function applyToTeam(teamSide, retry = false) {
     const players = pairName.split('・');
     if (players.length !== 2) return;
 
-    if(teamSide === 'A') {
+    if (teamSide === 'A') {
         document.getElementById('teamA').value = teamName;
         document.getElementById('playerA1').value = players[0];
         document.getElementById('playerA2').value = players[1];
@@ -3540,7 +3585,12 @@ function applyToTeam(teamSide, retry = false) {
         document.getElementById('playerB1').value = players[0];
         document.getElementById('playerB2').value = players[1];
     }
+
+    // ★ 反映後にデフォルトへ戻す
+    teamList.selectedIndex = 0;
+
 }
+
 
 // --------------------------------- チーム名と選手名を保存関連 ---------------------------------
 
@@ -3614,7 +3664,7 @@ function resetTeamFields(team) {
     ? ['teamA', 'playerA1', 'playerA2']
     : ['teamB', 'playerB1', 'playerB2'];
 
-  showSimpleConfirm(`${label}のチーム名・ペア名を<br>初期化しますか？`, function(result){
+  showSimpleConfirm(`チーム名・ペア名を<br>初期化しますか？`, function(result){
     if(!result) return; // キャンセルなら何もしない
 
     fieldIds.forEach(id => {
@@ -3680,14 +3730,15 @@ function isDeuceSide(team, playerId) {
 document.getElementById('saveTournamentButton').addEventListener('click', () => {
     const name = document.getElementById('tournamentNameInput').value.trim();
     if (!name) {
-        showSimpleAlert('大会名を入力してください。');
+        showSimpleAlert('大会名を入力してください');
         return;
     }
 
     let saved = JSON.parse(localStorage.getItem('savedTournaments') || '[]');
 
-    // 重複していたら何もせず終了（メッセージなし）
+    // ★ 重複チェック：メッセージを出す
     if (saved.includes(name)) {
+        showSimpleAlert('その大会名は保存されています');
         return;
     }
 
@@ -3696,8 +3747,7 @@ document.getElementById('saveTournamentButton').addEventListener('click', () => 
     localStorage.setItem('savedTournaments', JSON.stringify(saved));
     updateTournamentList();
 
-    // 任意で保存完了メッセージ
-    showSimpleAlert('大会名を保存しました。');
+    showSimpleAlert('大会名を保存しました');
 });
 
 // --- 大会名リスト更新 ---
@@ -3720,12 +3770,18 @@ function updateTournamentList() {
 
 // --- 大会名呼び出し（シンプルOKダイアログ版） ---
 document.getElementById('loadTournamentButton').addEventListener('click', () => {
-    const selected = document.getElementById('tournamentList').value;
+    const select = document.getElementById('tournamentList');
+    const selected = select.value;
+
     if (!selected) {
-        showSimpleAlert('大会名を選択してください。');
+        showSimpleAlert('大会名を選択してください');
         return;
     }
+
     document.getElementById('tournamentNameInput').value = selected;
+
+    // ★ 呼び出し後にデフォルトへ戻す
+    select.selectedIndex = 0;
 });
 
 // --- 大会名リストを localStorage に保存 ---
@@ -6432,36 +6488,58 @@ document.addEventListener('DOMContentLoaded', () => {
         div.appendChild(saveBar);
 
 
-        let saveTimer, saveInterval;
+// ===== 1回だけ宣言 =====
+let saveTimer, saveInterval;
 
-        const startPress = () => {
-          const startTime = Date.now();
-          saveBar.style.width = '0%';
+const startPress = () => {
+  const startTime = Date.now();
+  saveBar.style.width = '0%';
 
-          saveInterval = setInterval(() => {
-            const elapsed = Date.now() - startTime;
-            saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
-          }, 50);
+  saveInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
+  }, 50);
 
-          saveTimer = setTimeout(() => {
-            saveFavorite(idx - 1);
-            clearInterval(saveInterval);
-            saveBar.style.width = '0%';
-          }, SAVE_TIME);
-        };
+  saveTimer = setTimeout(() => {
+    saveFavorite(idx - 1);
+    clearInterval(saveInterval);
+    saveBar.style.width = '0%';
+  }, SAVE_TIME);
+};
 
-        const cancelPress = () => {
-          clearTimeout(saveTimer);
-          clearInterval(saveInterval);
-          saveBar.style.width = '0%';
-        };
+const cancelPress = () => {
+  clearTimeout(saveTimer);
+  clearInterval(saveInterval);
+  saveBar.style.width = '0%';
+};
 
-        div.addEventListener('mousedown', startPress);
-        div.addEventListener('mouseup', cancelPress);
-        div.addEventListener('mouseleave', cancelPress);
-        div.addEventListener('touchstart', startPress);
-        div.addEventListener('touchend', cancelPress);
-        div.addEventListener('touchcancel', cancelPress);
+// ===== 既存（そのまま）=====
+div.addEventListener('mousedown', startPress);
+div.addEventListener('mouseup', cancelPress);
+div.addEventListener('mouseleave', cancelPress);
+div.addEventListener('touchstart', startPress);
+div.addEventListener('touchend', cancelPress);
+div.addEventListener('touchcancel', cancelPress);
+
+// ===== ★ 追加するのはここだけ =====
+let pointerActive = false;
+
+div.addEventListener('pointerdown', (e) => {
+  pointerActive = true;
+  e.preventDefault(); // ← OSの長押しだけ無効化
+});
+
+div.addEventListener('pointerup', () => {
+  pointerActive = false;
+});
+
+div.addEventListener('pointerleave', () => {
+  pointerActive = false;
+});
+
+div.addEventListener('pointercancel', () => {
+  pointerActive = false;
+});
 
         // スワイプ削除
         let startX = 0, currentX = 0, isDragging = false;
@@ -6693,12 +6771,18 @@ buildFavoritesPicker();
 });
 /* ------------------- 色の組み合わせお気に入り終り ------------------- */
 
-/* ------------------- お天気 高速安全版 ------------------- */
+/* ------------------- お天気 高速安全版（最終・アラート付き） ------------------- */
 
-const locationCache = {}; // 住所キャッシュ
-let isSearching = false;  // 住所検索中フラグ
+const locationCache = {};
+let isSearching = false;
+let safeDateInterval = null;
+let lastRegion = "地域";
+let lastSearchedRegion = localStorage.getItem("lastSearchedRegion") || "";
+let lastLat = 37.75;
+let lastLon = 140.47;
+let weatherInterval = null;
 
-// 日時表示（元のまま）
+// 日時表示
 function getSafeJapaneseDateTime() {
     const d = new Date();
     const y = d.getFullYear() - 2018;
@@ -6721,170 +6805,194 @@ function startSafeDateTime() {
 }
 window.addEventListener("DOMContentLoaded", startSafeDateTime);
 
-// 天気コード変換（元のまま）
+// 天気コード変換
 function codeToWeather(code) {
     const map = {
-        0:  {name: '快晴', icon: '<i class="wi wi-day-sunny"></i>'},
-        1:  {name: '晴れ', icon: '<i class="wi wi-day-sunny"></i>'},
-        2:  {name: '薄曇', icon: '<i class="wi wi-day-cloudy"></i>'},
-        3:  {name: '曇り', icon: '<i class="wi wi-cloud"></i>'},
-        45: {name: '霧', icon: '<i class="wi wi-fog"></i>'},
-        48: {name: '濃霧', icon: '<i class="wi wi-fog"></i>'},
-        51: {name: '霧雨（弱）', icon: '<i class="wi wi-sprinkle"></i>'},
-        53: {name: '霧雨', icon: '<i class="wi wi-sprinkle"></i>'},
-        55: {name: '霧雨（強）', icon: '<i class="wi wi-sprinkle"></i>'},
-        61: {name: '弱い雨', icon: '<i class="wi wi-showers"></i>'},
-        63: {name: '雨', icon: '<i class="wi wi-rain"></i>'},
-        65: {name: '強い雨', icon: '<i class="wi wi-rain-wind"></i>'},
-        66: {name: 'みぞれ（弱）', icon: '<i class="wi wi-sleet"></i>'},
-        67: {name: 'みぞれ（強）', icon: '<i class="wi wi-sleet"></i>'},
-        71: {name: '弱い雪', icon: '<i class="wi wi-snow"></i>'},
-        73: {name: '雪', icon: '<i class="wi wi-snow"></i>'},
-        75: {name: '大雪', icon: '<i class="wi wi-snowflake-cold"></i>'},
-        77: {name: '雪粒', icon: '<i class="wi wi-snowflake-cold"></i>'},
-        85: {name: 'にわか雪（弱）', icon: '<i class="wi wi-snow"></i>'},
-        86: {name: 'にわか雪（強）', icon: '<i class="wi wi-snow-wind"></i>'},
-        95: {name: '雷雨', icon: '<i class="wi wi-thunderstorm"></i>'},
-        96: {name: '雷雨（雹）', icon: '<i class="wi wi-hail"></i>'},
-        97: {name: '激しい雷雨', icon: '<i class="wi wi-storm-showers"></i>'},
-        default: {name:"不明", icon: ''} 
+        0: {name:'快晴', icon:'<i class="wi wi-day-sunny"></i>'},
+        1: {name:'晴れ', icon:'<i class="wi wi-day-sunny"></i>'},
+        2: {name:'薄曇', icon:'<i class="wi wi-day-cloudy"></i>'},
+        3: {name:'曇り', icon:'<i class="wi wi-cloud"></i>'},
+        45:{name:'霧', icon:'<i class="wi wi-fog"></i>'},
+        48:{name:'濃霧', icon:'<i class="wi wi-fog"></i>'},
+        51:{name:'霧雨（弱）', icon:'<i class="wi wi-sprinkle"></i>'},
+        53:{name:'霧雨', icon:'<i class="wi wi-sprinkle"></i>'},
+        55:{name:'霧雨（強）', icon:'<i class="wi wi-sprinkle"></i>'},
+        61:{name:'弱い雨', icon:'<i class="wi wi-showers"></i>'},
+        63:{name:'雨', icon:'<i class="wi wi-rain"></i>'},
+        65:{name:'強い雨', icon:'<i class="wi wi-rain-wind"></i>'},
+        66:{name:'みぞれ（弱）', icon:'<i class="wi wi-sleet"></i>'},
+        67:{name:'みぞれ（強）', icon:'<i class="wi wi-sleet"></i>'},
+        71:{name:'弱い雪', icon:'<i class="wi wi-snow"></i>'},
+        73:{name:'雪', icon:'<i class="wi wi-snow"></i>'},
+        75:{name:'大雪', icon:'<i class="wi wi-snowflake-cold"></i>'},
+        77:{name:'雪粒', icon:'<i class="wi wi-snowflake-cold"></i>'},
+        85:{name:'にわか雪（弱）', icon:'<i class="wi wi-snow"></i>'},
+        86:{name:'にわか雪（強）', icon:'<i class="wi wi-snow-wind"></i>'},
+        95:{name:'雷雨', icon:'<i class="wi wi-thunderstorm"></i>'},
+        96:{name:'雷雨（雹）', icon:'<i class="wi wi-hail"></i>'},
+        97:{name:'激しい雷雨', icon:'<i class="wi wi-storm-showers"></i>'},
+        default:{name:"不明", icon:''}
     };
     return map[code] || map.default;
 }
 
-// 地域名短縮（元のまま）
-function shortenRegion(name) {
-    if (!name) return "不明";
-    const units = ["市","区","町","村"];
-    for (let unit of units) {
-        const idx = name.indexOf(unit);
-        if (idx !== -1) {
-            const start = Math.max(0, idx - 3);
-            let found = name.slice(start, idx + 1);
-            return found.length > 4 ? found.slice(0,4) + "…" : found;
-        }
-    }
-    const parts = name.split(/[ ,]/).filter(n => n);
-    let found = parts[parts.length - 1];
-    return found.length > 4 ? found.slice(0,4) + "…" : found;
+// 天気ボックス用: 市まで
+function formatCityAddress(address) {
+    if (!address) return "";
+    return address.city || address.county || address.municipality || "不明";
 }
 
-// フォント調整（軽量）
-function adjustFontSize(el, max = 13, min = 8) {
-    el.style.fontSize = max + "px";
-    if(el.scrollWidth > el.clientWidth){
-        el.style.fontSize = min + "px";
-    }
+// ダイアログ用: 町までフル
+function formatFullAddress(address) {
+    if (!address) return "";
+    const parts = [
+        address.province,
+        address.city || address.county,
+        address.ward,
+        address.town || address.suburb || address.hamlet || address.quarter
+    ];
+    return parts.filter(Boolean).join("");
 }
 
-// 天気取得（降水確率）
-function loadWeather(lat, lon, regionName) {
+// フォント調整
+function adjustFontSize(el, max=13, min=8) {
+    el.style.fontSize = max+"px";
+    if(el.scrollWidth > el.clientWidth) el.style.fontSize = min+"px";
+}
+
+// 天気取得
+function loadWeather(lat, lon, displayRegion) {
     lastLat = lat;
     lastLon = lon;
-
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability&timezone=Asia/Tokyo`;
 
     fetch(url)
-        .then(res => res.json())
-        .then(data => {
+        .then(res=>res.json())
+        .then(data=>{
             const w = data.current_weather;
             const hour = new Date().getHours();
             const precipProb = data.hourly.precipitation_probability[hour];
             const info = codeToWeather(w.weathercode);
 
-            let displayRegion = shortenRegion(regionName || lastRegion);
             lastRegion = displayRegion;
 
             const weatherBox = document.getElementById("weatherBox");
-            weatherBox.innerHTML =
-                `<span class="region">${displayRegion}</span> ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%`;
-            
-            adjustFontSize(weatherBox, 13, 8);
+            weatherBox.innerHTML = `<span class="region">${displayRegion}</span> ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%`;
+            adjustFontSize(weatherBox,13,8);
 
             const icon = weatherBox.querySelector("i");
-            if (icon) {
-                icon.style.fontSize = Math.min(16, weatherBox.clientHeight - 4) + "px";
-            }
+            if(icon) icon.style.fontSize = Math.min(16, weatherBox.clientHeight-4) + "px";
         })
-        .catch(() => {
-            document.getElementById("weatherBox").textContent = "取得失敗";
-        });
+        .catch(()=>document.getElementById("weatherBox").textContent="取得失敗");
 }
 
-// 住所 → 緯度経度（キャッシュ＋連打防止）
+// 住所 → 緯度経度
 function addressToLatLon(address) {
     if(locationCache[address]) return Promise.resolve(locationCache[address]);
     if(isSearching) return Promise.reject("検索中");
-
     isSearching = true;
     const q = "日本 " + address;
     const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(q)}`;
     return fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            isSearching = false;
-            if (data.length === 0) throw new Error("住所が見つかりません");
-            const pos = { lat: data[0].lat, lon: data[0].lon, display_name: data[0].display_name };
-            locationCache[address] = pos;
+        .then(res=>res.json())
+        .then(data=>{
+            isSearching=false;
+            if(data.length===0) throw new Error("住所が見つかりません");
+            const pos = {lat:data[0].lat, lon:data[0].lon, address:data[0].address};
+            locationCache[address]=pos;
             return pos;
         })
-        .catch(err => {
-            isSearching = false;
-            throw err;
-        });
+        .catch(err=>{isSearching=false; throw err;});
 }
 
-// 自動更新（10分）
+// 自動更新
 function startWeatherAutoUpdate() {
-    if (weatherInterval) clearInterval(weatherInterval);
-    weatherInterval = setInterval(() => {
-        loadWeather(lastLat, lastLon, lastRegion);
-    }, 10 * 60 * 1000);
+    if(weatherInterval) clearInterval(weatherInterval);
+    weatherInterval = setInterval(()=>loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion})), 10*60*1000);
 }
 
 // 初期読み込み
-if (lastSearchedRegion) {
+if(lastSearchedRegion){
     addressToLatLon(lastSearchedRegion)
-        .then(pos => { loadWeather(pos.lat, pos.lon, pos.display_name); startWeatherAutoUpdate(); })
-        .catch(() => { loadWeather(lastLat, lastLon, lastRegion); startWeatherAutoUpdate(); });
+        .then(pos=>{
+            const fullAddr = formatFullAddress(pos.address);
+            const cityAddr = formatCityAddress(pos.address);
+            loadWeather(pos.lat,pos.lon,cityAddr);
+            startWeatherAutoUpdate();
+        })
+        .catch(()=>{ loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion})); startWeatherAutoUpdate(); });
 } else {
-    loadWeather(lastLat, lastLon, lastRegion);
+    loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion}));
     startWeatherAutoUpdate();
 }
 
-// モーダル操作（元のまま）
-document.getElementById("weatherBox").onclick = () => {
+// モーダル操作
+document.getElementById("weatherBox").onclick = ()=>{
     const modal = document.getElementById("addressModal");
     const addressInput = document.getElementById("addressInput");
     addressInput.value = localStorage.getItem("lastSearchedRegion") || "";
+
+    const resolved = document.getElementById("resolvedAddress");
+    if(resolved) resolved.textContent = "";
+
+    const confirmBtn = document.getElementById("addressConfirmBtn");
+    if(confirmBtn) confirmBtn.disabled = true;
+
+    // 検索済みフル住所をリセット
+    window._pendingAddress = null;
+
     modal.style.display = "flex";
 };
 
-document.getElementById("addressSearchBtn").onclick = () => {
+// 検索ボタン
+document.getElementById("addressSearchBtn").onclick = ()=>{
     const addr = document.getElementById("addressInput").value.trim();
-    if (!addr) return;
+    if(!addr) return;
 
     addressToLatLon(addr)
-        .then(pos => {
-            loadWeather(pos.lat, pos.lon, pos.display_name);
-            document.getElementById("addressModal").style.display = "none";
-            localStorage.setItem("lastSearchedRegion", addr);
+        .then(pos=>{
+            const fullAddr = formatFullAddress(pos.address);
+            const cityAddr = formatCityAddress(pos.address);
+            loadWeather(pos.lat,pos.lon,cityAddr);
+
+            const resolved = document.getElementById("resolvedAddress");
+            if(resolved) resolved.textContent = "※ 表示地点（自動判定）：" + fullAddr;
+
+            const confirmBtn = document.getElementById("addressConfirmBtn");
+            if(confirmBtn) confirmBtn.disabled = false;
+
+            // 検索済みフル住所を保存
+            window._pendingAddress = fullAddr;
         })
-        .catch(() => alert("住所が見つかりませんでした"));
+        .catch(()=>{
+            const resolved = document.getElementById("resolvedAddress");
+            if(resolved) resolved.textContent = "住所が見つかりません";
+        });
 };
 
-document.getElementById("addressInput").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        document.getElementById("addressSearchBtn").click();
-    }
+// Enterキー
+document.getElementById("addressInput").addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); document.getElementById("addressSearchBtn").click(); }
 });
 
-document.getElementById("addressCancelBtn").onclick = () => {
-    document.getElementById("addressModal").style.display = "none";
+// キャンセル
+document.getElementById("addressCancelBtn").onclick = ()=>{
+    document.getElementById("addressModal").style.display="none";
 };
 
-// ------------------- お天気（改良版＋自動更新10分）ここまで -------------------
+// 確定
+// 確定
+document.getElementById("addressConfirmBtn").onclick = ()=>{
+    // 入力フォームに検索済みフル住所を反映（_pendingAddress は null でも大丈夫）
+    if(window._pendingAddress){
+        document.getElementById("addressInput").value = window._pendingAddress;
+        localStorage.setItem("lastSearchedRegion", window._pendingAddress);
+    }
+    // モーダルを閉じる
+    document.getElementById("addressModal").style.display="none";
+};
+
+/* ------------------- お天気 高速安全版 最終・アラート付き 完了 ------------------- */
 
 /* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
 function applyAutoScale() {
