@@ -734,7 +734,84 @@ button:hover { opacity: 0.9; }
   font-size: 11px;
   text-align: center;
   opacity: 0.6;
+  cursor: pointer;
 }
+
+/* モーダル全体 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* モーダル表示時 */
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+/* モーダル内部 */
+.modal-content {
+  background-color: #fff;
+  color: #222;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+/* モーダル表示時のスライド */
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+/* モーダル本文 */
+.modal-body {
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* 閉じるボタン */
+.close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  align-self: flex-end;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.close:hover {
+  color: #f00;
+}
+
+.modal-content h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.modal-body p {
+  font-size: 0.95em;
+  line-height: 1.5;
+}
+
+/* 著作権関連 */
 
 /* ------------------------------------------- 設定画面全体 ------------------------------------------- */
 
@@ -2427,6 +2504,51 @@ body::after {
 <div id="settingsFooter">
   © 2025-2026 Tok.DoT / Hiroki Sato. All rights reserved.
 </div>
+
+<!-- 利用規約ダイアログ -->
+<div id="termsDialog" class="modal">
+  <div class="modal-content">
+    <button class="close">✕</button>
+    <h2>Smash!!!! 利用規約</h2>
+    <div class="modal-body">
+      <p>
+        最終更新日：2025年12月25日<br><br>
+        本アプリは、部活動やスポーツ観戦の応援を主な目的として作成されています。<br>
+        特にソフトテニスはルールが複雑で、スコアボードのない公式試合も多いため、観覧者が得点を記録しながら試合をより楽しく応援できるように設計しました。<br><br>
+
+        <strong>1. 利用条件</strong><br>
+        本アプリは、個人での応援や部活動のサポートなど、応援目的でご利用ください。<br>
+        商用利用、再配布、改変はご遠慮ください。<br>
+        <em>禁止行為の例：</em><br>
+        - 不正アクセスや改ざん行為<br>
+        - 他の利用者に迷惑をかける行為<br>
+        - 法律・公序良俗に反する行為<br><br>
+
+        <strong>2. 著作権</strong><br>
+        本アプリの著作権は、Tok.DoT / Hiroki Satoに帰属します。<br>
+        © 2025–2026 Tok.DoT / Hiroki Sato. All Rights Reserved.<br><br>
+
+        <strong>3. 免責事項</strong><br>
+        - 本アプリの利用によって生じたいかなる損害についても、運営者は一切責任を負いません。<br>
+        - 本アプリの内容は、予告なく変更・停止・終了される場合があります。<br>
+        - 本アプリの情報は参考目的で提供しており、正確性を保証するものではありません。<br><br>
+
+        <strong>4. ユーザーの責任</strong><br>
+        - 利用者は、自身の端末やデータの管理を自己責任で行ってください。<br>
+        - 本アプリを使用した際のトラブルや誤操作について、運営者は責任を負いません。<br><br>
+
+        <strong>5. プライバシー</strong><br>
+        - 本アプリは個人情報を保存しません。<br>
+        - 匿名のアクセス情報を収集する場合があります（アナリティクス利用）。<br><br>
+
+        <strong>6. 改訂</strong><br>
+        - 本利用規約は、予告なく改訂されることがあります。<br>
+        - 最新版は本アプリ内で確認できます。
+      </p>
+    </div>
+  </div>
+</div>
+
 <!-- 著作権関連表示 -->
 
 </div> <!-- setupScreen閉じ -->
@@ -6988,6 +7110,34 @@ function showSimpleAlert(message, callback) {
     }
 }
 <!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
+
+<!-- ==================== 著作権　利用規約　関連　ダイアログ ==================== -->
+
+const footer = document.getElementById("settingsFooter");
+const modal = document.getElementById("termsDialog");
+const closeBtn = modal.querySelector(".close");
+
+// フッタークリックで表示
+footer.addEventListener("click", () => {
+  modal.classList.add("show");
+  document.body.style.overflow = "hidden"; // 背景スクロール防止
+});
+
+// 閉じるボタン
+closeBtn.addEventListener("click", () => {
+  modal.classList.remove("show");
+  document.body.style.overflow = "auto"; 
+});
+
+// モーダル外クリックで閉じる
+window.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("show");
+    document.body.style.overflow = "auto"; 
+  }
+});
+
+<!-- ==================== 著作権　利用規約　関連　ダイアログ ==================== -->
 
 </script>
 </body>
