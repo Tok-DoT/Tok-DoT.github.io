@@ -5346,287 +5346,102 @@ function swapBars() {
 
 /* ------------------- チーム名と選手名背景色変更スクロールバー始り ------------------- */
 const teamCombos = [
-  // デフォルト色（残す）
+  // ==============================
+  // デフォルト色
+  // ==============================
   {teamA:"#ffffff", teamB:"#ffff00"}, 
   {teamA:"#ffff00", teamB:"#ffffff"}, 
 
- // --- Here Start: 追加100通り（濃いめパステル・Switch調） ---
-{teamA:"#ff9fbf", teamB:"#8fd3ff"},
-{teamA:"#8fd3ff", teamB:"#ff9fbf"},
-{teamA:"#ffb38a", teamB:"#9fc5ff"},
-{teamA:"#9fc5ff", teamB:"#ffb38a"},
-{teamA:"#ffd38f", teamB:"#a7a0ff"},
-{teamA:"#a7a0ff", teamB:"#ffd38f"},
-{teamA:"#ffa4cc", teamB:"#88e0c0"},
-{teamA:"#88e0c0", teamB:"#ffa4cc"},
-{teamA:"#ffc19a", teamB:"#98b8ff"},
-{teamA:"#98b8ff", teamB:"#ffc19a"},
-{teamA:"#ffabc2", teamB:"#90e5a8"},
-{teamA:"#90e5a8", teamB:"#ffabc2"},
-{teamA:"#ffcf8e", teamB:"#88b6ff"},
-{teamA:"#88b6ff", teamB:"#ffcf8e"},
-{teamA:"#ffa0a8", teamB:"#9fe0ff"},
-{teamA:"#9fe0ff", teamB:"#ffa0a8"},
-{teamA:"#ffc8a0", teamB:"#8ea0ff"},
-{teamA:"#8ea0ff", teamB:"#ffc8a0"},
-{teamA:"#ff95b8", teamB:"#8ef7c0"},
-{teamA:"#8ef7c0", teamB:"#ff95b8"},
-{teamA:"#ffb28c", teamB:"#98d8ff"},
-{teamA:"#98d8ff", teamB:"#ffb28c"},
-{teamA:"#ffdba0", teamB:"#92b4ff"},
-{teamA:"#92b4ff", teamB:"#ffdba0"},
-{teamA:"#ff9ac8", teamB:"#8feac0"},
-{teamA:"#8feac0", teamB:"#ff9ac8"},
-{teamA:"#ffc7a8", teamB:"#9fb0ff"},
-{teamA:"#9fb0ff", teamB:"#ffc7a8"},
-{teamA:"#ffadc5", teamB:"#82ebd0"},
-{teamA:"#82ebd0", teamB:"#ffadc5"},
-{teamA:"#ffd090", teamB:"#8abaff"},
-{teamA:"#8abaff", teamB:"#ffd090"},
-{teamA:"#ffaac0", teamB:"#93e9b8"},
-{teamA:"#93e9b8", teamB:"#ffaac0"},
-{teamA:"#ffce9c", teamB:"#8ec3ff"},
-{teamA:"#8ec3ff", teamB:"#ffce9c"},
-{teamA:"#ff94d0", teamB:"#86efd0"},
-{teamA:"#86efd0", teamB:"#ff94d0"},
-{teamA:"#ffc5a0", teamB:"#95b2ff"},
-{teamA:"#95b2ff", teamB:"#ffc5a0"},
-{teamA:"#ffb0d0", teamB:"#7fe0b0"},
-{teamA:"#7fe0b0", teamB:"#ffb0d0"},
-{teamA:"#ffd99e", teamB:"#8ab2ff"},
-{teamA:"#8ab2ff", teamB:"#ffd99e"},
-{teamA:"#ff92b4", teamB:"#9ae5ff"},
-{teamA:"#9ae5ff", teamB:"#ff92b4"},
-{teamA:"#ffba90", teamB:"#86b0ff"},
-{teamA:"#86b0ff", teamB:"#ffba90"},
-{teamA:"#ff85c2", teamB:"#7ff0bc"},
-{teamA:"#7ff0bc", teamB:"#ff85c2"},
-{teamA:"#ffb098", teamB:"#8dd0ff"},
-{teamA:"#8dd0ff", teamB:"#ffb098"},
-{teamA:"#ffcfa4", teamB:"#8ab8ff"},
-{teamA:"#8ab8ff", teamB:"#ffcfa4"},
-{teamA:"#ff94be", teamB:"#90e8d0"},
-{teamA:"#90e8d0", teamB:"#ff94be"},
-{teamA:"#ffc090", teamB:"#82c2ff"},
-{teamA:"#82c2ff", teamB:"#ffc090"},
-{teamA:"#ff99c8", teamB:"#7fd8c5"},
-{teamA:"#7fd8c5", teamB:"#ff99c8"},
-{teamA:"#ffc5a8", teamB:"#78b2ff"},
-{teamA:"#78b2ff", teamB:"#ffc5a8"},
-{teamA:"#ff86cc", teamB:"#90f0c0"},
-{teamA:"#90f0c0", teamB:"#ff86cc"},
-{teamA:"#ffcf8c", teamB:"#8ec0ff"},
-{teamA:"#8ec0ff", teamB:"#ffcf8c"},
-{teamA:"#ff96bb", teamB:"#89e9d0"},
-{teamA:"#89e9d0", teamB:"#ff96bb"},
-{teamA:"#ffca90", teamB:"#91c0ff"},
-{teamA:"#91c0ff", teamB:"#ffca90"},
-{teamA:"#ffa2c4", teamB:"#85e9c0"},
-{teamA:"#85e9c0", teamB:"#ffa2c4"},
-{teamA:"#ffd490", teamB:"#8dbbff"},
-{teamA:"#8dbbff", teamB:"#ffd490"},
-{teamA:"#ff8ec0", teamB:"#80e8c5"},
-{teamA:"#80e8c5", teamB:"#ff8ec0"},
-{teamA:"#ffb89c", teamB:"#8fc5ff"},
-{teamA:"#8fc5ff", teamB:"#ffb89c"},
-{teamA:"#ffd890", teamB:"#84bcff"},
-{teamA:"#84bcff", teamB:"#ffd890"},
-{teamA:"#ff9ad0", teamB:"#78e8c8"},
-{teamA:"#78e8c8", teamB:"#ff9ad0"},
-{teamA:"#ffc0a4", teamB:"#7ab2ff"},
-{teamA:"#7ab2ff", teamB:"#ffc0a4"},
-{teamA:"#ff8fb8", teamB:"#94e5d0"},
-{teamA:"#94e5d0", teamB:"#ff8fb8"},
-{teamA:"#ffbd90", teamB:"#92c8ff"},
-{teamA:"#92c8ff", teamB:"#ffbd90"},
-{teamA:"#ffabd4", teamB:"#80e2b8"},
-{teamA:"#80e2b8", teamB:"#ffabd4"},
-{teamA:"#ffd1a0", teamB:"#8ab0ff"},
-{teamA:"#8ab0ff", teamB:"#ffd1a0"},
-{teamA:"#ff98b4", teamB:"#8fe8ff"},
-{teamA:"#8fe8ff", teamB:"#ff98b4"},
-{teamA:"#ffc8aa", teamB:"#88b0ff"},
-{teamA:"#88b0ff", teamB:"#ffc8aa"},
-{teamA:"#ff9ed0", teamB:"#7ee0bc"},
-{teamA:"#7ee0bc", teamB:"#ff9ed0"},
-{teamA:"#ffd99c", teamB:"#82b8ff"},
-{teamA:"#82b8ff", teamB:"#ffd99c"},
-{teamA:"#ff92d0", teamB:"#7feed0"},
-{teamA:"#7feed0", teamB:"#ff92d0"},
-{teamA:"#ffc2a8", teamB:"#90bfff"},
-{teamA:"#90bfff", teamB:"#ffc2a8"},
-{teamA:"#ff8fb0", teamB:"#a0e8ff"},
-{teamA:"#a0e8ff", teamB:"#ff8fb0"},
-{teamA:"#ffd3a8", teamB:"#82cfff"},
-{teamA:"#82cfff", teamB:"#ffd3a8"},
-{teamA:"#ff8cc8", teamB:"#7fe5c0"},
-{teamA:"#7fe5c0", teamB:"#ff8cc8"},
-{teamA:"#ffb79c", teamB:"#88d0ff"},
-{teamA:"#88d0ff", teamB:"#ffb79c"},
-{teamA:"#ffd98a", teamB:"#8bb4ff"},
-{teamA:"#8bb4ff", teamB:"#ffd98a"},
-{teamA:"#ff97cc", teamB:"#80e0c5"},
-{teamA:"#80e0c5", teamB:"#ff97cc"},
-{teamA:"#ffc8a0", teamB:"#89baff"},
-{teamA:"#89baff", teamB:"#ffc8a0"},
-{teamA:"#ff9bc0", teamB:"#86e0ff"},
-{teamA:"#86e0ff", teamB:"#ff9bc0"},
-// --- 追加 50通り（ややビビッド・高コントラスト） ---
-{teamA:"#FF6F91", teamB:"#6EC1E4"},
-{teamA:"#6EC1E4", teamB:"#FF6F91"},
+  // ==============================
+  // ややビビッド・高コントラスト
+  // ==============================
+  {teamA:"#FF6F91", teamB:"#6EC1E4"}, {teamA:"#6EC1E4", teamB:"#FF6F91"},
+  {teamA:"#7FDBFF", teamB:"#FFB347"}, {teamA:"#FFB347", teamB:"#7FDBFF"},
+  {teamA:"#A2E4A4", teamB:"#FF9AA2"}, {teamA:"#FF9AA2", teamB:"#A2E4A4"},
+  {teamA:"#FFD47F", teamB:"#8ED1FC"}, {teamA:"#8ED1FC", teamB:"#FFD47F"},
+  {teamA:"#FF9C6E", teamB:"#B39DDB"}, {teamA:"#B39DDB", teamB:"#FF9C6E"},
+  {teamA:"#FFB6C1", teamB:"#4FC3F7"}, {teamA:"#4FC3F7", teamB:"#FFB6C1"},
+  {teamA:"#FFCC80", teamB:"#81C784"}, {teamA:"#81C784", teamB:"#FFCC80"},
+  {teamA:"#FF8A80", teamB:"#80D8FF"}, {teamA:"#80D8FF", teamB:"#FF8A80"},
+  {teamA:"#F5A623", teamB:"#64B5F6"}, {teamA:"#64B5F6", teamB:"#F5A623"},
+  {teamA:"#FF7043", teamB:"#AED581"}, {teamA:"#AED581", teamB:"#FF7043"},
+  {teamA:"#FFCA28", teamB:"#90CAF9"}, {teamA:"#90CAF9", teamB:"#FFCA28"},
+  {teamA:"#E57373", teamB:"#4DD0E1"}, {teamA:"#4DD0E1", teamB:"#E57373"},
+  {teamA:"#FFAB91", teamB:"#BA68C8"}, {teamA:"#BA68C8", teamB:"#FFAB91"},
+  {teamA:"#FFB74D", teamB:"#4DB6AC"}, {teamA:"#4DB6AC", teamB:"#FFB74D"},
+  {teamA:"#FF8F00", teamB:"#64FFDA"}, {teamA:"#64FFDA", teamB:"#FF8F00"},
+  {teamA:"#FF5252", teamB:"#40C4FF"}, {teamA:"#40C4FF", teamB:"#FF5252"},
 
-{teamA:"#7FDBFF", teamB:"#FFB347"},
-{teamA:"#FFB347", teamB:"#7FDBFF"},
+// ==============================
+// 濃いビビッド＋対決意識
+// ==============================
+{teamA:"#FF1744", teamB:"#009688"}, {teamA:"#009688", teamB:"#FF1744"},
+{teamA:"#D500F9", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#D500F9"},
+{teamA:"#FF6D00", teamB:"#1DE9B6"}, {teamA:"#1DE9B6", teamB:"#FF6D00"},
+{teamA:"#C51162", teamB:"#00E5FF"}, {teamA:"#00E5FF", teamB:"#C51162"},
+{teamA:"#FF4081", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#FF4081"},
+{teamA:"#FFAB00", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FFAB00"},
+{teamA:"#FF5252", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FF5252"},
+{teamA:"#FF6E40", teamB:"#1B5E20"}, {teamA:"#1B5E20", teamB:"#FF6E40"},
+{teamA:"#FFEA00", teamB:"#AA00FF"}, {teamA:"#AA00FF", teamB:"#FFEA00"},
+{teamA:"#FF3D00", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF3D00"},
+{teamA:"#F50057", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#F50057"},
+{teamA:"#FF9100", teamB:"#304FFE"}, {teamA:"#304FFE", teamB:"#FF9100"},
 
-{teamA:"#A2E4A4", teamB:"#FF9AA2"},
-{teamA:"#FF9AA2", teamB:"#A2E4A4"},
+// ==============================
+// スプラトゥーン風
+// ==============================
+{teamA:"#FF3CAC", teamB:"#00FFD4"}, {teamA:"#00FFD4", teamB:"#FF3CAC"},
+{teamA:"#FF9500", teamB:"#1CE6FF"}, {teamA:"#1CE6FF", teamB:"#FF9500"},
+{teamA:"#FF1C1C", teamB:"#B8FF1C"}, {teamA:"#B8FF1C", teamB:"#FF1C1C"},
+{teamA:"#FF6EC7", teamB:"#6EFFA2"}, {teamA:"#6EFFA2", teamB:"#FF6EC7"},
+{teamA:"#FFEB3B", teamB:"#00FF9D"}, {teamA:"#00FF9D", teamB:"#FFEB3B"},
 
-{teamA:"#FFD47F", teamB:"#8ED1FC"},
-{teamA:"#8ED1FC", teamB:"#FFD47F"},
+// ==============================
+// マリオカート風
+// ==============================
+{teamA:"#FF0000", teamB:"#00CC00"}, {teamA:"#00CC00", teamB:"#FF0000"},
+{teamA:"#FF8800", teamB:"#0088FF"}, {teamA:"#0088FF", teamB:"#FF8800"},
+{teamA:"#FFEE00", teamB:"#CC00FF"}, {teamA:"#CC00FF", teamB:"#FFEE00"},
+{teamA:"#FF4444", teamB:"#44FF44"}, {teamA:"#44FF44", teamB:"#FF4444"},
+{teamA:"#FFAA33", teamB:"#33AAFF"}, {teamA:"#33AAFF", teamB:"#FFAA33"},
 
-{teamA:"#FF9C6E", teamB:"#B39DDB"},
-{teamA:"#B39DDB", teamB:"#FF9C6E"},
+// ==============================
+// モンハン風
+// ==============================
+{teamA:"#8B4513", teamB:"#FF4500"}, {teamA:"#FF4500", teamB:"#8B4513"},
+{teamA:"#A0522D", teamB:"#1E90FF"}, {teamA:"#1E90FF", teamB:"#A0522D"},
+{teamA:"#0000FF", teamB:"#008000"}, {teamA:"#008000", teamB:"#0000FF"},
+{teamA:"#CD853F", teamB:"#7B68EE"}, {teamA:"#7B68EE", teamB:"#CD853F"},
+{teamA:"#DEB887", teamB:"#FF6347"}, {teamA:"#FF6347", teamB:"#DEB887"},
 
-{teamA:"#FFB6C1", teamB:"#4FC3F7"},
-{teamA:"#4FC3F7", teamB:"#FFB6C1"},
-
-{teamA:"#FFCC80", teamB:"#81C784"},
-{teamA:"#81C784", teamB:"#FFCC80"},
-
-{teamA:"#FF8A80", teamB:"#80D8FF"},
-{teamA:"#80D8FF", teamB:"#FF8A80"},
-
-{teamA:"#F5A623", teamB:"#64B5F6"},
-{teamA:"#64B5F6", teamB:"#F5A623"},
-
-{teamA:"#FF7043", teamB:"#AED581"},
-{teamA:"#AED581", teamB:"#FF7043"},
-
-{teamA:"#FFCA28", teamB:"#90CAF9"},
-{teamA:"#90CAF9", teamB:"#FFCA28"},
-
-{teamA:"#E57373", teamB:"#4DD0E1"},
-{teamA:"#4DD0E1", teamB:"#E57373"},
-
-{teamA:"#FFAB91", teamB:"#BA68C8"},
-{teamA:"#BA68C8", teamB:"#FFAB91"},
-
-{teamA:"#FFB74D", teamB:"#4DB6AC"},
-{teamA:"#4DB6AC", teamB:"#FFB74D"},
-
-{teamA:"#FF8F00", teamB:"#64FFDA"},
-{teamA:"#64FFDA", teamB:"#FF8F00"},
-
-{teamA:"#FF5252", teamB:"#40C4FF"},
-{teamA:"#40C4FF", teamB:"#FF5252"},
-
-{teamA:"#FF9E80", teamB:"#9575CD"},
-{teamA:"#9575CD", teamB:"#FF9E80"},
-
-{teamA:"#FFA726", teamB:"#81D4FA"},
-{teamA:"#81D4FA", teamB:"#FFA726"},
-
-{teamA:"#FF7043", teamB:"#B2DFDB"},
-{teamA:"#B2DFDB", teamB:"#FF7043"},
-
-{teamA:"#FFB300", teamB:"#4FC3F7"},
-{teamA:"#4FC3F7", teamB:"#FFB300"},
-
-// --- 残り10セット ---
-{teamA:"#FF6D00", teamB:"#90A4AE"},
-{teamA:"#90A4AE", teamB:"#FF6D00"},
-
-{teamA:"#FF5252", teamB:"#AED581"},
-{teamA:"#AED581", teamB:"#FF5252"},
-
-{teamA:"#FF4081", teamB:"#4DD0E1"},
-{teamA:"#4DD0E1", teamB:"#FF4081"},
-
-{teamA:"#FF8A65", teamB:"#4DB6AC"},
-{teamA:"#4DB6AC", teamB:"#FF8A65"},
-
-{teamA:"#FFD54F", teamB:"#7986CB"},
-{teamA:"#7986CB", teamB:"#FFD54F"},
-
-{teamA:"#FF7043", teamB:"#90CAF9"},
-{teamA:"#90CAF9", teamB:"#FF7043"},
-
-{teamA:"#FFB74D", teamB:"#CE93D8"},
-{teamA:"#CE93D8", teamB:"#FFB74D"},
-
-{teamA:"#FF8A80", teamB:"#64B5F6"},
-{teamA:"#64B5F6", teamB:"#FF8A80"},
-
-{teamA:"#FFA07A", teamB:"#8BC34A"},
-{teamA:"#8BC34A", teamB:"#FFA07A"},
-
-{teamA:"#FFB74D", teamB:"#42A5F5"},
-{teamA:"#42A5F5", teamB:"#FFB74D"},
-
-  // --- 濃いめビビッド＋対決意識100通り ---
-  {teamA:"#FF1744", teamB:"#009688"}, {teamA:"#009688", teamB:"#FF1744"},
-  {teamA:"#D500F9", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#D500F9"},
-  {teamA:"#FF6D00", teamB:"#1DE9B6"}, {teamA:"#1DE9B6", teamB:"#FF6D00"},
-  {teamA:"#C51162", teamB:"#00E5FF"}, {teamA:"#00E5FF", teamB:"#C51162"},
-  {teamA:"#FF4081", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#FF4081"},
-  {teamA:"#FFAB00", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FFAB00"},
-  {teamA:"#FF5252", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#1B5E20"}, {teamA:"#1B5E20", teamB:"#FF6E40"},
-  {teamA:"#FFEA00", teamB:"#AA00FF"}, {teamA:"#AA00FF", teamB:"#FFEA00"},
-  {teamA:"#FF3D00", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#304FFE"}, {teamA:"#304FFE", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#FF1744"},
-  {teamA:"#D50000", teamB:"#00E676"}, {teamA:"#00E676", teamB:"#D50000"},
-  {teamA:"#FF6F00", teamB:"#2979FF"}, {teamA:"#2979FF", teamB:"#FF6F00"},
-  {teamA:"#FF4081", teamB:"#00ACC1"}, {teamA:"#00ACC1", teamB:"#FF4081"},
-  {teamA:"#FFEA00", teamB:"#AA00FF"}, {teamA:"#AA00FF", teamB:"#FFEA00"},
-  {teamA:"#FF5252", teamB:"#0091EA"}, {teamA:"#0091EA", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#1B5E20"}, {teamA:"#1B5E20", teamB:"#FF6E40"},
-  {teamA:"#FF3D00", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#00E5FF"}, {teamA:"#00E5FF", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FF1744"},
-  {teamA:"#D50000", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#D50000"},
-  {teamA:"#FF6F00", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF6F00"},
-  {teamA:"#FF4081", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FF4081"},
-  {teamA:"#FFEA00", teamB:"#00ACC1"}, {teamA:"#00ACC1", teamB:"#FFEA00"},
-  {teamA:"#FF5252", teamB:"#304FFE"}, {teamA:"#304FFE", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FF6E40"},
-  {teamA:"#FF3D00", teamB:"#009688"}, {teamA:"#009688", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#00E676"}, {teamA:"#00E676", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#1DE9B6"}, {teamA:"#1DE9B6", teamB:"#FF1744"},
-  {teamA:"#D50000", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#D50000"},
-  {teamA:"#FF6F00", teamB:"#0091EA"}, {teamA:"#0091EA", teamB:"#FF6F00"},
-  {teamA:"#FF4081", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF4081"},
-  {teamA:"#FFEA00", teamB:"#304FFE"}, {teamA:"#304FFE", teamB:"#FFEA00"},
-  {teamA:"#FF5252", teamB:"#00ACC1"}, {teamA:"#00ACC1", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#AA00FF"}, {teamA:"#AA00FF", teamB:"#FF6E40"},
-  {teamA:"#FF3D00", teamB:"#009688"}, {teamA:"#009688", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#00E676"}, {teamA:"#00E676", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#FF1744"},
-  {teamA:"#D50000", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#D50000"},
-  {teamA:"#FF6F00", teamB:"#00E5FF"}, {teamA:"#00E5FF", teamB:"#FF6F00"},
-  {teamA:"#FF4081", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FF4081"},
-  {teamA:"#FFEA00", teamB:"#0091EA"}, {teamA:"#0091EA", teamB:"#FFEA00"},
-  {teamA:"#FF5252", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FF6E40"},
-  {teamA:"#FF3D00", teamB:"#00ACC1"}, {teamA:"#00ACC1", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#304FFE"}, {teamA:"#304FFE", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#00E676"}, {teamA:"#00E676", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#6200EA"}, {teamA:"#6200EA", teamB:"#FF1744"},
-  {teamA:"#D50000", teamB:"#00C853"}, {teamA:"#00C853", teamB:"#D50000"},
-  {teamA:"#FF6F00", teamB:"#00B0FF"}, {teamA:"#00B0FF", teamB:"#FF6F00"},
-  {teamA:"#FF4081", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF4081"},
-  {teamA:"#FFEA00", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#FFEA00"},
-  {teamA:"#FF5252", teamB:"#AA00FF"}, {teamA:"#AA00FF", teamB:"#FF5252"},
-  {teamA:"#FF6E40", teamB:"#009688"}, {teamA:"#009688", teamB:"#FF6E40"},
-  {teamA:"#FF3D00", teamB:"#00E676"}, {teamA:"#00E676", teamB:"#FF3D00"},
-  {teamA:"#F50057", teamB:"#2962FF"}, {teamA:"#2962FF", teamB:"#F50057"},
-  {teamA:"#FF9100", teamB:"#00ACC1"}, {teamA:"#00ACC1", teamB:"#FF9100"},
-  {teamA:"#FF1744", teamB:"#00BFA5"}, {teamA:"#00BFA5", teamB:"#FF1744"}
+// ==============================
+  // 濃いめパステル・Switch調
+  // ==============================
+  {teamA:"#ff9fbf", teamB:"#8fd3ff"}, {teamA:"#8fd3ff", teamB:"#ff9fbf"},
+  {teamA:"#ffb38a", teamB:"#9fc5ff"}, {teamA:"#9fc5ff", teamB:"#ffb38a"},
+  {teamA:"#ffd38f", teamB:"#a7a0ff"}, {teamA:"#a7a0ff", teamB:"#ffd38f"},
+  {teamA:"#ffa4cc", teamB:"#88e0c0"}, {teamA:"#88e0c0", teamB:"#ffa4cc"},
+  {teamA:"#ffc19a", teamB:"#98b8ff"}, {teamA:"#98b8ff", teamB:"#ffc19a"},
+  {teamA:"#ffabc2", teamB:"#90e5a8"}, {teamA:"#90e5a8", teamB:"#ffabc2"},
+  {teamA:"#ffcf8e", teamB:"#88b6ff"}, {teamA:"#88b6ff", teamB:"#ffcf8e"},
+  {teamA:"#ffa0a8", teamB:"#9fe0ff"}, {teamA:"#9fe0ff", teamB:"#ffa0a8"},
+  {teamA:"#ffc8a0", teamB:"#8ea0ff"}, {teamA:"#8ea0ff", teamB:"#ffc8a0"},
+  {teamA:"#ff95b8", teamB:"#8ef7c0"}, {teamA:"#8ef7c0", teamB:"#ff95b8"},
+  {teamA:"#ffb28c", teamB:"#98d8ff"}, {teamA:"#98d8ff", teamB:"#ffb28c"},
+  {teamA:"#ffdba0", teamB:"#92b4ff"}, {teamA:"#92b4ff", teamB:"#ffdba0"},
+  {teamA:"#ff9ac8", teamB:"#8feac0"}, {teamA:"#8feac0", teamB:"#ff9ac8"},
+  {teamA:"#ffc7a8", teamB:"#9fb0ff"}, {teamA:"#9fb0ff", teamB:"#ffc7a8"},
+  {teamA:"#ffadc5", teamB:"#82ebd0"}, {teamA:"#82ebd0", teamB:"#ffadc5"},
+  {teamA:"#ffd090", teamB:"#8abaff"}, {teamA:"#8abaff", teamB:"#ffd090"},
+  {teamA:"#ffaac0", teamB:"#93e9b8"}, {teamA:"#93e9b8", teamB:"#ffaac0"},
+  {teamA:"#ffce9c", teamB:"#8ec3ff"}, {teamA:"#8ec3ff", teamB:"#ffce9c"},
+  {teamA:"#ff94d0", teamB:"#86efd0"}, {teamA:"#86efd0", teamB:"#ff94d0"},
+  {teamA:"#ffc5a0", teamB:"#95b2ff"}, {teamA:"#95b2ff", teamB:"#ffc5a0"},
+  {teamA:"#ffb0d0", teamB:"#7fe0b0"}, {teamA:"#7fe0b0", teamB:"#ffb0d0"},
+  {teamA:"#ffd99e", teamB:"#8ab2ff"}, {teamA:"#8ab2ff", teamB:"#ffd99e"},
+  {teamA:"#ff92b4", teamB:"#9ae5ff"}, {teamA:"#9ae5ff", teamB:"#ff92b4"},
+  {teamA:"#ffba90", teamB:"#86b0ff"}, {teamA:"#86b0ff", teamB:"#ffba90"}
 
 ];
 
@@ -5793,288 +5608,169 @@ const brightCombos = [
   // ==============================
   // デフォルト（青/緑）
   // ==============================
-  ["#00CED1","#D2691E"],
-  ["#D2691E","#00CED1"],
+  ["#00CED1","#D2691E"], ["#D2691E","#00CED1"],
 
   // ==============================
-// エヴァ風（紫 / 赤 / 黄 / 緑 / 青紫）
-// ==============================
-["#7B00FF","#FFD700"],
-["#FFD700","#7B00FF"],
+  // エヴァ風（紫 / 赤 / 黄 / 緑 / 青紫）
+  // ==============================
+  ["#7B00FF","#FFD700"], ["#FFD700","#7B00FF"],
+  ["#FF0000","#00FF80"], ["#00FF80","#FF0000"],
+  ["#FFC107","#3F51B5"], ["#3F51B5","#FFC107"],
+  ["#8000FF","#00FF80"], ["#00FF80","#8000FF"],
+  ["#FF3300","#1E90FF"], ["#1E90FF","#FF3300"],
+  ["#FFEB3B","#673AB7"], ["#673AB7","#FFEB3B"],
+  ["#4CAF50","#FF9800"], ["#FF9800","#4CAF50"],
+  ["#9B4DFF","#FF8F00"], ["#FF8F00","#9B4DFF"],
+  ["#D50000","#00BCD4"], ["#00BCD4","#D50000"],
+  ["#FFCA28","#00C853"], ["#00C853","#FFCA28"],
+  ["#66FFCC","#8E24AA"], ["#8E24AA","#66FFCC"],
+  ["#E60000","#4CAF50"], ["#4CAF50","#E60000"],
+  ["#FBC02D","#E91E63"], ["#E91E63","#FBC02D"],
+  ["#00C853","#3F51B5"], ["#3F51B5","#00C853"],
+  ["#7B00FF","#2196F3"], ["#2196F3","#7B00FF"],
+  ["#00E676","#C62828"], ["#C62828","#00E676"],
+  ["#FF1744","#8BC34A"], ["#8BC34A","#FF1744"],
+  ["#00FF80","#FF6D00"], ["#FF6D00","#00FF80"],
+  ["#FFD700","#1E90FF"], ["#1E90FF","#FFD700"],
+  ["#7B00FF","#FF0000"], ["#FF0000","#7B00FF"],
 
-["#FF0000","#00FF80"],
-["#00FF80","#FF0000"],
+  // ==============================
+  // スプラトゥーン風
+  // ==============================
+  ["#FF3CAC","#00FFD4"], ["#00FFD4","#FF3CAC"],
+  ["#FF9500","#1CE6FF"], ["#1CE6FF","#FF9500"],
+  ["#FF1C1C","#B8FF1C"], ["#B8FF1C","#FF1C1C"],
+  ["#FF6EC7","#6EFFA2"], ["#6EFFA2","#FF6EC7"],
+  ["#FFEB3B","#00FF9D"], ["#00FF9D","#FFEB3B"],
+  // --- 追加 ---
+  ["#FF6F61","#61FF6F"], ["#61FF6F","#FF6F61"],
+  ["#FFA07A","#20B2AA"], ["#20B2AA","#FFA07A"],
+  ["#FF1493","#7FFF00"], ["#7FFF00","#FF1493"],
+  ["#00FFFF","#FF4500"], ["#FF4500","#00FFFF"],
 
-["#FFC107","#3F51B5"],
-["#3F51B5","#FFC107"],
+  // ==============================
+  // マリオカート風
+  // ==============================
+  ["#FF0000","#00CC00"], ["#00CC00","#FF0000"],
+  ["#FF8800","#0088FF"], ["#0088FF","#FF8800"],
+  ["#FFEE00","#CC00FF"], ["#CC00FF","#FFEE00"],
+  ["#FF4444","#44FF44"], ["#44FF44","#FF4444"],
+  ["#FFAA33","#33AAFF"], ["#33AAFF","#FFAA33"],
+  // --- 追加 ---
+  ["#FF0000","#FFFF00"], ["#FFFF00","#FF0000"],
+  ["#00FF00","#FF00FF"], ["#FF00FF","#00FF00"],
+  ["#FF8C00","#1E90FF"], ["#1E90FF","#FF8C00"],
+  ["#FF69B4","#00CED1"], ["#00CED1","#FF69B4"],
 
-["#8000FF","#00FF80"],
-["#00FF80","#8000FF"],
+  // ==============================
+  // ゼルダ風
+  // ==============================
+  ["#1B5E20","#FFD700"], ["#FFD700","#1B5E20"],
+  ["#4CAF50","#FFEB3B"], ["#FFEB3B","#4CAF50"],
+  ["#2E7D32","#FFC107"], ["#FFC107","#2E7D32"],
+  ["#66BB6A","#FFEE58"], ["#FFEE58","#66BB6A"],
+  ["#81C784","#FFF176"], ["#FFF176","#81C784"],
 
-["#FF3300","#1E90FF"],
-["#1E90FF","#FF3300"],
+  // ==============================
+  // カービィ風
+  // ==============================
+  ["#FF69B4","#FFD1DC"], ["#FFD1DC","#FF69B4"],
+  ["#FF1493","#FFB6C1"], ["#FFB6C1","#FF1493"],
+  ["#FF7F50","#FFE4E1"], ["#FFE4E1","#FF7F50"],
+  ["#FF69B4","#FFC0CB"], ["#FFC0CB","#FF69B4"],
+  ["#FF3399","#FF99CC"], ["#FF99CC","#FF3399"],
 
-["#FFEB3B","#673AB7"],
-["#673AB7","#FFEB3B"],
+  // ==============================
+  // ヨッシー風
+  // ==============================
+  ["#00FF00","#00CED1"], ["#00CED1","#00FF00"],
+  ["#ADFF2F","#7FFFD4"], ["#7FFFD4","#ADFF2F"],
+  ["#32CD32","#87CEFA"], ["#87CEFA","#32CD32"],
+  ["#7CFC00","#40E0D0"], ["#40E0D0","#7CFC00"],
+  ["#00FA9A","#00FFFF"], ["#00FFFF","#00FA9A"],
 
-["#4CAF50","#FF9800"],
-["#FF9800","#4CAF50"],
-
-["#9B4DFF","#FF8F00"],
-["#FF8F00","#9B4DFF"],
-
-["#D50000","#00BCD4"],
-["#00BCD4","#D50000"],
-
-["#FFCA28","#00C853"],
-["#00C853","#FFCA28"],
-
-["#66FFCC","#8E24AA"],
-["#8E24AA","#66FFCC"],
-
-["#E60000","#4CAF50"],
-["#4CAF50","#E60000"],
-
-["#FBC02D","#E91E63"],
-["#E91E63","#FBC02D"],
-
-["#00C853","#3F51B5"],
-["#3F51B5","#00C853"],
-
-["#7B00FF","#2196F3"],
-["#2196F3","#7B00FF"],
-
-["#00E676","#C62828"],
-["#C62828","#00E676"],
-
-["#FF1744","#8BC34A"],
-["#8BC34A","#FF1744"],
-
-["#00FF80","#FF6D00"],
-["#FF6D00","#00FF80"],
-
-["#FFD700","#1E90FF"],
-["#1E90FF","#FFD700"],
-
-["#7B00FF","#FF0000"],
-["#FF0000","#7B00FF"],
-
-// ==============================
-// スプラトゥーン風
-// ==============================
-["#FF3CAC","#00FFD4"],
-["#00FFD4","#FF3CAC"],
-
-["#FF9500","#1CE6FF"],
-["#1CE6FF","#FF9500"],
-
-["#FF1C1C","#B8FF1C"],
-["#B8FF1C","#FF1C1C"],
-
-["#FF6EC7","#6EFFA2"],
-["#6EFFA2","#FF6EC7"],
-
-["#FFEB3B","#00FF9D"],
-["#00FF9D","#FFEB3B"],
-
-// ==============================
-// マリオカート風
-// ==============================
-["#FF0000","#00CC00"],
-["#00CC00","#FF0000"],
-
-["#FF8800","#0088FF"],
-["#0088FF","#FF8800"],
-
-["#FFEE00","#CC00FF"],
-["#CC00FF","#FFEE00"],
-
-["#FF4444","#44FF44"],
-["#44FF44","#FF4444"],
-
-["#FFAA33","#33AAFF"],
-["#33AAFF","#FFAA33"],
-
-// ==============================
-// ゼルダ風
-// ==============================
-["#1B5E20","#FFD700"],
-["#FFD700","#1B5E20"],
-
-["#4CAF50","#FFEB3B"],
-["#FFEB3B","#4CAF50"],
-
-["#2E7D32","#FFC107"],
-["#FFC107","#2E7D32"],
-
-["#66BB6A","#FFEE58"],
-["#FFEE58","#66BB6A"],
-
-["#81C784","#FFF176"],
-["#FFF176","#81C784"],
-
-// ==============================
-// カービィ風
-// ==============================
-["#FF69B4","#FFD1DC"],
-["#FFD1DC","#FF69B4"],
-
-["#FF1493","#FFB6C1"],
-["#FFB6C1","#FF1493"],
-
-["#FF7F50","#FFE4E1"],
-["#FFE4E1","#FF7F50"],
-
-["#FF69B4","#FFC0CB"],
-["#FFC0CB","#FF69B4"],
-
-["#FF3399","#FF99CC"],
-["#FF99CC","#FF3399"],
-
-// ==============================
-// ヨッシー風
-// ==============================
-["#00FF00","#00CED1"],
-["#00CED1","#00FF00"],
-
-["#ADFF2F","#7FFFD4"],
-["#7FFFD4","#ADFF2F"],
-
-["#32CD32","#87CEFA"],
-["#87CEFA","#32CD32"],
-
-["#7CFC00","#40E0D0"],
-["#40E0D0","#7CFC00"],
-
-["#00FA9A","#00FFFF"],
-["#00FFFF","#00FA9A"],
-
-// ==============================
-// モンハン風
-// ==============================
-["#8B4513","#FF4500"],
-["#FF4500","#8B4513"],
-
-["#A0522D","#1E90FF"],
-["#1E90FF","#A0522D"],
-
-["#0000FF","#008000"], // 青 × 緑
-["#008000","#0000FF"], // 緑 × 青
-
-["#CD853F","#7B68EE"],
-["#7B68EE","#CD853F"],
-
-["#DEB887","#FF6347"],
-["#FF6347","#DEB887"],
+  // ==============================
+  // モンハン風
+  // ==============================
+  ["#8B4513","#FF4500"], ["#FF4500","#8B4513"],
+  ["#A0522D","#1E90FF"], ["#1E90FF","#A0522D"],
+  ["#0000FF","#008000"], ["#008000","#0000FF"],
+  ["#CD853F","#7B68EE"], ["#7B68EE","#CD853F"],
+  ["#DEB887","#FF6347"], ["#FF6347","#DEB887"],
+  // --- 追加 ---
+  ["#8B0000","#FFD700"], ["#FFD700","#8B0000"],
+  ["#006400","#FF8C00"], ["#FF8C00","#006400"],
+  ["#4B0082","#FF4500"], ["#FF4500","#4B0082"],
+  ["#2E8B57","#FF6347"], ["#FF6347","#2E8B57"],
 
   // ==============================
   // サンリオ風（正反対の色意識）
   // ==============================
-  ["#FF1493","#00CED1"], ["#00CED1","#FF1493"], // 深ピンク × 水色
-  ["#FF4500","#1E90FF"], ["#1E90FF","#FF4500"], // 赤橙 × 青
-  ["#FF69B4","#228B22"], ["#228B22","#FF69B4"], // ピンク × 緑
-  ["#FF8C00","#8A2BE2"], ["#8A2BE2","#FF8C00"], // オレンジ × 紫
-  ["#FF0000","#00FFFF"], ["#00FFFF","#FF0000"], // 赤 × シアン
-  ["#FFD700","#6A5ACD"], ["#6A5ACD","#FFD700"], // 黄 × 青紫
-  ["#FF6347","#008000"], ["#008000","#FF6347"], // トマト × 緑
-  ["#FFA500","#0000FF"], ["#0000FF","#FFA500"], // オレンジ × 青
-  ["#FF69B4","#4B0082"], ["#4B0082","#FF69B4"], // ピンク × インディゴ
-  ["#FF4500","#00FF7F"], ["#00FF7F","#FF4500"], // 赤橙 × 春緑
+  ["#FF1493","#00CED1"], ["#00CED1","#FF1493"],
+  ["#FF4500","#1E90FF"], ["#1E90FF","#FF4500"],
+  ["#FF69B4","#228B22"], ["#228B22","#FF69B4"],
+  ["#FF8C00","#8A2BE2"], ["#8A2BE2","#FF8C00"],
+  ["#FF0000","#00FFFF"], ["#00FFFF","#FF0000"],
+  ["#FFD700","#6A5ACD"], ["#6A5ACD","#FFD700"],
+  ["#FF6347","#008000"], ["#008000","#FF6347"],
+  ["#FFA500","#0000FF"], ["#0000FF","#FFA500"],
+  ["#FF69B4","#4B0082"], ["#4B0082","#FF69B4"],
+  ["#FF4500","#00FF7F"], ["#00FF7F","#FF4500"],
 
   // ==============================
   // ポケモン風（正反対色＋はっきり色）
   // ==============================
-  ["#FF0000","#1E90FF"], ["#1E90FF","#FF0000"], // 赤 × 青
-  ["#FF8C00","#32CD32"], ["#32CD32","#FF8C00"], // オレンジ × 緑
-  ["#00CED1","#FF4500"], ["#FF4500","#00CED1"], // 水色 × 赤橙
-  ["#8A2BE2","#FFD700"], ["#FFD700","#8A2BE2"], // 青紫 × 黄
-  ["#FF1493","#00FA9A"], ["#00FA9A","#FF1493"], // ピンク × 緑
-  ["#FF6347","#0000CD"], ["#0000CD","#FF6347"], // トマト × 濃青
-  ["#1E90FF","#FF4500"], ["#FF4500","#1E90FF"], // 青 × 赤橙
-  ["#FF0000","#00CED1"], ["#00CED1","#FF0000"], // 赤 × 水色
-  ["#FFD700","#8A2BE2"], ["#8A2BE2","#FFD700"], // 黄 × 青紫
-  ["#32CD32","#FF0000"], ["#FF0000","#32CD32"], // 緑 × 赤
+  ["#FF0000","#1E90FF"], ["#1E90FF","#FF0000"],
+  ["#FF8C00","#32CD32"], ["#32CD32","#FF8C00"],
+  ["#00CED1","#FF4500"], ["#FF4500","#00CED1"],
+  ["#8A2BE2","#FFD700"], ["#FFD700","#8A2BE2"],
+  ["#FF1493","#00FA9A"], ["#00FA9A","#FF1493"],
+  ["#FF6347","#0000CD"], ["#0000CD","#FF6347"],
+  ["#1E90FF","#FF4500"], ["#FF4500","#1E90FF"],
+  ["#FF0000","#00CED1"], ["#00CED1","#FF0000"],
+  ["#32CD32","#FF0000"], ["#FF0000","#32CD32"],
 
   // ==============================
   // アンパンマン風（はっきり色＋対決）
   // ==============================
-  ["#FF4500","#1E90FF"], ["#1E90FF","#FF4500"], // 赤橙 × 青
-  ["#FF6347","#006400"], ["#006400","#FF6347"], // トマト × 濃緑
-  ["#FFA500","#8B00FF"], ["#8B00FF","#FFA500"], // オレンジ × 紫
-  ["#D2691E","#00CED1"], ["#00CED1","#D2691E"], // チョコ × 水色
-  ["#FF7F50","#0000FF"], ["#0000FF","#FF7F50"], // コーラル × 青
-  ["#FFD700","#FF1493"], ["#FF1493","#FFD700"], // 黄 × ピンク
-  ["#FF69B4","#008000"], ["#008000","#FF69B4"], // ピンク × 緑
-  ["#FF4500","#00FFFF"], ["#00FFFF","#FF4500"], // 赤橙 × シアン
-  ["#FFA500","#4B0082"], ["#4B0082","#FFA500"], // オレンジ × インディゴ
-  ["#FF6347","#00FA9A"], ["#00FA9A","#FF6347"], // トマト × 明緑
+  ["#FF4500","#1E90FF"], ["#1E90FF","#FF4500"],
+  ["#FF6347","#006400"], ["#006400","#FF6347"],
+  ["#FFA500","#8B00FF"], ["#8B00FF","#FFA500"],
+  ["#D2691E","#00CED1"], ["#00CED1","#D2691E"],
+  ["#FF7F50","#0000FF"], ["#0000FF","#FF7F50"],
+  ["#FFD700","#FF1493"], ["#FF1493","#FFD700"],
+  ["#FF69B4","#008000"], ["#008000","#FF69B4"],
+  ["#FF4500","#00FFFF"], ["#00FFFF","#FF4500"],
+  ["#FFA500","#4B0082"], ["#4B0082","#FFA500"],
+  ["#FF6347","#00FA9A"], ["#00FA9A","#FF6347"],
 
-// ==============================
-// ミックス追加
-// ==============================
-["#FF4500","#00FF7F"],
-["#00FF7F","#FF4500"],
+  // ==============================
+  // ミックス追加
+  // ==============================
+  ["#FF4500","#00FF7F"], ["#00FF7F","#FF4500"],
+  ["#FFD700","#FF1493"], ["#FF1493","#FFD700"],
+  ["#00CED1","#FF6347"], ["#FF6347","#00CED1"],
+  ["#ADFF2F","#FF69B4"], ["#FF69B4","#ADFF2F"],
+  ["#1E90FF","#FFFF00"], ["#FFFF00","#1E90FF"],
+  ["#FF8C00","#00FA9A"], ["#00FA9A","#FF8C00"],
+  ["#7FFFD4","#FF00FF"], ["#FF00FF","#7FFFD4"],
+  ["#FFB6C1","#00BFFF"], ["#00BFFF","#FFB6C1"],
+  ["#FF4500","#00FFFF"], ["#00FFFF","#FF4500"],
+  ["#FFD700","#00FF7F"], ["#00FF7F","#FFD700"],
 
-["#FFD700","#FF1493"],
-["#FF1493","#FFD700"],
-
-["#00CED1","#FF6347"],
-["#FF6347","#00CED1"],
-
-["#ADFF2F","#FF69B4"],
-["#FF69B4","#ADFF2F"],
-
-["#1E90FF","#FFFF00"],
-["#FFFF00","#1E90FF"],
-
-["#FF8C00","#00FA9A"],
-["#00FA9A","#FF8C00"],
-
-["#7FFFD4","#FF00FF"],
-["#FF00FF","#7FFFD4"],
-
-["#FFB6C1","#00BFFF"],
-["#00BFFF","#FFB6C1"],
-
-["#FF4500","#00FFFF"],
-["#00FFFF","#FF4500"],
-
-["#FFD700","#00FF7F"],
-["#00FF7F","#FFD700"],
-
-// ==============================
-// 追加20パターン
-// ==============================
-["#FF6347","#7FFFD4"],
-["#7FFFD4","#FF6347"],
-
-["#00FA9A","#FF69B4"],
-["#FF69B4","#00FA9A"],
-
-["#1E90FF","#FF1493"],
-["#FF1493","#1E90FF"],
-
-["#FFD700","#8B0000"],
-["#8B0000","#FFD700"],
-
-["#FF8C00","#00CED1"],
-["#00CED1","#FF8C00"],
-
-["#ADFF2F","#FF4500"],
-["#FF4500","#ADFF2F"],
-
-["#32CD32","#FF00FF"],
-["#FF00FF","#32CD32"],
-
-["#7CFC00","#FF1493"],
-["#FF1493","#7CFC00"],
-
-["#00CED1","#FF8C00"],
-["#FF8C00","#00CED1"],
-
-["#D2691E","#00FFFF"],
-["#00FFFF","#D2691E"]
-
+  // ==============================
+  // 追加20パターン
+  // ==============================
+  ["#FF6347","#7FFFD4"], ["#7FFFD4","#FF6347"],
+  ["#00FA9A","#FF69B4"], ["#FF69B4","#00FA9A"],
+  ["#1E90FF","#FF1493"], ["#FF1493","#1E90FF"],
+  ["#FFD700","#8B0000"], ["#8B0000","#FFD700"],
+  ["#FF8C00","#00CED1"], ["#00CED1","#FF8C00"],
+  ["#ADFF2F","#FF4500"], ["#FF4500","#ADFF2F"],
+  ["#32CD32","#FF00FF"], ["#FF00FF","#32CD32"],
+  ["#7CFC00","#FF1493"], ["#FF1493","#7CFC00"],
+  ["#00CED1","#FF8C00"], ["#FF8C00","#00CED1"],
+  ["#D2691E","#00FFFF"], ["#00FFFF","#D2691E"]
 ];
 
   // スクロール内容構築
@@ -6216,7 +5912,7 @@ const combos = [
   {court:"#32CD32", out:"#006400"},
 
   // ===========================
-  // ✅ ハード（青・緑系）
+  // ✅ ハード（青系）
   // ===========================
   {court:"#1E90FF", out:"#006400"},
   {court:"#4169E1", out:"#006400"},
@@ -6242,7 +5938,6 @@ const combos = [
   {court:"#2E8B57", out:"#006400"},
   {court:"#008000", out:"#006400"},
   {court:"#3CB371", out:"#2E8B57"},
-  {court:"#32CD32", out:"#006400"},
 
   // ===========================
   // ✅ 混合（実在しそう）
@@ -6319,32 +6014,31 @@ const combos = [
   {court:"#CCB072", out:"#3060A0"},
   {court:"#E0D19A", out:"#505050"},
   {court:"#D8C48C", out:"#4070A0"},
-  {court:"#CCB072", out:"#505050"},
   {court:"#D9D09A", out:"#306080"},
 
-/* ===========================
-✅ 非現実的・明るめコート × 暗めアウト（白文字OK）
-=========================== */
-  {court:"#FFFF00", out:"#006666"}, // 黄色 × 暗いシアン
-  {court:"#FF69B4", out:"#660033"}, // ホットピンク × 暗い赤紫
-  {court:"#FFA500", out:"#334400"}, // オレンジ × 暗い緑
-  {court:"#FF4500", out:"#333300"}, // 赤橙 × 暗い黄緑
-  {court:"#7CFC00", out:"#003300"}, // ライムグリーン × 濃緑
-  {court:"#00FFFF", out:"#004444"}, // シアン × 暗い青緑
-  {court:"#FF00FF", out:"#440044"}, // マゼンタ × 暗い紫
-  {court:"#00FF7F", out:"#004422"}, // 春緑 × 暗い緑
-  {court:"#FFD700", out:"#664400"}, // 金色 × 暗い茶色
-  {court:"#7FFF00", out:"#336600"}, // チャートリューズ × 暗い緑
-  {court:"#00FF00", out:"#003300"}, // 緑 × 濃緑
-  {court:"#FF6347", out:"#332200"}, // トマト × 暗め茶色
-  {court:"#FF1493", out:"#440033"}, // 深ピンク × 暗め紫
-  {court:"#FFA07A", out:"#443300"}, // サーモン × 暗め茶色
-  {court:"#00FFFF", out:"#002222"}, // シアン × 超濃青緑
-  {court:"#FFD700", out:"#332200"}, // 金色 × 暗め茶
-  {court:"#FF4500", out:"#330011"}, // 赤橙 × 暗い紫赤
-  {court:"#7FFF00", out:"#223300"}, // チャートリューズ × 暗緑
-  {court:"#FF00FF", out:"#330033"}, // マゼンタ × 暗紫
-  {court:"#00FF7F", out:"#002211"}  // 春緑 × 超暗緑
+  // ===========================
+  // ✅ 非現実的・明るめコート × 暗めアウト
+  // ===========================
+  {court:"#FFFF00", out:"#006666"},
+  {court:"#FF69B4", out:"#660033"},
+  {court:"#FFA500", out:"#334400"},
+  {court:"#FF4500", out:"#333300"},
+  {court:"#7CFC00", out:"#003300"},
+  {court:"#00FFFF", out:"#004444"},
+  {court:"#FF00FF", out:"#440044"},
+  {court:"#00FF7F", out:"#004422"},
+  {court:"#FFD700", out:"#664400"},
+  {court:"#7FFF00", out:"#336600"},
+  {court:"#00FF00", out:"#003300"},
+  {court:"#FF6347", out:"#332200"},
+  {court:"#FF1493", out:"#440033"},
+  {court:"#FFA07A", out:"#443300"},
+  {court:"#00FFFF", out:"#002222"},
+  {court:"#FFD700", out:"#332200"},
+  {court:"#FF4500", out:"#330011"},
+  {court:"#7FFF00", out:"#223300"},
+  {court:"#FF00FF", out:"#330033"},
+  {court:"#00FF7F", out:"#002211"},
 ];
 
 const wrapper = document.getElementById("picker");
