@@ -19,6 +19,7 @@
 <meta name="theme-color" content="#006400">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ソフトテニスSB">
 
 <!-- マニフェスト（別ファイル） -->
 <link rel="manifest" href="manifest.json">
@@ -32,6 +33,7 @@
 
   gtag('config', 'G-ZJXT1XNPN2');
 </script>
+</head>
 
 <style>
 html,body{
@@ -343,7 +345,7 @@ button:hover { opacity: 0.9; }
 /* 上部透明枠 */
 #setupExtraTop {
   width: 100%;
-  height: 80px;
+  height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -359,7 +361,7 @@ button:hover { opacity: 0.9; }
 /* 下余白透明枠 */
 #setupSubFrame {
   width: 100%;
-  height: 8px;
+  height: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -369,7 +371,7 @@ button:hover { opacity: 0.9; }
 /* アナウンス上段 */
 #setupHintTextTop {
   width: 100%;
-  height: 28px;
+  height: 34px;
   margin: 4px 0;
   pointer-events: none;
   text-align: center;
@@ -725,6 +727,15 @@ button:hover { opacity: 0.9; }
   transform: translateY(3px);
 }
 
+/* 著作権関連 */
+#settingsFooter {
+  margin-top: 16px;
+  padding-top: 8px;
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.6;
+}
+
 /* ------------------------------------------- 設定画面全体 ------------------------------------------- */
 
 /* 試合画面全体 */
@@ -831,7 +842,7 @@ button:hover { opacity: 0.9; }
 .wi-snow, .wi-snowflake-cold { color: #CAF0F8; background: #CAF0F833; }
 .wi-na { color: #FF6B6B; background: #FF6B6B33; }
 
-/* 住所表示は常に4文字＋"…"に対応 */
+/* 天気ボックス 通常（市区町村） */
 #weatherBox span.region {
     display: inline-block;
     max-width: 38px;  /* ★ 4文字＋…に最適化 */
@@ -839,6 +850,12 @@ button:hover { opacity: 0.9; }
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 11px;
+}
+
+/* ★ 県表示時だけ一段小さく */
+#weatherBox span.region.prefecture {
+    font-size: 10px;
+    opacity: 0.9; /* 任意：少しだけ控えめ */
 }
 
 /* モーダルは現状維持 */
@@ -854,12 +871,11 @@ button:hover { opacity: 0.9; }
 }
 
 #addressModalContent {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    width: 80%;
-    max-width: 300px;
-    text-align: center;
+    background:#fff;
+    padding:20px;
+    border-radius:8px;
+    width:300px;
+    color:#333;   /* ← 追加 */
 }
 
 #addressModalContent input {
@@ -2407,6 +2423,12 @@ body::after {
       <button class="start-btn" onclick="startMatch()">試合開始</button>
     </div>
 
+<!-- 著作権関連表示 -->
+<div id="settingsFooter">
+  © 2025-2026 Tok.DoT / Hiroki Sato. All rights reserved.
+</div>
+<!-- 著作権関連表示 -->
+
 </div> <!-- setupScreen閉じ -->
 </div> <!-- setup-block閉じ -->
 
@@ -2431,7 +2453,7 @@ body::after {
 <!-- 住所入力モーダル -->
 <div id="addressModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
     <div id="addressModalContent" style="background:#fff; padding:20px; border-radius:8px; width:300px;">
-        <p>住所を入力してください</p>
+        <p>住所を入力し検索してください</p>
 
         <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市" style="width:100%; padding:6px; margin-bottom:10px; box-sizing:border-box;">
 
@@ -2890,7 +2912,16 @@ body::after {
 <!-- ==================== シンプル OKのみ ダイアログ ==================== -->
 
 <script>
+/* ================== 本番・開発切り替え ================== */
+const IS_PRODUCTION = true;
+
+function devLog(...args){
+  if(!IS_PRODUCTION) console.log(...args);
+}
+/* ======================================================== */
+
 // -------------------- 既存のゲームロジック --------------------
+
 // -------------------- 試合管理用変数 --------------------
 let pointA = 0;
 let pointB = 0;
@@ -4058,7 +4089,7 @@ function rotateCourt(angle) {
 
   // 🔥 ゲーム終了中は回転禁止（ここで完全に止める）
   if (matchEnded) {
-    console.log("ゲーム終了中のため回転しません");
+    devLog("ゲーム終了中のため回転しません");
     return;
   }
 
@@ -4076,7 +4107,7 @@ function rotateCourtIndependent(angle) {
 
   // 🔥 ゲーム終了中は回転禁止
   if (matchEnded) {
-    console.log("ゲーム終了中のため独立回転しません");
+    devLog("ゲーム終了中のため独立回転しません");
     return;
   }
 
@@ -4109,7 +4140,7 @@ function resetCourtRotation() {
 
   // 🔥 ゲーム終了中はリセット禁止（回転処理を止める）
   if (matchEnded) {
-    console.log("ゲーム終了中のためリセットしません");
+    devLog("ゲーム終了中のためリセットしません");
     return;
   }
 
@@ -6850,8 +6881,17 @@ function codeToWeather(code) {
 
 // 天気ボックス用: 市まで
 function formatCityAddress(address) {
-    if (!address) return "";
-    return address.city || address.county || address.municipality || "不明";
+    if (!address) return "不明";
+
+    // 市区町村を最優先
+    if (address.city) return address.city;
+    if (address.county) return address.county;
+    if (address.municipality) return address.municipality;
+
+    // 市が無い場合は県を表示
+    if (address.province) return address.province;
+
+    return "不明";
 }
 
 // ダイアログ用: 町までフル
@@ -6876,11 +6916,12 @@ function adjustFontSize(el, max=13, min=8) {
 function loadWeather(lat, lon, displayRegion) {
     lastLat = lat;
     lastLon = lon;
+
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability&timezone=Asia/Tokyo`;
 
     fetch(url)
-        .then(res=>res.json())
-        .then(data=>{
+        .then(res => res.json())
+        .then(data => {
             const w = data.current_weather;
             const hour = new Date().getHours();
             const precipProb = data.hourly.precipitation_probability[hour];
@@ -6889,13 +6930,29 @@ function loadWeather(lat, lon, displayRegion) {
             lastRegion = displayRegion;
 
             const weatherBox = document.getElementById("weatherBox");
-            weatherBox.innerHTML = `<span class="region">${displayRegion}</span> ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%`;
-            adjustFontSize(weatherBox,13,8);
+
+            // ★ 県（都道府県）かどうか判定
+            const isPrefecture = /[都道府県]$/.test(displayRegion);
+
+            // ★ class を付け替え
+            weatherBox.innerHTML = `
+                <span class="region ${isPrefecture ? 'prefecture' : ''}">
+                    ${displayRegion}
+                </span>
+                ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%
+            `;
+
+            adjustFontSize(weatherBox, 13, 8);
 
             const icon = weatherBox.querySelector("i");
-            if(icon) icon.style.fontSize = Math.min(16, weatherBox.clientHeight-4) + "px";
+            if (icon) {
+                icon.style.fontSize =
+                    Math.min(16, weatherBox.clientHeight - 4) + "px";
+            }
         })
-        .catch(()=>document.getElementById("weatherBox").textContent="取得失敗");
+        .catch(() => {
+            document.getElementById("weatherBox").textContent = "取得失敗";
+        });
 }
 
 // 住所 → 緯度経度
@@ -7061,7 +7118,7 @@ const isLocal =
   location.hostname === '0.0.0.0' ||
   location.hostname.startsWith('192.168.') ||
   location.hostname.startsWith('10.') ||
-  location.hostname.startsWith('172.16.');
+  location.hostname.match(/^172\.(1[6-9]|2\d|3[01])\./)
 
 // ---- Service Worker 対応ブラウザか ----
 if ('serviceWorker' in navigator) {
@@ -7075,7 +7132,7 @@ if ('serviceWorker' in navigator) {
       for (const reg of regs) {
         await reg.unregister();
       }
-      console.log('SW disabled (development)');
+      devLog('SW disabled (development)');
     });
 
   } else {
@@ -7084,8 +7141,8 @@ if ('serviceWorker' in navigator) {
     // =====================================================
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('SW registered (production)'))
-        .catch(err => console.log('SW error:', err));
+        .then(() => devLog('SW registered (production)'))
+        .catch(err => console.error('SW error:', err));
     });
   }
 }

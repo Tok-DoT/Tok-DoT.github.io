@@ -1,6 +1,6 @@
 {
-  "name": "ソフトテニス ダブルスマッチスコアボードアプリ",
-  "short_name": "ソフトテニススコア",
+  "name": "ソフトテニス ダブルスマッチ スコアボード",
+  "short_name": "ソフトテニスSB",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1B5E20",
