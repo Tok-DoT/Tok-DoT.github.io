@@ -856,19 +856,17 @@ button:hover { opacity: 0.9; }
 /* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
 #dateWeatherContainer {
     width: 95%;
-    max-width: 390px;
+    max-width: 400px; /* ← 390px → 400px */
     margin: 2px auto;
     display: flex;
-    flex-direction: column; /* 2段表示 */
-    justify-content: center;
-    align-items: center; /* 天気を中央に */
-    padding: 6px 8px; /* 少し広めに */
+    flex-direction: column;   /* ※2段表示を維持 */
+    gap: 4px;
+    padding: 6px 10px;
     background: rgba(0, 0, 0, 0.25);
     border-radius: 12px;
     backdrop-filter: blur(4px);
     color: #fff;
     font-family: "Segoe UI", sans-serif;
-    overflow: hidden;
 }
 
 /* 日時（少し大きく） */
@@ -890,17 +888,18 @@ button:hover { opacity: 0.9; }
 #weatherBox {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;   /* 中央寄せは維持 */
 
     font-size: 12px;
     font-weight: 400;
-    gap: 6px;
+    gap: 8px;                  /* 少し余裕を持たせる */
 
-    max-width: 100%;      /* ← コンテナいっぱい使う */
-    white-space: nowrap; /* 1段は維持 */
-    overflow: hidden;    /* はみ出し防止 */
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;       /* 1段表示維持 */
+
+    overflow: visible;         /* ← 重要：切らない */
 }
-
 
 /* 天気アイコン */
 #weatherBox i {
@@ -5617,7 +5616,38 @@ const teamCombos = [
   {teamA:"#ffb0d0", teamB:"#7fe0b0"}, {teamA:"#7fe0b0", teamB:"#ffb0d0"},
   {teamA:"#ffd99e", teamB:"#8ab2ff"}, {teamA:"#8ab2ff", teamB:"#ffd99e"},
   {teamA:"#ff92b4", teamB:"#9ae5ff"}, {teamA:"#9ae5ff", teamB:"#ff92b4"},
-  {teamA:"#ffba90", teamB:"#86b0ff"}, {teamA:"#86b0ff", teamB:"#ffba90"}
+  {teamA:"#ffba90", teamB:"#86b0ff"}, {teamA:"#86b0ff", teamB:"#ffba90"},
+
+// ==============================
+// 濃い色 × 白（コントラスト強化・整理版）
+// ==============================
+
+// 赤系（代表1色）
+{teamA:"#FF1744", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#FF1744"},
+
+// 紫系（代表1色）
+{teamA:"#6200EA", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#6200EA"},
+
+// 青系（代表1色）
+{teamA:"#2962FF", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#2962FF"},
+
+// 緑系（代表1色）
+{teamA:"#1B5E20", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#1B5E20"},
+
+// 黄・橙系（1色）
+{teamA:"#FF9100", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#FF9100"},
+
+// ピンク系（スプラ系代表）
+{teamA:"#FF3CAC", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#FF3CAC"},
+
+// シアン系
+{teamA:"#00B0FF", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#00B0FF"},
+
+// 茶系（モンハン代表）
+{teamA:"#8B4513", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#8B4513"},
+
+// 緑（鮮やか寄り・別系統）
+{teamA:"#008000", teamB:"#ffffff"}, {teamA:"#ffffff", teamB:"#008000"}
 
 ];
 
@@ -6768,11 +6798,11 @@ function getSafeJapaneseDateTime() {
     if (weekIndex === 0) weekClass = 'week-sun';
     if (weekIndex === 6) weekClass = 'week-sat';
 
-    // 午前・午後判定
+    // 午前・午後
     const hour24 = d.getHours();
     const ampm = hour24 < 12 ? '午前' : '午後';
 
-    // 12時間制（0時 → 12）
+    // 12時間制
     let hour12 = hour24 % 12;
     if (hour12 === 0) hour12 = 12;
 
@@ -6780,7 +6810,22 @@ function getSafeJapaneseDateTime() {
     const min = String(d.getMinutes()).padStart(2,'0');
     const sec = String(d.getSeconds()).padStart(2,'0');
 
-    return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>） ${ampm} ⏰ ${h}:${min}<span style="opacity:0.7;font-size:0.9em">:${sec}</span>`;
+   return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>）
+ <span style="
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   width:1.45em;
+   height:1.45em;
+   border-radius:50%;
+   background:#ffffff;
+   color:#000000;
+   font-size:0.95em;
+   margin:0 4px;
+ ">⏰</span>
+ <span style="margin-right:4px;">${ampm}</span>
+ ${h}:${min}<span style="opacity:0.7;font-size:0.9em">:${sec}</span>`;
+
 }
 
 function startSafeDateTime() {
@@ -6915,7 +6960,7 @@ function loadWeather(lat, lon, displayRegion) {
     ${isThunder ? '<span class="thunder-alert">⚡</span>' : ''}
 `;
 
-            adjustFontSize(weatherBox, 13, 8);
+            adjustFontSize(weatherBox, 13, 10);
 
             const icon = weatherBox.querySelector("i");
             if (icon) {
