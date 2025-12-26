@@ -853,50 +853,58 @@ button:hover { opacity: 0.9; }
   gap: 2px; /* A・vs・B の間のバランス調整 */
 }
 
-/* ------------------- お天気と日時 ------------------- */
+/* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
 #dateWeatherContainer {
     width: 95%;
-    max-width: 390px; /* ★ 最大幅を390pxに固定 */
+    max-width: 390px;
     margin: 2px auto;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 8px; /* 少し細く調整 */
+    flex-direction: column; /* 2段表示 */
+    justify-content: center;
+    align-items: center; /* 天気を中央に */
+    padding: 6px 8px; /* 少し広めに */
     background: rgba(0, 0, 0, 0.25);
     border-radius: 12px;
     backdrop-filter: blur(4px);
     color: #fff;
     font-family: "Segoe UI", sans-serif;
-    overflow: hidden; /* はみ出し防止 */
+    overflow: hidden;
 }
 
-/* 日時（フォントを少し小さめに） */
+/* 日時（少し大きく） */
 #safeDateTimeBox {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     white-space: nowrap;
-    margin-right: 0.3em;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 2px; /* 天気との間隔 */
 }
 
-/* 天気全体枠（強制390px制御用） */
+/* 曜日カラー */
+.week-sun { color: #ff6b6b; }   /* 日曜 */
+.week-sat { color: #4dabf7; }   /* 土曜 */
+.week-weekday { color: #ffffff; } /* 平日 */
+
+/* 天気全体枠 */
 #weatherBox {
-    font-size: 11px; /* ★ 全体を小さくスタート */
-    white-space: nowrap;
     display: flex;
     align-items: center;
-    gap: 4px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    cursor: pointer;
-    height: 22px;
-    max-width: 180px; /* ★ ← 少し幅を制限しバランス調整 */
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 400;
+    gap: 6px;
+
+    max-width: 100%;      /* ← コンテナいっぱい使う */
+    white-space: nowrap; /* 1段は維持 */
+    overflow: hidden;    /* はみ出し防止 */
 }
+
 
 /* 天気アイコン */
 #weatherBox i {
-    font-size: 14px; /* 初期値（後で JS が自動調整） */
+    font-size: 15px;
     padding: 1px;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
@@ -919,40 +927,95 @@ button:hover { opacity: 0.9; }
 .wi-snow, .wi-snowflake-cold { color: #CAF0F8; background: #CAF0F833; }
 .wi-na { color: #FF6B6B; background: #FF6B6B33; }
 
-/* 天気ボックス 通常（市区町村） */
 #weatherBox span.region {
-    display: inline-block;
-    max-width: 38px;  /* ★ 4文字＋…に最適化 */
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
     white-space: nowrap;
-    font-size: 11px;
+    font-size: 12px; /* 任意 */
 }
 
-/* ★ 県表示時だけ一段小さく */
+
 #weatherBox span.region.prefecture {
-    font-size: 10px;
-    opacity: 0.9; /* 任意：少しだけ控えめ */
+    font-size: 11px;
+    opacity: 0.9;
 }
 
-/* モーダルは現状維持 */
+#weatherBox .weather-name {
+    opacity: 0.85;      /* 少し控えめ */
+    margin-right: 2px; /* 数値との間隔 */
+}
+
+/* 雷注意（2回速く点滅） */
+.thunder-alert {
+    animation: thunderDoubleBlink 1.6s infinite;
+}
+
+@keyframes thunderDoubleBlink {
+    /* 1回目 */
+    0%   { opacity: 1; }
+    10%  { opacity: 0.2; }
+    20%  { opacity: 1; }
+
+    /* 少し間をあけて2回目 */
+    35%  { opacity: 0.2; }
+    45%  { opacity: 1; }
+
+    /* 残りは待機（落ち着かせる） */
+    100% { opacity: 1; }
+}
+
+/* 大雨強調 */
+.heavy-rain {
+    color: #00b4d8;
+    font-weight: 600;
+    animation: rainPulse 1.4s infinite;
+}
+
+@keyframes rainPulse {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* 強風アニメ */
+.strong-wind {
+    display: inline-block;
+    animation: windSwing 0.6s infinite ease-in-out;
+}
+
+@keyframes windSwing {
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(-2px); }
+    50%  { transform: translateX(2px); }
+    75%  { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
+
+/* モーダル位置調整（画面トップに近く表示） */
 #addressModal {
-    display: none;
+    display: none;              /* ← 初期は非表示 */
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4);
-    justify-content: center;
-    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+
+    justify-content: center;    /* JSで表示された時に有効 */
+    align-items: flex-start;    /* 上寄せ */
+    padding-top: 60px;
+
     z-index: 9999;
 }
+
 
 #addressModalContent {
     background:#fff;
     padding:20px;
     border-radius:8px;
     width:300px;
-    color:#333;   /* ← 追加 */
+    color:#333;
 }
 
 #addressModalContent input {
@@ -977,7 +1040,7 @@ button:hover { opacity: 0.9; }
 #addressModalContent button:hover {
     background-color: #0096C7;
 }
-/* ------------------- お天気と日時 ------------------- */
+/* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
 
 /* 試合画面_大会名表示 */
 #tournamentDisplay {
@@ -2514,13 +2577,13 @@ body::after {
       <p>
         最終更新日：2025年12月25日<br><br>
         本アプリは、部活動やスポーツ観戦の応援を主な目的として作成されています。<br>
-        特にソフトテニスはルールが複雑で、スコアボードのない公式試合も多いため、観覧者が得点を記録しながら試合をより楽しく応援できるように設計しました。<br><br>
+        特にソフトテニスはルールが複雑で、スコアボードのない公式試合も多いため、観戦者が得点を記録しながら、より楽しく応援できるように設計しました。<br><br>
 
         <strong>1. 利用条件</strong><br>
-        本アプリは、個人での応援や部活動のサポートなど、応援目的でご利用ください。<br>
+        本アプリは、個人での応援や部活動のサポートなど、応援目的で無料で自由にご利用いただけます。<br>
         商用利用、再配布、改変はご遠慮ください。<br>
         <em>禁止行為の例：</em><br>
-        - 不正アクセスや改ざん行為<br>
+        - 不正アクセスや不正な改ざん行為<br>
         - 他の利用者に迷惑をかける行為<br>
         - 法律・公序良俗に反する行為<br><br>
 
@@ -2565,39 +2628,30 @@ body::after {
     <!-- 日時 -->
     <div id="safeDateTimeBox"></div>
 
-    <!-- ★ 日時との間に必ず半角スペースを入れる（&nbsp;でもOK） -->
-    <div style="width:8px;"></div>
-
     <!-- 天気（クリックで住所入力） -->
     <div id="weatherBox" style="cursor:pointer;"></div>
 </div>
 
 <!-- 住所入力モーダル -->
-<div id="addressModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
-    <div id="addressModalContent" style="background:#fff; padding:20px; border-radius:8px; width:300px;">
+<div id="addressModal">
+    <div id="addressModalContent">
         <p>住所を入力し検索してください</p>
-
-        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市" style="width:100%; padding:6px; margin-bottom:10px; box-sizing:border-box;">
-
-        <!-- 横並びボタン -->
+        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市">
         <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end; margin-bottom:10px;">
             <button id="addressSearchBtn" style="background-color:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:4px;">検索</button>
             <button id="addressConfirmBtn" disabled style="background-color:#008CBA; color:white; border:none; padding:6px 12px; border-radius:4px;">決定</button>
             <button id="addressCancelBtn" style="background-color:#f44336; color:white; border:none; padding:6px 12px; border-radius:4px;">キャンセル</button>
         </div>
-
-        <!-- 自動判定された住所の表示エリア -->
         <div id="resolvedAddress" style="
             margin-top:10px;
             padding-top:6px;
             font-size:12px;
-            color:#000080; /* 紺色 */
+            color:#000080;
             line-height:1.4;
             border-top:1px solid rgba(0,0,0,0.15);
         "></div>
     </div>
 </div>
-
 <!-- ================== お天気と日時 ================== -->
 
 <!-- 試合画面大会名表示 -->
@@ -6700,27 +6754,49 @@ let lastLat = 37.75;
 let lastLon = 140.47;
 let weatherInterval = null;
 
-// 日時表示
+// 日時表示（午前／午後＋⏰＋秒控えめ＋曜日色分け）
 function getSafeJapaneseDateTime() {
     const d = new Date();
     const y = d.getFullYear() - 2018;
     const m = d.getMonth() + 1;
     const day = d.getDate();
-    const w = ['日','月','火','水','木','金','土'][d.getDay()];
-    const h = String(d.getHours()).padStart(2,'0');
+
+    const weekIndex = d.getDay();
+    const weekChar = ['日','月','火','水','木','金','土'][weekIndex];
+
+    let weekClass = 'week-weekday';
+    if (weekIndex === 0) weekClass = 'week-sun';
+    if (weekIndex === 6) weekClass = 'week-sat';
+
+    // 午前・午後判定
+    const hour24 = d.getHours();
+    const ampm = hour24 < 12 ? '午前' : '午後';
+
+    // 12時間制（0時 → 12）
+    let hour12 = hour24 % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    const h = String(hour12).padStart(2,'0');
     const min = String(d.getMinutes()).padStart(2,'0');
     const sec = String(d.getSeconds()).padStart(2,'0');
-    return `令和${y}年${m}月${day}日（${w}） ${h}:${min}:${sec}`;
+
+    return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>） ${ampm} ⏰ ${h}:${min}<span style="opacity:0.7;font-size:0.9em">:${sec}</span>`;
 }
+
 function startSafeDateTime() {
     const box = document.getElementById("safeDateTimeBox");
     if (!box) return;
     if (safeDateInterval) clearInterval(safeDateInterval);
-    box.textContent = getSafeJapaneseDateTime();
+
+    // 初回表示
+    box.innerHTML = getSafeJapaneseDateTime();
+
+    // 1秒ごと更新
     safeDateInterval = setInterval(() => {
-        box.textContent = getSafeJapaneseDateTime();
+        box.innerHTML = getSafeJapaneseDateTime();
     }, 1000);
 }
+
 window.addEventListener("DOMContentLoaded", startSafeDateTime);
 
 // 天気コード変換
@@ -6792,7 +6868,12 @@ function loadWeather(lat, lon, displayRegion) {
     lastLat = lat;
     lastLon = lon;
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=precipitation_probability&timezone=Asia/Tokyo`;
+    const url = `https://api.open-meteo.com/v1/forecast
+?latitude=${lat}
+&longitude=${lon}
+&current_weather=true
+&hourly=precipitation_probability,apparent_temperature
+&timezone=Asia/Tokyo`;
 
     fetch(url)
         .then(res => res.json())
@@ -6801,7 +6882,8 @@ function loadWeather(lat, lon, displayRegion) {
             const hour = new Date().getHours();
             const precipProb = data.hourly.precipitation_probability[hour];
             const info = codeToWeather(w.weathercode);
-
+            const isThunder = w.weathercode >= 95;
+           
             lastRegion = displayRegion;
 
             const weatherBox = document.getElementById("weatherBox");
@@ -6810,12 +6892,28 @@ function loadWeather(lat, lon, displayRegion) {
             const isPrefecture = /[都道府県]$/.test(displayRegion);
 
             // ★ class を付け替え
+            const temp = Math.round(w.temperature);
+            const feels = Math.round(data.hourly.apparent_temperature[hour]);
+            const wind = Math.round(w.windspeed);
+            const rain = Math.round(precipProb);
+            const isHeavyRain = precipProb >= 70;
+            const isStrongWind = wind >= 8;
+
             weatherBox.innerHTML = `
-                <span class="region ${isPrefecture ? 'prefecture' : ''}">
-                    ${displayRegion}
-                </span>
-                ${info.icon} ${info.name} ${w.temperature}℃ ${precipProb}%
-            `;
+    <span class="region ${isPrefecture ? 'prefecture' : ''}">
+        ${displayRegion}
+    </span>
+    ${info.icon}
+    <span class="weather-name">${info.name}</span>
+    ${w.temperature}℃ / 体${feels}℃　
+    <span class="wind ${isStrongWind ? 'strong-wind' : ''}">
+    🍃${wind}m/s
+    </span>
+　  <span class="rain ${isHeavyRain ? 'heavy-rain' : ''}">
+    ☔${precipProb}%
+    </span>
+    ${isThunder ? '<span class="thunder-alert">⚡</span>' : ''}
+`;
 
             adjustFontSize(weatherBox, 13, 8);
 
