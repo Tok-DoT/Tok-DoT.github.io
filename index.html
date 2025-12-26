@@ -968,27 +968,11 @@ button:hover { opacity: 0.9; }
 .heavy-rain {
     color: #00b4d8;
     font-weight: 600;
-    animation: rainPulse 1.4s infinite;
-}
-
-@keyframes rainPulse {
-    0%   { opacity: 1; }
-    50%  { opacity: 0.5; }
-    100% { opacity: 1; }
 }
 
 /* 強風アニメ */
 .strong-wind {
     display: inline-block;
-    animation: windSwing 0.6s infinite ease-in-out;
-}
-
-@keyframes windSwing {
-    0%   { transform: translateX(0); }
-    25%  { transform: translateX(-2px); }
-    50%  { transform: translateX(2px); }
-    75%  { transform: translateX(-2px); }
-    100% { transform: translateX(0); }
 }
 
 /* モーダル位置調整（画面トップに近く表示） */
@@ -6810,20 +6794,8 @@ function getSafeJapaneseDateTime() {
     const min = String(d.getMinutes()).padStart(2,'0');
     const sec = String(d.getSeconds()).padStart(2,'0');
 
-   return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>）
- <span style="
-   display:inline-flex;
-   align-items:center;
-   justify-content:center;
-   width:1.45em;
-   height:1.45em;
-   border-radius:50%;
-   background:#ffffff;
-   color:#000000;
-   font-size:0.95em;
-   margin:0 4px;
- ">⏰</span>
- <span style="margin-right:4px;">${ampm}</span>
+ return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>）
+ <span style="margin-left:4px;">${ampm}</span>
  ${h}:${min}<span style="opacity:0.7;font-size:0.9em">:${sec}</span>`;
 
 }
@@ -6951,12 +6923,8 @@ function loadWeather(lat, lon, displayRegion) {
     ${info.icon}
     <span class="weather-name">${info.name}</span>
     ${w.temperature}℃ / 体${feels}℃　
-    <span class="wind ${isStrongWind ? 'strong-wind' : ''}">
-    🍃${wind}m/s
-    </span>
-　  <span class="rain ${isHeavyRain ? 'heavy-rain' : ''}">
-    ☔${precipProb}%
-    </span>
+    <span class="wind">🍃${wind}m/s</span>
+　  <span class="rain">☔${precipProb}%</span>
     ${isThunder ? '<span class="thunder-alert">⚡</span>' : ''}
 `;
 
