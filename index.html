@@ -855,7 +855,7 @@ button:hover { opacity: 0.9; }
 
 /* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
 #dateWeatherContainer {
-    width: 95%;
+    width: 100%;
     max-width: 400px; /* ← 390px → 400px */
     margin: 2px auto;
     display: flex;
@@ -871,12 +871,12 @@ button:hover { opacity: 0.9; }
 
 /* 日時（少し大きく） */
 #safeDateTimeBox {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 2px; /* 天気との間隔 */
+    margin-bottom: 0px; /* 天気との間隔 */
 }
 
 /* 曜日カラー */
@@ -892,13 +892,14 @@ button:hover { opacity: 0.9; }
 
     font-size: 12px;
     font-weight: 400;
-    gap: 8px;                  /* 少し余裕を持たせる */
+
+    gap: 4px;                  /* ★ 8px → 4px に調整（詰めすぎない最適値） */
 
     width: 100%;
     max-width: 100%;
     white-space: nowrap;       /* 1段表示維持 */
 
-    overflow: visible;         /* ← 重要：切らない */
+    overflow: visible;         /* ← 切らない */
 }
 
 /* 天気アイコン */
@@ -945,34 +946,33 @@ button:hover { opacity: 0.9; }
     margin-right: 2px; /* 数値との間隔 */
 }
 
-/* 雷注意（2回速く点滅） */
-.thunder-alert {
-    animation: thunderDoubleBlink 1.6s infinite;
+/* 天気表示の横間隔を完全に均一化 */
+#weatherBox span,
+#weatherBox i {
+    margin-right: 4px;
 }
 
-@keyframes thunderDoubleBlink {
-    /* 1回目 */
-    0%   { opacity: 1; }
-    10%  { opacity: 0.2; }
-    20%  { opacity: 1; }
-
-    /* 少し間をあけて2回目 */
-    35%  { opacity: 0.2; }
-    45%  { opacity: 1; }
-
-    /* 残りは待機（落ち着かせる） */
-    100% { opacity: 1; }
+/* 最後だけ余白なし */
+#weatherBox span:last-child,
+#weatherBox i:last-child {
+    margin-right: 0;
 }
 
-/* 大雨強調 */
+/* 風 */
+.strong-wind {
+    color: #4fa3ff;
+}
+
+/* 雨 */
 .heavy-rain {
-    color: #00b4d8;
+    color: #2b7cff;
     font-weight: 600;
 }
 
-/* 強風アニメ */
-.strong-wind {
-    display: inline-block;
+/* 雷 */
+.thunder-alert {
+    color: #ffcc00;
+    font-weight: 600;
 }
 
 /* モーダル位置調整（画面トップに近く表示） */
@@ -3163,9 +3163,13 @@ let isTextInputActive = false;
 let updatingPositions = false;
 let resizeTimer = null;
 
-let finalGameTimeoutId = null;
-
 let allowExit = false;
+
+// ==================== 共通フラグ・タイマー ====================
+let isUndoing = false;               // Undo 中フラグ
+let finalGameTimeoutId = null;       // ファイナルゲーム表示タイマー
+let matchWinnerTimeoutId = null;     // 勝利表示タイマー
+const MAX_HISTORY = 100;             // Undo 履歴上限
 
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
@@ -4642,16 +4646,12 @@ function bumpDisplayVersion() {
     displayVersion++;
 }
 
-// -------------------- ポイント加算（安全版） --------------------
+// ==================== addPoint（安全版） ====================
 function addPoint(team) {
     bumpDisplayVersion();
     if (!matchControlsEnabled || matchEnded) return;
 
-    const finalThreshold =
-        matchType === 5 ? 2 :
-        matchType === 7 ? 3 :
-        matchType === 9 ? 4 : null;
-
+    const finalThreshold = getFinalThreshold(matchType);
     const inFinalGame =
         finalThreshold !== null &&
         gameA === finalThreshold &&
@@ -4668,20 +4668,17 @@ function addPoint(team) {
         finalInitDone,
         lastTotalPoints,
         matchEnded,
-
-        // ★ 重要：finalGameActive を必ず保存
         finalGameActive,
-
         courtRotation,
         independentRotation,
         rotation: courtRotation + independentRotation,
-
         finalText: document.getElementById("finalDisplay")?.textContent || "",
-        finalGradient:
-            document.getElementById("finalDisplay")
-                ?.classList.contains("final-gradient") || false,
+        finalGradient: document.getElementById("finalDisplay")?.classList.contains("final-gradient") || false,
         deuceText: document.getElementById("deuceDisplay")?.textContent || "",
     });
+
+    // 最大履歴数制限
+    if (historyStack.length > MAX_HISTORY) historyStack.shift();
 
     // --- ポイント加算 ---
     if (team === "A") scoreA++;
@@ -4689,8 +4686,7 @@ function addPoint(team) {
 
     // --- ファイナル開始時サーバー初期化 ---
     let finalJustStarted = false;
-    if (
-        !finalInitDone &&
+    if (!finalInitDone &&
         finalThreshold !== null &&
         gameA === finalThreshold - 1 &&
         gameB === finalThreshold - 1 &&
@@ -4703,133 +4699,94 @@ function addPoint(team) {
         finalInitDone = true;
         lastTotalPoints = 0;
         updateServerIndicator();
-
         finalJustStarted = true;
     }
 
-    // --- 状態・UI更新 ---
     checkGameStatus();
     updateScore();
     updatePointCall();
     if (currentServerTeam) refereeCall();
 
-    const infoMsg =
-        (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
+    const infoMsg = (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
     showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
     adjustAllInfoFonts();
 
-    // --- ファイナル突入表示 ---
     if (finalJustStarted) {
-        if (finalGameDisplayTimeout)
-            clearTimeout(finalGameDisplayTimeout);
-
-        finalGameDisplayTimeout = setTimeout(() => {
+        clearAllTimers();
+        finalGameTimeoutId = setTimeout(() => {
+            if (!finalGameActive || matchEnded || isUndoing) return;
             showFinalGameEntryDisplay();
         }, 5000);
     }
 }
 
-// -------------------- Undo ポイント（安全版） --------------------
+// ==================== undoPoint（安全版） ====================
 function undoPoint(event) {
     bumpDisplayVersion();
     if (event) event.stopPropagation();
     if (historyStack.length === 0) return;
 
+    isUndoing = true;       // ★ Undo開始
+
+    clearAllTimers();       // ★ 既存タイマー破棄
+
     const last = historyStack.pop();
 
-    //----------------------------------------------------
     // 1) 状態復元
-    //----------------------------------------------------
     scoreA = last.scoreA;
     scoreB = last.scoreB;
     gameA  = last.gameA;
     gameB  = last.gameB;
 
-    // ★ ここで再計算する
-    finalGameActive =
-    isFinalGameState(
-        gameA,
-        gameB,
-        getFinalThreshold(matchType)
-    );
-
+    finalGameActive = isFinalGameState(gameA, gameB, getFinalThreshold(matchType));
     deuceCount = last.deuceCount || 0;
     totalPointsInFinal = last.totalPointsInFinal || 0;
     wasDeuce = last.wasDeuce || false;
-
     currentServerFixed = last.currentServerFixed ?? false;
     matchEnded = last.matchEnded ?? false;
 
-    //----------------------------------------------------
     // 2) サーバー復元
-    //----------------------------------------------------
     currentServerTeam   = last.currentServerTeam || "";
     currentReceiverTeam = last.currentReceiverTeam || "";
     updateServerIndicator();
 
-    //----------------------------------------------------
-    // 3) Final 表示復元
-    //----------------------------------------------------
+    // 3) Final 表示復元（Undo中は安全）
     const finalDisplay = document.getElementById("finalDisplay");
     if (finalDisplay) {
         finalDisplay.textContent = last.finalText || "";
-        finalDisplay.classList.toggle(
-            "final-gradient",
-            !!last.finalGradient
-        );
+        finalDisplay.classList.toggle("final-gradient", !!last.finalGradient);
         adjustFinalDisplayFont();
     }
 
-    //----------------------------------------------------
     // 3.5) コート回転復元
-    //----------------------------------------------------
-    if (typeof last.rotation === "number") {
-        restoreCourtRotation(last.rotation);
-    }
+    if (typeof last.rotation === "number") restoreCourtRotation(last.rotation);
 
-    //----------------------------------------------------
     // 4) デュース表示
-    //----------------------------------------------------
     const deuceDisplay = document.getElementById("deuceDisplay");
-    if (deuceDisplay) {
-        deuceDisplay.textContent = last.deuceText || "";
-    }
+    if (deuceDisplay) deuceDisplay.textContent = last.deuceText || "";
 
-    //----------------------------------------------------
     // 5) スコア・コール
-    //----------------------------------------------------
     updateScore();
     updatePointCall();
     if (currentServerTeam) refereeCall();
 
-    //----------------------------------------------------
     // 6) 完全リセット時
-    //----------------------------------------------------
-    if (
-        scoreA === 0 && scoreB === 0 &&
-        gameA === 0  && gameB === 0
-    ) {
+    if (scoreA === 0 && scoreB === 0 && gameA === 0 && gameB === 0) {
         currentServerFixed = false;
-        finalGameActive = false; // ★ 念のため明示
+        finalGameActive = false;
 
         document.querySelectorAll(".middle-symbol")
             .forEach(el => el.classList.add("inactive"));
 
         setTimeout(() => {
             disableMatchDisplays();
-
             currentServerTeam = "";
             currentReceiverTeam = "";
             updateServerIndicator();
-
-            if (selectedServer) {
-                selectedServer.team = "";
-                selectedServer.player = "";
-            }
+            if (selectedServer) { selectedServer.team = ""; selectedServer.player = ""; }
 
             const pointCall = document.getElementById("currentPointCall");
             const infoText  = document.getElementById("infoText");
-
             if (pointCall) pointCall.textContent = "";
             if (infoText)  infoText.textContent  = "";
             if (deuceDisplay) deuceDisplay.textContent = "";
@@ -4837,29 +4794,23 @@ function undoPoint(event) {
 
             matchControlsEnabled = true;
             vsButtonEnabled = true;
-            document.getElementById("readyButton")
-                ?.classList.remove("inactive");
-
+            document.getElementById("readyButton")?.classList.remove("inactive");
         }, 10);
     } else {
         enableMatchDisplays();
     }
 
-    //----------------------------------------------------
     // 7) Final 内部再判定
-    //----------------------------------------------------
     preCheckFinal();
 
-    //----------------------------------------------------
     // 8) ボタン復帰
-    //----------------------------------------------------
     disableScoreButtons(false);
 
-    //----------------------------------------------------
     // 9) 情報表示
-    //----------------------------------------------------
     showInfo("1ポイント戻しました");
     adjustAllInfoFonts();
+
+    isUndoing = false;  // ★ Undo終了
 }
 
 // --------------------------- 試合リセット関連 ---------------------------
@@ -4867,30 +4818,24 @@ function undoPoint(event) {
 // -------------------- 試合リセット(共通) --------------------
 function resetMatchState() {
     bumpDisplayVersion();
-    // ゲーム情報
     gameA = gameB = scoreA = scoreB = 0;
     historyStack = [];
     matchEnded = false;
     deuceCount = 0;
     finalInitDone = false;
-
-    // ★ 追加（重要）
     finalGameActive = false;
     totalPointsInFinal = 0;
+    isUndoing = false;
 
-    // サーバー情報
     selectedServer = { team:'', name:'' };
     currentServerTeam = 'A';
     currentReceiverTeam = 'B';
     currentServerFixed = false;
     resetServerIndicator();
-
-    // コート・選手配置
     resetCourtRotation();
     updatePlayerPositions();
     updateScore();
 
-    // 表示クリア
     const finalDisplay = document.getElementById('finalDisplay');
     if(finalDisplay) {
         finalDisplay.textContent = '';
@@ -4900,10 +4845,8 @@ function resetMatchState() {
     const deuceDisplay = document.getElementById('deuceDisplay');
     if(deuceDisplay) deuceDisplay.textContent = '';
 
-    // 白丸S・ポイント・ゲームカウント消灯
     disableMatchDisplays();
 
-    // Ready / 案内表示
     vsButtonEnabled = true;
     const readyBtn = document.getElementById('readyButton');
     if (readyBtn) readyBtn.classList.remove('inactive');
@@ -4916,11 +4859,7 @@ function resetMatchState() {
         setTimeout(()=>infoText.classList.remove("blink-text"),1000);
     }
 
-    // showInfo タイマークリア
-    if(showInfo.timeout) {
-        clearTimeout(showInfo.timeout);
-        showInfo.timeout = null;
-    }
+    clearAllTimers();
 }
 
 // -------------------- 試合リセットボタン --------------------
@@ -4975,6 +4914,7 @@ function initializeMatch() {
 
 
 // ==================== メイン判定 ====================
+// ==================== checkGameStatus（統合安全版） ====================
 function checkGameStatus() {
     if (matchEnded) return;
 
@@ -4982,7 +4922,7 @@ function checkGameStatus() {
     const isFinalGame = isFinalGameState(gameA, gameB, finalThreshold);
     const winner = judgeGameWinner(scoreA, scoreB, isFinalGame);
 
-    // ★ ここに追加（唯一正解）
+    // ★ ファイナルフラグ更新
     finalGameActive = isFinalGame && !matchEnded;
 
     // ---------- ファイナル中：2ポイント交代 ----------
@@ -5000,13 +4940,11 @@ function checkGameStatus() {
 
     // ---------- ゲーム勝者確定 ----------
     if (winner) {
-
         if (winner === 'A') gameA++;
         else gameB++;
 
-        // ★ ゲーム数からサーバーを再計算（ここが唯一の交代箇所）
+        // ゲーム数からサーバー再計算
         updateServerByGameCount();
-
         updateABSwapByRotation();
         updatePointCall();
         refereeCall();
@@ -5024,43 +4962,28 @@ function checkGameStatus() {
         scoreB = 0;
         updateScore();
 
-        // ★ ゲームカウント表示
         scheduleGameCountDisplay();
 
-        // ★ ファイナルゲーム突入表示
+        // ---------- ファイナルゲーム突入表示 ----------
         if (finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold) {
+            finalGameActive = true;
 
-    finalGameActive = true;
+            // 既存タイマー破棄
+            clearAllTimers();
 
-    // ★ 既存タイマーを必ず破棄
-    if (finalGameTimeoutId) {
-        clearTimeout(finalGameTimeoutId);
-        finalGameTimeoutId = null;
-    }
-
-    finalGameTimeoutId = setTimeout(() => {
-
-        // ★ 実行時に再確認（二重保険）
-        if (!finalGameActive || matchEnded) return;
-
-        setFinalDisplay("ファイナルゲーム");
-
-    }, 16000);
-}
+            finalGameTimeoutId = setTimeout(() => {
+                if (!finalGameActive || matchEnded || isUndoing) return;
+                setFinalDisplay("ファイナルゲーム");
+            }, 16000);  // 
+        }
     }
 
     // ---------- マッチ終了 ----------
     const matchResult = applyMatchEndLogic(matchType);
 
     if (matchResult.ended) {
-
         finalGameActive = false;
-
-    // ★ 追加：予約されたファイナル表示を完全抹消
-    if (finalGameTimeoutId) {
-        clearTimeout(finalGameTimeoutId);
-        finalGameTimeoutId = null;
-    }
+        clearAllTimers(); // ★ 予約タイマー破棄
 
         setFinalDisplay("ゲームセット");
         disableScoreButtons(true);
@@ -5069,15 +4992,13 @@ function checkGameStatus() {
         currentReceiverTeam = '';
         updateServerIndicator();
 
-        setTimeout(() => {
-            const teamAName =
-                document.getElementById('displayTeamA')?.textContent || 'Aチーム';
-            const teamBName =
-                document.getElementById('displayTeamB')?.textContent || 'Bチーム';
-            const pairAName =
-                document.getElementById('pairA')?.textContent.replace('ペア','').trim();
-            const pairBName =
-                document.getElementById('pairB')?.textContent.replace('ペア','').trim();
+        matchWinnerTimeoutId = setTimeout(() => {
+            if (isUndoing) return; // Undo中は表示抑制
+
+            const teamAName = document.getElementById('displayTeamA')?.textContent || 'Aチーム';
+            const teamBName = document.getElementById('displayTeamB')?.textContent || 'Bチーム';
+            const pairAName = document.getElementById('pairA')?.textContent.replace('ペア','').trim();
+            const pairBName = document.getElementById('pairB')?.textContent.replace('ペア','').trim();
 
             setFinalDisplay(
                 matchResult.winner === 'A'
@@ -5187,12 +5108,19 @@ function scheduleGameCountDisplay() {
     }, 8000);
 }
 
-// ==================== setFinalDisplay（最終安全版） ====================
+// ==================== タイマー破棄 ====================
+function clearAllTimers() {
+    if (finalGameTimeoutId) { clearTimeout(finalGameTimeoutId); finalGameTimeoutId = null; }
+    if (matchWinnerTimeoutId) { clearTimeout(matchWinnerTimeoutId); matchWinnerTimeoutId = null; }
+}
+
+// ==================== setFinalDisplay（安全版） ====================
 function setFinalDisplay(text) {
+    if (isUndoing) return;  // Undo 中は表示しない
     const el = document.getElementById("finalDisplay");
     if (!el) return;
 
-    // ★ ゲームセット後は「ファイナルゲーム」だけ表示禁止
+    // ゲームセット後は「ファイナルゲーム」だけ表示禁止
     if (matchEnded && text === "ファイナルゲーム") return;
 
     el.textContent = text;
@@ -5204,10 +5132,8 @@ function setFinalDisplay(text) {
         gameA === finalThreshold &&
         gameB === finalThreshold;
 
-    // ★ 本当にファイナル中かどうかの判定は残す
-    // ★ ただし「5秒後にファイナルゲームへ戻す処理」は行わない
     if (finalGameActive && stillFinal && text !== "ゲームセット") {
-        // 何もしない（将来の拡張用に構造だけ残す）
+        // 何もしない（将来拡張用）
     }
 }
 
@@ -6900,7 +6826,7 @@ function loadWeather(lat, lon, displayRegion) {
             const precipProb = data.hourly.precipitation_probability[hour];
             const info = codeToWeather(w.weathercode);
             const isThunder = w.weathercode >= 95;
-           
+
             lastRegion = displayRegion;
 
             const weatherBox = document.getElementById("weatherBox");
@@ -6908,28 +6834,42 @@ function loadWeather(lat, lon, displayRegion) {
             // ★ 県（都道府県）かどうか判定
             const isPrefecture = /[都道府県]$/.test(displayRegion);
 
-            // ★ class を付け替え
-            const temp = Math.round(w.temperature);
+            // 数値整理
+            const temp  = Math.round(w.temperature);
             const feels = Math.round(data.hourly.apparent_temperature[hour]);
-            const wind = Math.round(w.windspeed);
-            const rain = Math.round(precipProb);
-            const isHeavyRain = precipProb >= 70;
+            const wind  = Math.round(w.windspeed);
+            const rain  = Math.round(precipProb);
+            const isHeavyRain  = precipProb >= 70;
             const isStrongWind = wind >= 8;
 
+            // ★ 全角スペース・テキスト直書きを完全排除
             weatherBox.innerHTML = `
-    <span class="region ${isPrefecture ? 'prefecture' : ''}">
-        ${displayRegion}
-    </span>
-    ${info.icon}
-    <span class="weather-name">${info.name}</span>
-    ${w.temperature}℃ / 体${feels}℃　
-    <span class="wind">🍃${wind}m/s</span>
-　  <span class="rain">☔${precipProb}%</span>
-    ${isThunder ? '<span class="thunder-alert">⚡</span>' : ''}
-`;
+                <span class="region ${isPrefecture ? 'prefecture' : ''}">
+                    ${displayRegion}
+                </span>
 
+                ${info.icon}
+
+                <span class="weather-name">${info.name}</span>
+
+                <span class="temp">気温${temp}℃</span>
+                <span class="feels">体感${feels}℃</span>
+
+                <span class="wind ${isStrongWind ? 'strong-wind' : ''}">
+                    風${wind}m/s
+                </span>
+
+                <span class="rain ${isHeavyRain ? 'heavy-rain' : ''}">
+                    雨${rain}%
+                </span>
+
+                ${isThunder ? '<span class="thunder-alert">雷</span>' : ''}
+            `;
+
+            // フォント調整（既存ロジック維持）
             adjustFontSize(weatherBox, 13, 10);
 
+            // アイコンサイズ微調整
             const icon = weatherBox.querySelector("i");
             if (icon) {
                 icon.style.fontSize =
