@@ -729,8 +729,8 @@ button:hover { opacity: 0.9; }
 
 /* 著作権関連 */
 #settingsFooter {
-  margin-top: 16px;
-  padding-top: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
   font-size: 11px;
   text-align: center;
   opacity: 0.6;
@@ -812,6 +812,70 @@ button:hover { opacity: 0.9; }
 }
 
 /* 著作権関連 */
+
+/* -- OFUSE設置 -- */
+/* ===== 設定画面用OFUSE ===== */
+.support-section {
+  font-size: 9.5px;
+  text-align: center;
+  padding: 6px 0 4px;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.support-section a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.4);
+}
+
+.support-section a:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ===== モーダル背景 ===== */
+.support-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+/* ===== モーダル本体 ===== */
+.support-modal-content {
+  max-width: 420px;
+  margin: 20vh auto 0;
+  padding: 14px 16px;
+  background: rgba(30, 30, 30, 0.95);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.support-modal-content a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+}
+
+.support-close {
+  margin-top: 10px;
+  font-size: 11px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.support-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* -- OFUSE設置 -- */
 
 /* ------------------------------------------- 設定画面全体 ------------------------------------------- */
 
@@ -2589,13 +2653,43 @@ body::after {
 
         <strong>6. 改訂</strong><br>
         - 本利用規約は、予告なく改訂されることがあります。<br>
-        - 最新版は本アプリ内で確認できます。
+        - 最新版は本アプリ内で確認できます。<br><br>
+
+        <strong>7. 任意の支援について</strong><br>
+        - 本アプリでは、任意で開発者を支援できるリンク（OFUSE）を設置しています。<br>
+        - 支援は完全に自由であり、利用や登録は不要です。
       </p>
     </div>
   </div>
 </div>
 
 <!-- 著作権関連表示 -->
+
+<!-- OFUSE設置設定画面用（フッター・トリガーのみ） -->
+
+<section class="support-section">
+  <a href="#" id="openSupportModal">
+    OFUSEで応援する
+  </a>
+</section>
+
+<!-- 応援モーダル -->
+<div id="supportModal" class="support-modal" aria-hidden="true">
+  <div class="support-modal-content">
+    <p>
+      このスコアボードアプリは無料でご利用いただけます。<br>
+      もし役に立ったと感じていただけたら、
+      開発の励みになりますので
+      <a href="https://ofuse.me/tokdot" target="_blank" rel="noopener">
+        OFUSEで応援する
+      </a>
+      をお願いします。
+    </p>
+
+    <button class="support-close" type="button">閉じる</button>
+  </div>
+</div>
+<!-- OFUSE設置 -->
 
 </div> <!-- setupScreen閉じ -->
 </div> <!-- setup-block閉じ -->
@@ -2829,7 +2923,6 @@ body::after {
 <button class="settings-btn" onclick="returnToSetup()">設定</button>
 
 </div>
-   
 <div class="extraControls">
 </div>
 
@@ -2841,6 +2934,7 @@ body::after {
 <div id="extraAreaBottom" style="width:100%; height:20px;"></div>
 
 </div>
+
 </div>
 
 <!-- ==================== 終了確認ダイアログ（アプリ風） ==================== -->
@@ -7189,6 +7283,32 @@ window.addEventListener("click", (e) => {
 });
 
 <!-- ==================== 著作権　利用規約　関連　ダイアログ ==================== -->
+
+<!-- ==================== OFUSE　ダイアログ ==================== -->
+document.addEventListener('DOMContentLoaded', () => {
+  const openBtn = document.getElementById('openSupportModal');
+  const modal = document.getElementById('supportModal');
+  const closeBtn = modal.querySelector('.support-close');
+
+  openBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  });
+});
+<!-- ==================== OFUSE　ダイアログ ==================== -->
 
 </script>
 </body>
