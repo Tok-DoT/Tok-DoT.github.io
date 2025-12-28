@@ -3264,6 +3264,7 @@ let isUndoing = false;               // Undo 中フラグ
 let finalGameTimeoutId = null;       // ファイナルゲーム表示タイマー
 let matchWinnerTimeoutId = null;     // 勝利表示タイマー
 const MAX_HISTORY = 100;             // Undo 履歴上限
+let readyMessageTimers = [];
 
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
@@ -3470,7 +3471,15 @@ function swapPlayers(team) {
     showServerBlink(team);
 }
 
-// ----------------------------------- Ready ボタン共通処理 -----------------------------------
+// --- タイマー全キャンセル関数 ---
+function cancelReadyDisplayTimers() {
+    readyMessageTimers.forEach(t => clearTimeout(t));
+    readyMessageTimers = [];
+    const finalDisplay = document.getElementById("finalDisplay");
+    if (finalDisplay) finalDisplay.textContent = "";
+}
+
+// ----------------------------------- Ready ボタン共通処理（安全版） -----------------------------------
 function handleReadyButton() {
   if (!vsButtonEnabled) return;
 
@@ -3479,9 +3488,12 @@ function handleReadyButton() {
     infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
     infoText.style.color = "#ff8080";
     infoText.classList.add("blink-text");
-    setTimeout(() => infoText.classList.remove("blink-text"), 1000);
+    readyMessageTimers.push(setTimeout(() => infoText.classList.remove("blink-text"), 1000));
     return;
   }
+
+  // 既存演出用タイマーは念のためキャンセル
+  cancelReadyDisplayTimers();
 
   disableMatchDisplays();
   enableMatchDisplays();
@@ -3493,7 +3505,6 @@ function handleReadyButton() {
   const finalDisplay = document.getElementById('finalDisplay');
   if (!finalDisplay) return;
 
-  // --- ペア整形関数（以前の挙動を完全再現） ---
   function formatPair(team) {
     const base =
       (team === 'A')
@@ -3507,10 +3518,11 @@ function handleReadyButton() {
     return trimmed + 'ペア';
   }
 
+  // --- 演出順序は一切変更なし ---
   finalDisplay.textContent = "レディ";
-  setTimeout(() => adjustFinalDisplayFont(), 0);
+  readyMessageTimers.push(setTimeout(() => adjustFinalDisplayFont(), 0));
 
-  setTimeout(() => {
+  readyMessageTimers.push(setTimeout(() => {
     const serverTeam = selectedServer.team;
     const receiverTeam = (serverTeam === 'A') ? 'B' : 'A';
 
@@ -3525,29 +3537,30 @@ function handleReadyButton() {
 
     finalDisplay.textContent = `サービスサイド　${serverTeamName}　${serverPair}`;
     finalDisplay.style.color = serverColor;
-    setTimeout(() => adjustFinalDisplayFont(), 0);
+    adjustFinalDisplayFont();
 
-    setTimeout(() => {
+    readyMessageTimers.push(setTimeout(() => {
       finalDisplay.textContent = `レシーブサイド　${receiverTeamName}　${receiverPair}`;
       finalDisplay.style.color = recvColor;
-      setTimeout(() => adjustFinalDisplayFont(), 0);
+      adjustFinalDisplayFont();
 
-      setTimeout(() => {
+      readyMessageTimers.push(setTimeout(() => {
         finalDisplay.textContent = matchTypeText + "　プレーボール";
-        setTimeout(() => adjustFinalDisplayFont(), 0);
+        adjustFinalDisplayFont();
 
-        setTimeout(() => {
+        readyMessageTimers.push(setTimeout(() => {
           finalDisplay.textContent = "";
-          setTimeout(() => adjustFinalDisplayFont(), 0);
-        }, 5000);
+          adjustFinalDisplayFont();
+        }, 5000));
 
-      }, 5000);
-    }, 5000);
+      }, 5000));
+
+    }, 5000));
 
     currentServerTeam = serverTeam;
     currentReceiverTeam = receiverTeam;
 
-  }, 1500);
+  }, 1500));
 
   vsButtonEnabled = false;
   document.getElementById('readyButton').classList.add('inactive');
@@ -4823,6 +4836,7 @@ function undoPoint(event) {
     isUndoing = true;       // ★ Undo開始
 
     clearAllTimers();       // ★ 既存タイマー破棄
+    cancelReadyDisplayTimers();
 
     const last = historyStack.pop();
 
@@ -4912,6 +4926,7 @@ function undoPoint(event) {
 // -------------------- 試合リセット(共通) --------------------
 function resetMatchState() {
     bumpDisplayVersion();
+    cancelReadyDisplayTimers();
     gameA = gameB = scoreA = scoreB = 0;
     historyStack = [];
     matchEnded = false;
