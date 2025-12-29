@@ -352,10 +352,208 @@ button:hover { opacity: 0.9; }
   pointer-events: none;
 }
 
+/* ===============================
+   設定画面タイトル
+   =============================== */
+.setup-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 52px;
+}
+
 .setup-title {
-  font-size: 22px;
-  color: white;
+  font-size: 18px;
+  line-height: 48px;
+  margin: 0;
+}
+
+/* ===============================
+   設定画面 インフォメーションボタン
+   （試合画面と同じ思想）
+   =============================== */
+.help-footer-btn {
+  position: fixed;     /* ★ absolute → fixed */
+  top: 8px;            /* ★ 画面右上 */
+  right: 8px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+
+  background-color: #6ec6e9;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+
+  font-size: 15px;
   font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 999;        /* ★ 常にUI最前面 */
+}
+
+.help-footer-btn:hover {
+  background-color: #4fb6df;
+  transform: scale(1.05);   /* ★ translateY 不要 */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.help-footer-btn:active {
+  transform: scale(0.95);
+}
+
+/* インフォメーションモーダル背景 */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+/* モーダル本体 */
+.help-modal-content {
+  max-width: 300px;
+  max-height: 70vh;           /* 高さ制限 */
+  margin: 15vh auto 0;
+  padding: 16px 18px;
+  background: #f9f9f9;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;           /* 子要素を制限 */
+}
+
+/* モーダル本文（スクロール可能に） */
+.modal-body {
+  overflow-y: auto;
+  padding-right: 5px;         /* スクロールバーとテキストの隙間 */
+}
+
+/* 見出し */
+.help-modal-content h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.help-modal-content h3 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+/* 段落調整 */
+.modal-body p {
+  margin-bottom: 12px;
+}
+
+/* リスト調整 */
+.modal-body ul {
+  margin-bottom: 12px;
+  padding-left: 18px;
+}
+
+/* 閉じるボタン */
+.help-close {
+  margin-top: 12px;
+  font-size: 12px;
+  background: #e0e0e0;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  align-self: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.help-close:hover {
+  background: #d4d4d4;
+  color: #000;
+}
+
+.note {
+  font-size: 11px;
+  color: #666;
+}
+
+/* ===============================
+   試合画面 インフォメーションボタン
+   =============================== */
+.match-info-btn {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+
+  border: 2px solid #ffffff;
+  background-color: #6fd3f5;
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  z-index: 999; /* モーダル手前・UI最前 */
+}
+
+/* hover（PC） */
+.match-info-btn:hover {
+  background-color: #5cc8ec;
+  transform: scale(1.05);
+}
+
+/* タップ時（スマホ） */
+.match-info-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   試合画面用 補足ノート（note）
+   =============================== */
+.match-note {
+  font-size: 11px;
+  line-height: 1.4;
+
+  color: #777;                 /* 設定画面より少し薄く */
+  background: rgba(0,0,0,0.03); /* ほんのり背景 */
+  padding: 6px 8px;
+  margin: 10px 0;
+
+  border-left: 3px solid #6fd3f5; /* 情報カラーで統一 */
+  border-radius: 4px;
 }
 
 /* 下余白透明枠 */
@@ -766,7 +964,7 @@ button:hover { opacity: 0.9; }
   padding: 20px;
   border-radius: 12px;
   width: 90%;
-  max-width: 500px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   max-height: 90vh;
@@ -814,7 +1012,6 @@ button:hover { opacity: 0.9; }
 /* 著作権関連 */
 
 /* -- OFUSE設置 -- */
-/* ===== 設定画面用OFUSE ===== */
 .support-section {
   font-size: 9.5px;
   text-align: center;
@@ -839,40 +1036,44 @@ button:hover { opacity: 0.9; }
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.25); /* 背景を少し薄く */
   z-index: 1000;
 }
 
 /* ===== モーダル本体 ===== */
 .support-modal-content {
-  max-width: 420px;
-  margin: 20vh auto 0;
-  padding: 14px 16px;
-  background: rgba(30, 30, 30, 0.95);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 12px;
-  line-height: 1.5;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  max-width: 300px;               /* 横幅を小さく */
+  margin: 15vh auto 0;
+  padding: 16px 18px;
+  background: #f9f9f9;            /* 明るい背景 */
+  color: #333;                     /* 文字は濃いめ */
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15); /* 軽めの影 */
   text-align: center;
 }
 
 .support-modal-content a {
-  color: rgba(255, 255, 255, 0.85);
+  color: #4CAF50;                 /* リンクも明るくアクセント */
   text-decoration: underline;
 }
 
 .support-close {
-  margin-top: 10px;
-  font-size: 11px;
-  background: none;
+  margin-top: 12px;
+  font-size: 12px;
+  background: #e0e0e0;            /* ボタンも明るく */
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: #333;
   cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
 }
 
 .support-close:hover {
-  color: rgba(255, 255, 255, 0.8);
+  background: #d4d4d4;             /* ホバーで少し濃く */
+  color: #000;
 }
 
 /* -- OFUSE設置 -- */
@@ -2500,8 +2701,11 @@ body::after {
 <div class="setup-block">
   <div class="container" id="setupScreen">
 
-    <div id="setupExtraTop">
-      <span id="setupInfoText" class="setup-title">▲▽▲▽▲ 設定画面 ▲▽▲▽▲</span>
+    <!-- タイトル + ヘルプボタン -->
+    <div class="setup-header">
+      <span id="setupInfoText" class="setup-title">▲▽▲ 設定画面 ▲▽▲</span>
+      <button id="helpButtonFooter" class="help-footer-btn" aria-label="インフォメーション">i</button>
+
     </div>
 
     <div id="setupSubFrame">
@@ -2622,18 +2826,18 @@ body::after {
     <h2>Smash!!!! 利用規約</h2>
     <div class="modal-body">
       <p>
-        最終更新日：2025年12月25日<br><br>
-        本アプリは、部活動やスポーツ観戦の応援を主な目的として作成されています。<br>
-        特にソフトテニスはルールが複雑で、スコアボードのない公式試合も多いため、観戦者が得点を記録しながらスムーズに試合展開を楽しめるよう、非公式ながら公益財団法人日本ソフトテニス連盟のハンドブックを参考に、主審のコールなどを取り入れて設計しました。<br><br>
+  最終更新日：2025年12月25日<br><br>
 
-        <strong>1. 利用条件</strong><br>
-        本アプリは、個人での応援や部活動のサポートなど、応援目的で無料で自由にご利用いただけます。<br>
-        商用利用、再配布、改変はご遠慮ください。<br>
-        <em>禁止行為の例：</em><br>
-        - 不正アクセスや不正な改ざん行為<br>
-        - 他の利用者に迷惑をかける行為<br>
-        - 法律・公序良俗に反する行為<br><br>
+  本規約は、Smash!!!!（以下「本アプリ」）の利用条件を定めるものです。<br>
+  本アプリを利用することで、本規約に同意したものとみなします。<br><br>
 
+  <strong>1. 利用条件</strong><br>
+  本アプリは、個人での応援や部活動のサポートなど、応援目的で無料で自由にご利用いただけます。<br>
+  商用利用、再配布、改変はご遠慮ください。<br>
+  <em>禁止行為の例：</em><br>
+  - 不正アクセスや不正な改ざん行為<br>
+  - 他の利用者に迷惑をかける行為<br>
+  - 法律・公序良俗に反する行為<br><br>
         <strong>2. 著作権</strong><br>
         本アプリの著作権は、Tok.DoT / Hiroki Satoに帰属します。<br>
         © 2025–2026 Tok.DoT / Hiroki Sato. All Rights Reserved.<br><br>
@@ -2667,19 +2871,18 @@ body::after {
 
 <!-- OFUSE設置設定画面用（フッター・トリガーのみ） -->
 
+<!-- OFUSEボタン（フッター左側に設置） -->
 <section class="support-section">
-  <a href="#" id="openSupportModal">
-    OFUSEで応援する
-  </a>
+  <a href="#" id="openSupportModal">OFUSEで応援する</a>
 </section>
 
 <!-- 応援モーダル -->
 <div id="supportModal" class="support-modal" aria-hidden="true">
   <div class="support-modal-content">
     <p>
-      このスコアボードアプリは無料でご利用いただけます。<br>
-      もし役に立ったと感じていただけたら、
-      開発の励みになりますので
+      このスコアボードアプリは、<br>無料でご利用いただけます。<br>
+      もし役に立ったと感じていただけたら、<br>
+      開発の励みになりますので<br>
       <a href="https://ofuse.me/tokdot" target="_blank" rel="noopener">
         OFUSEで応援する
       </a>
@@ -2691,12 +2894,119 @@ body::after {
 </div>
 <!-- OFUSE設置 -->
 
+<!-- インフォメーションモーダル -->
+<div id="helpModal" class="help-modal" aria-hidden="true">
+  <div class="help-modal-content">
+
+    <h2>インフォメーション</h2>
+
+    <div class="modal-body">
+
+      <h3>観戦者・保護者の方へ</h3>
+      <p>
+        Smash!!!! は、部活動やスポーツ観戦を
+        どなたでも気軽に楽しめるように作られたアプリです。
+      </p>
+
+      <p>
+        特にソフトテニスの試合では、
+        スコアボードが無いことも多く、
+        「今の得点はどうなっているの？」と
+        分かりにくい場面があります。
+      </p>
+
+      <p>
+        このアプリでは、
+        観戦しながら得点を記録するだけで、
+        試合の流れや状況を把握しやすくなります。
+        難しい操作はありませんので、
+        スマートフォンに不慣れな方でも安心してお使いいただけます。
+      </p>
+
+      <p class="note">
+        ※ Smash!!!! は、公式な記録を残すためのものではありません。<br>
+        観戦や応援を楽しむための補助ツールです。
+      </p>
+
+      <h3>このアプリについて</h3>
+      <p>
+        Smash!!!! は、インターネットを使って動作するアプリです。
+      </p>
+
+      <p>
+        スマートフォンのブラウザから
+        「ホーム画面に追加」していただくと、
+        他のアプリと同じように、
+        アイコンをタップして起動できます。
+      </p>
+
+      <h3>設定画面について</h3>
+      <p>
+        設定画面では、
+        試合のゲーム数を確認し、
+        ［試合開始］ボタンを押すだけで準備が完了します。
+      </p>
+
+      <p>
+        大会名やチーム名を入力すると、
+        観戦がより楽しめます。
+      </p>
+
+      <h3>大会名の入力・保存</h3>
+      <ul>
+        <li>「大会名」欄に大会名を入力します</li>
+        <li>▽ 保存ボタンで端末に保存できます</li>
+        <li>保存した大会名は ▲ ボタンで呼び出せます</li>
+        <li>初期化ボタンで入力内容を消すこともできます</li>
+      </ul>
+
+      <h3>チーム・選手名の入力・保存</h3>
+      <ul>
+        <li>Aチーム・Bチームの名前や選手名を入力します</li>
+        <li>▽ 保存ボタンで端末に保存できます</li>
+        <li>保存したチームやペアは ▲ ボタンで呼び出せます</li>
+        <li>初期化ボタンで入力内容を消せます</li>
+      </ul>
+
+      <p class="note">
+        ※ 保存した内容を削除する場合は、<br>
+        一覧から選択して削除してください。
+      </p>
+
+      <h3>ゲーム数の選択</h3>
+      <ul>
+        <li>試合のゲーム数を一覧から選びます</li>
+        <li>［試合開始］ボタンで試合を始められます</li>
+      </ul>
+
+      <h3>ひとこと</h3>
+      <p>
+        操作に迷ったときは、
+        端末の戻るボタンでアプリをリロードして、
+        最初からやり直しても問題ありません。
+        ご自身のペースで、ゆっくりお使いください。
+      </p>
+
+    </div>
+
+    <button class="help-close" type="button" id="closeHelp">閉じる</button>
+  </div>
+</div>
+
 </div> <!-- setupScreen閉じ -->
 </div> <!-- setup-block閉じ -->
 
 <!-- 試合画面トップ -->
 <div class="container" id="gameScreen" style="display:none;">
   <div id="topBar" style="text-align:center;">
+
+<!-- 試合画面用 インフォメーションボタン -->
+<button
+  id="matchInfoButton"
+  class="match-info-btn"
+  aria-label="インフォメーション">
+  i
+</button>
 
 <!-- ================== お天気と日時 ================== -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
@@ -2933,8 +3243,136 @@ body::after {
 <!-- コート下に余白 -->
 <div id="extraAreaBottom" style="width:100%; height:20px;"></div>
 
+<!-- 試合画面用 インフォメーションモーダル -->
+<div id="matchInfoModal" class="help-modal" aria-hidden="true">
+  <div class="help-modal-content">
+
+    <h2>インフォメーション</h2>
+
+    <div class="modal-body">
+
+      <h3>試合画面について</h3>
+
+      <h4>ゲーム開始前にやること</h4>
+
+      <p>
+        <strong>観戦場所とチームの位置を合わせる</strong><br>
+        観戦する場所を基準に、<br>
+        チームの位置（コートを回転）を変更します
+      </p>
+
+      <p>
+        <strong>選手のポジションを合わせる</strong><br>
+        コート内のチームをタップして変更します<br>
+        ※ ゲーム中もポジションの変更は可能です
+      </p>
+
+      <p>
+        <strong>サーバーをタップ</strong><br>
+        コート内のサーバーをタップします
+      </p>
+
+      <h4>ゲームが開始されたら</h4>
+
+      <p>
+        <strong>[ vs ] ボタンをタップ</strong><br>
+        両チーム・ペア名の間にある [ vs ]（対戦）ボタンをタップします
+      </p>
+
+      <p class="note">
+        ※ ポイント0-0・ゲームカウント0-0時点は、<br>
+        サーバーの変更が可能です<br>
+        ※ 試合中（1ポイントでも入ると）は、<br>
+        サーバーをタップする事はできません
+      </p>
+
+      <p>
+        <strong>ポイントの追加</strong><br>
+        ・ポイント盤をタップしてポイントを追加します
+      </p>
+
+      <p>
+        <strong>ポイントを戻す</strong><br>
+        ・[ Tok.DoT ] のロゴをタップしてポイントを戻します
+      </p>
+
+      <p class="note">
+        ※ ポイント0-0・ゲームカウント0-0まで戻ると、
+        リセットボタン同様にスコアボードが消灯します
+      </p>
+
+      <p>
+        <strong>サービスサイドチームの点灯</strong><br>
+        ・サービスサイドチームのⓢボール（サーブ側の目印）が点灯します
+      </p>
+
+      <p>
+        <strong>コート回転</strong><br>
+        ・コートサイド（両サイドにあります）をタップします
+      </p>
+
+      <p>
+        <strong>コート回転のリセット</strong><br>
+        ・コートの中央をタップします
+      </p>
+
+      <p>
+        <strong>試合画面のリセット</strong><br>
+        ・[ リセット ] ボタンで試合開始前に戻ります
+      </p>
+
+      <p>
+        <strong>設定画面に戻る</strong><br>
+        ・[ 設定 ] ボタンで設定画面に戻ります
+      </p>
+
+      <p class="match-note">
+        ※ ポイント・ゲームカウントはリセットされます
+      </p>
+
+      <h3>★ 楽しく応援するために</h3>
+
+      <p>
+        <strong>試合画面のカスタマイズ</strong><br>
+        コート下にあるフリックスクロールバーを回して、
+        試合画面をカスタマイズできます
+      </p>
+
+      <p>
+        <strong>お気に入りの保存</strong><br>
+        フリックスクロールバーの一番下（上から4つ目）には、
+        お気に入りが保存（①～⑤まで）できます
+      </p>
+
+      <p>
+        スクロールバーを長押し（約3秒以上）すると保存できます
+      </p>
+
+      <p class="note">
+        ※ ★ は本アプリのデフォルト設定です。保存できません<br>
+        ※ アプリ起動直後のみ1回転します<br>（仕様です）<br>
+        ※ 一部端末（主にタブレット等）では、<br>
+        長押し保存機能が使えない場合があります
+      </p>
+
+      <p>
+        上記をご理解の上、<br>
+        アプリをご使用ください
+      </p>
+
+    </div>
+
+    <button
+      class="help-close"
+      type="button"
+      id="closeMatchInfo">
+      閉じる
+    </button>
+
+  </div>
 </div>
 
+</div>
 </div>
 
 <!-- ==================== 終了確認ダイアログ（アプリ風） ==================== -->
@@ -7271,8 +7709,7 @@ function showSimpleAlert(message, callback) {
 }
 <!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
 
-<!-- ==================== 著作権　利用規約　関連　ダイアログ ==================== -->
-
+// 利用規約モーダル
 const footer = document.getElementById("settingsFooter");
 const modal = document.getElementById("termsDialog");
 const closeBtn = modal.querySelector(".close");
@@ -7297,33 +7734,88 @@ window.addEventListener("click", (e) => {
   }
 });
 
-<!-- ==================== 著作権　利用規約　関連　ダイアログ ==================== -->
+// OFUSEモーダル
+const openSupportModal = document.getElementById('openSupportModal');
+const supportModal = document.getElementById('supportModal');
+const supportClose = supportModal.querySelector('.support-close');
 
-<!-- ==================== OFUSE　ダイアログ ==================== -->
-document.addEventListener('DOMContentLoaded', () => {
-  const openBtn = document.getElementById('openSupportModal');
-  const modal = document.getElementById('supportModal');
-  const closeBtn = modal.querySelector('.support-close');
+openSupportModal.addEventListener('click', (e) => {
+  e.preventDefault();
+  supportModal.style.display = 'block';
+});
 
-  openBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    modal.style.display = 'block';
-    modal.setAttribute('aria-hidden', 'false');
+supportClose.addEventListener('click', () => {
+  supportModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+  if (e.target === supportModal) supportModal.style.display = 'none';
+});
+
+// ===============================
+// 設定画面 インフォメーションモーダル
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+
+  const helpButton = document.getElementById("helpButtonFooter");
+  const helpModal  = document.getElementById("helpModal");
+  const closeHelp  = document.getElementById("closeHelp");
+
+  if (!helpButton || !helpModal || !closeHelp) return;
+
+  helpButton.addEventListener("click", () => {
+    helpModal.style.display = "block";
+    helpModal.setAttribute("aria-hidden", "false");
   });
 
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-    modal.setAttribute('aria-hidden', 'true');
+  closeHelp.addEventListener("click", () => {
+    helpModal.style.display = "none";
+    helpModal.setAttribute("aria-hidden", "true");
   });
 
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.style.display = 'none';
-      modal.setAttribute('aria-hidden', 'true');
+  // モーダル外クリックで閉じる
+  helpModal.addEventListener("click", (e) => {
+    if (e.target === helpModal) {
+      helpModal.style.display = "none";
+      helpModal.setAttribute("aria-hidden", "true");
     }
   });
+
 });
-<!-- ==================== OFUSE　ダイアログ ==================== -->
+
+
+// ===============================
+// 試合画面 インフォメーションモーダル
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("matchInfoButton");
+  const modal    = document.getElementById("matchInfoModal");
+  const closeBtn = document.getElementById("closeMatchInfo");
+
+  if (!openBtn || !modal || !closeBtn) return;
+
+  // 開く
+  openBtn.addEventListener("click", () => {
+    modal.style.display = "flex";
+    modal.setAttribute("aria-hidden", "false");
+  });
+
+  // 閉じる
+  closeBtn.addEventListener("click", () => {
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+  });
+
+  // 背景クリックで閉じる
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+});
 
 </script>
 </body>
