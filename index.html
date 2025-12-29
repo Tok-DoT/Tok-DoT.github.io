@@ -379,21 +379,22 @@ button:hover { opacity: 0.9; }
    （試合画面と同じ思想）
    =============================== */
 .help-footer-btn {
-  position: fixed;     /* ★ absolute → fixed */
-  top: 8px;            /* ★ 画面右上 */
-  right: 8px;
+  position: fixed;
+  bottom: 10px;
+  right: 12px;
 
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 
-  background-color: #6ec6e9;
+  background-color: #2f80ed;
   color: #ffffff;
   border: 2px solid #ffffff;
 
-  font-size: 15px;
+  font-size: 20px;
   font-weight: bold;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1;
 
   cursor: pointer;
   display: flex;
@@ -401,17 +402,18 @@ button:hover { opacity: 0.9; }
   justify-content: center;
 
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
   transition:
     background-color 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
 
-  z-index: 999;        /* ★ 常にUI最前面 */
+  z-index: 999;
 }
 
 .help-footer-btn:hover {
-  background-color: #4fb6df;
-  transform: scale(1.05);   /* ★ translateY 不要 */
+  background-color: #1c6ed5;
+  transform: scale(1.05);
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
 
@@ -419,7 +421,12 @@ button:hover { opacity: 0.9; }
   transform: scale(0.95);
 }
 
-/* インフォメーションモーダル背景 */
+/* ===============================
+   共通 インフォメーションモーダル
+   （設定画面・試合画面 共通）
+   =============================== */
+
+/* モーダル背景 */
 .help-modal {
   display: none;
   position: fixed;
@@ -428,56 +435,67 @@ button:hover { opacity: 0.9; }
   z-index: 2000;
 }
 
+/* 表示時 */
+.help-modal.show {
+  display: block;
+}
+
 /* モーダル本体 */
 .help-modal-content {
-  max-width: 300px;
+  max-width: 400px;           /* 幅調整 */
+  width: 90%;                 /* 画面幅に応じて縮小 */
   max-height: 70vh;           /* 高さ制限 */
-  margin: 15vh auto 0;
+  margin: 15vh auto 0;        /* 上余白＋中央寄せ */
   padding: 16px 18px;
   background: #f9f9f9;
   color: #333;
-  font-size: 13px;
+  font-size: 15px;            /* ベース文字サイズを少し大きく */
   line-height: 1.5;
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   text-align: left;
   display: flex;
   flex-direction: column;
-  overflow: hidden;           /* 子要素を制限 */
+  overflow: hidden;
 }
 
-/* モーダル本文（スクロール可能に） */
+/* モーダル本文（スクロール可能） */
 .modal-body {
   overflow-y: auto;
-  padding-right: 5px;         /* スクロールバーとテキストの隙間 */
+  padding-right: 5px;         /* スクロールバーとの隙間 */
+  font-size: 1em;             /* 統一文字サイズ */
 }
 
 /* 見出し */
 .help-modal-content h2 {
   text-align: center;
   margin-bottom: 12px;
+  font-size: 1.2em;           /* 見出しを少し大きく */
 }
 
 .help-modal-content h3 {
   margin-top: 16px;
   margin-bottom: 8px;
+  font-size: 1em;             /* 統一文字サイズ */
 }
 
-/* 段落調整 */
+/* 段落 */
 .modal-body p {
   margin-bottom: 12px;
+  font-size: 1em;             /* 統一文字サイズ */
 }
 
-/* リスト調整 */
+/* リスト */
 .modal-body ul {
   margin-bottom: 12px;
   padding-left: 18px;
+  font-size: 1em;             /* 統一文字サイズ */
 }
 
 /* 閉じるボタン */
 .help-close {
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 13px;            /* 読みやすく調整 */
   background: #e0e0e0;
   border: none;
   color: #333;
@@ -493,29 +511,39 @@ button:hover { opacity: 0.9; }
   color: #000;
 }
 
-.note {
-  font-size: 11px;
-  color: #666;
+/* 注意書き・補足 */
+.help-modal-content .modal-body .note {
+  font-size: 12px;    /* 文字サイズ */
+  color: #666;        /* 色 */
+  line-height: 1.4;   /* 行間 */
+  background: rgba(0,0,0,0.03); /* 背景を付ける場合 */
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-left: 3px solid #6fd3f5;
+  border-radius: 6px;
 }
+
+
 
 /* ===============================
    試合画面 インフォメーションボタン
    =============================== */
 .match-info-btn {
   position: fixed;
-  top: 8px;
-  right: 8px;
+  bottom: 10px;
+  right: 12px;
 
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 
-  border: 2px solid #ffffff;
-  background-color: #6fd3f5;
+  background-color: #2f80ed;  /* 統一 */
   color: #ffffff;
+  border: 2px solid #ffffff;
 
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1;
 
   display: flex;
@@ -525,35 +553,22 @@ button:hover { opacity: 0.9; }
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 
-  transition: transform 0.2s ease, background-color 0.2s ease;
-  z-index: 999; /* モーダル手前・UI最前 */
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 999;
 }
 
-/* hover（PC） */
 .match-info-btn:hover {
-  background-color: #5cc8ec;
+  background-color: #1c6ed5;  /* 統一 */
   transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
 
-/* タップ時（スマホ） */
 .match-info-btn:active {
   transform: scale(0.95);
-}
-
-/* ===============================
-   試合画面用 補足ノート（note）
-   =============================== */
-.match-note {
-  font-size: 11px;
-  line-height: 1.4;
-
-  color: #777;                 /* 設定画面より少し薄く */
-  background: rgba(0,0,0,0.03); /* ほんのり背景 */
-  padding: 6px 8px;
-  margin: 10px 0;
-
-  border-left: 3px solid #6fd3f5; /* 情報カラーで統一 */
-  border-radius: 4px;
 }
 
 /* 下余白透明枠 */
@@ -929,7 +944,7 @@ button:hover { opacity: 0.9; }
 #settingsFooter {
   margin-top: 6px;
   padding-top: 6px;
-  font-size: 11px;
+  font-size: 13px;
   text-align: center;
   opacity: 0.6;
   cursor: pointer;
@@ -2703,7 +2718,7 @@ body::after {
 
     <!-- タイトル + ヘルプボタン -->
     <div class="setup-header">
-      <span id="setupInfoText" class="setup-title">▲▽▲ 設定画面 ▲▽▲</span>
+      <span id="setupInfoText" class="setup-title">▲▽▲▽▲ 設定画面 ▲▽▲▽▲</span>
       <button id="helpButtonFooter" class="help-footer-btn" aria-label="インフォメーション">i</button>
 
     </div>
@@ -2894,7 +2909,7 @@ body::after {
 </div>
 <!-- OFUSE設置 -->
 
-<!-- インフォメーションモーダル -->
+<!-- 設定画面 インフォメーションモーダル -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-modal-content">
 
@@ -2902,89 +2917,65 @@ body::after {
 
     <div class="modal-body">
 
-      <h3>観戦者・保護者の方へ</h3>
+      <h3>はじめての方へ</h3>
       <p>
-        Smash!!!! は、部活動やスポーツ観戦を
-        どなたでも気軽に楽しめるように作られたアプリです。
-      </p>
-
-      <p>
-        特にソフトテニスの試合では、
-        スコアボードが無いことも多く、
-        「今の得点はどうなっているの？」と
-        分かりにくい場面があります。
-      </p>
-
-      <p>
-        このアプリでは、
-        観戦しながら得点を記録するだけで、
-        試合の流れや状況を把握しやすくなります。
-        難しい操作はありませんので、
-        スマートフォンに不慣れな方でも安心してお使いいただけます。
-      </p>
-
-      <p class="note">
-        ※ Smash!!!! は、公式な記録を残すためのものではありません。<br>
-        観戦や応援を楽しむための補助ツールです。
+        Smash!!!! は、インターネットを使って動作するアプリです。
+        スマートフォンのブラウザから「ホーム画面に追加」すると、
+        他のアプリと同じように、アイコンをタップして起動できます。
       </p>
 
       <h3>このアプリについて</h3>
       <p>
-        Smash!!!! は、インターネットを使って動作するアプリです。
+        部活動やスポーツ観戦をどなたでも気軽に楽しめるように作られています。
+        特にソフトテニスの試合ではスコアボードが無いことも多く、
+        「今の得点はどうなっているの？」と分かりにくい場面があります。
+      </p>
+      <p>
+        このアプリでは、観戦しながら得点を記録するだけで、
+        試合の流れや状況を把握しやすくなります。
+        難しい操作はありませんので、スマートフォンに不慣れな方でも安心してお使いいただけます。
       </p>
 
-      <p>
-        スマートフォンのブラウザから
-        「ホーム画面に追加」していただくと、
-        他のアプリと同じように、
-        アイコンをタップして起動できます。
+      <p class="note">
+        ※ 公式な記録を残すものではありません。観戦や応援を楽しむための補助ツールです。
       </p>
 
       <h3>設定画面について</h3>
       <p>
-        設定画面では、
-        試合のゲーム数を確認し、
-        ［試合開始］ボタンを押すだけで準備が完了します。
-      </p>
-
-      <p>
-        大会名やチーム名を入力すると、
-        観戦がより楽しめます。
+        設定画面では、試合のゲーム数を確認し、［試合開始］ボタンを押すだけで準備が完了します。
+        大会名やチーム名を入力すると、観戦がより楽しめます。
       </p>
 
       <h3>大会名の入力・保存</h3>
       <ul>
-        <li>「大会名」欄に大会名を入力します</li>
-        <li>▽ 保存ボタンで端末に保存できます</li>
+        <li>「大会名」欄に大会名を入力</li>
+        <li>▽ 保存ボタンで端末に保存</li>
         <li>保存した大会名は ▲ ボタンで呼び出せます</li>
-        <li>初期化ボタンで入力内容を消すこともできます</li>
+        <li>初期化ボタンで入力内容を消せます</li>
       </ul>
 
       <h3>チーム・選手名の入力・保存</h3>
       <ul>
-        <li>Aチーム・Bチームの名前や選手名を入力します</li>
-        <li>▽ 保存ボタンで端末に保存できます</li>
+        <li>Aチーム・Bチームの名前や選手名を入力</li>
+        <li>▽ 保存ボタンで端末に保存</li>
         <li>保存したチームやペアは ▲ ボタンで呼び出せます</li>
         <li>初期化ボタンで入力内容を消せます</li>
       </ul>
 
       <p class="note">
-        ※ 保存した内容を削除する場合は、<br>
-        一覧から選択して削除してください。
+        ※ 保存した内容を削除する場合は、一覧から選択して削除してください。
       </p>
 
       <h3>ゲーム数の選択</h3>
       <ul>
-        <li>試合のゲーム数を一覧から選びます</li>
+        <li>試合のゲーム数を一覧から選択</li>
         <li>［試合開始］ボタンで試合を始められます</li>
       </ul>
 
       <h3>ひとこと</h3>
       <p>
-        操作に迷ったときは、
-        端末の戻るボタンでアプリをリロードして、
-        最初からやり直しても問題ありません。
-        ご自身のペースで、ゆっくりお使いください。
+        操作に迷ったときは、端末の戻るボタンでリロードして最初からやり直しても問題ありません。
+        ご自身のペースでゆっくりお使いください。
       </p>
 
     </div>
@@ -3253,121 +3244,81 @@ body::after {
 
       <h3>試合画面について</h3>
 
-      <h4>ゲーム開始前にやること</h4>
+      <h4>◎ ゲーム開始前にやること</h4>
 
-      <p>
-        <strong>観戦場所とチームの位置を合わせる</strong><br>
-        観戦する場所を基準に、<br>
-        チームの位置（コートを回転）を変更します
-      </p>
+      <p><strong>観戦場所とチームの位置を合わせる</strong><br>
+      観戦する場所を基準に、チームの位置（コートを回転）を調整します。</p>
 
-      <p>
-        <strong>選手のポジションを合わせる</strong><br>
-        コート内のチームをタップして変更します<br>
-        ※ ゲーム中もポジションの変更は可能です
-      </p>
+      <p><strong>選手のポジションを合わせる</strong><br>
+      コート内のチームをタップして変更できます。<br>
+      ※ ゲーム中もポジションの変更は可能です。</p>
 
-      <p>
-        <strong>サーバーをタップ</strong><br>
-        コート内のサーバーをタップします
-      </p>
+      <p><strong>サーバーをタップ</strong><br>
+      コート内のサーバーをタップします。</p>
 
-      <h4>ゲームが開始されたら</h4>
+      <h4>◎ ゲームが開始されたら</h4>
 
-      <p>
-        <strong>[ vs ] ボタンをタップ</strong><br>
-        両チーム・ペア名の間にある [ vs ]（対戦）ボタンをタップします
-      </p>
+      <p><strong>[ vs ] ボタンをタップ</strong><br>
+      両チーム・ペア名の間にある [ vs ]（対戦）ボタンをタップします。</p>
 
       <p class="note">
-        ※ ポイント0-0・ゲームカウント0-0時点は、<br>
-        サーバーの変更が可能です<br>
-        ※ 試合中（1ポイントでも入ると）は、<br>
-        サーバーをタップする事はできません
+        ※ ポイント0-0・ゲームカウント0-0時点はサーバーの変更が可能です。<br>
+        ※ 試合中（1ポイント以上入ると）は、サーバーを変更できません。
       </p>
 
-      <p>
-        <strong>ポイントの追加</strong><br>
-        ・ポイント盤をタップしてポイントを追加します
-      </p>
+      <p><strong>ポイントの追加</strong><br>
+      ・ポイント盤をタップしてポイントを追加します。</p>
 
-      <p>
-        <strong>ポイントを戻す</strong><br>
-        ・[ Tok.DoT ] のロゴをタップしてポイントを戻します
-      </p>
+      <p><strong>ポイントを戻す</strong><br>
+      ・[ Tok.DoT ] のロゴをタップしてポイントを戻します。</p>
 
       <p class="note">
-        ※ ポイント0-0・ゲームカウント0-0まで戻ると、
-        リセットボタン同様にスコアボードが消灯します
+        ※ ポイント0-0・ゲームカウント0-0まで戻ると、リセットボタンと同様にスコアボードが消灯します。
       </p>
 
-      <p>
-        <strong>サービスサイドチームの点灯</strong><br>
-        ・サービスサイドチームのⓢボール（サーブ側の目印）が点灯します
-      </p>
+      <p><strong>サービスサイドチームの点灯</strong><br>
+      ・サービスサイドチームのⓢボール（サーブ側の目印）が点灯します。</p>
 
-      <p>
-        <strong>コート回転</strong><br>
-        ・コートサイド（両サイドにあります）をタップします
-      </p>
+      <p><strong>コート回転</strong><br>
+      ・コートサイド（両サイド）をタップして回転します。</p>
 
-      <p>
-        <strong>コート回転のリセット</strong><br>
-        ・コートの中央をタップします
-      </p>
+      <p><strong>コート回転のリセット</strong><br>
+      ・コートの中央をタップして元に戻します。</p>
 
-      <p>
-        <strong>試合画面のリセット</strong><br>
-        ・[ リセット ] ボタンで試合開始前に戻ります
-      </p>
+      <p><strong>試合画面のリセット</strong><br>
+      ・[ リセット ] ボタンで試合開始前の状態に戻ります。</p>
 
-      <p>
-        <strong>設定画面に戻る</strong><br>
-        ・[ 設定 ] ボタンで設定画面に戻ります
-      </p>
+      <p><strong>設定画面に戻る</strong><br>
+      ・[ 設定 ] ボタンで設定画面に戻ります。</p>
 
       <p class="match-note">
-        ※ ポイント・ゲームカウントはリセットされます
+        ※ ポイント・ゲームカウントはリセットされます。
       </p>
 
-      <h3>★ 楽しく応援するために</h3>
+      <h4>◎ より楽しく応援するために</h4>
 
-      <p>
-        <strong>試合画面のカスタマイズ</strong><br>
-        コート下にあるフリックスクロールバーを回して、
-        試合画面をカスタマイズできます
-      </p>
+      <p><strong>試合画面のカスタマイズ</strong><br>
+      コート下にあるフリックススクロールバーを回して、試合画面の色や表示をカスタマイズできます。</p>
 
-      <p>
-        <strong>お気に入りの保存</strong><br>
-        フリックスクロールバーの一番下（上から4つ目）には、
-        お気に入りが保存（①～⑤まで）できます
-      </p>
-
-      <p>
-        スクロールバーを長押し（約3秒以上）すると保存できます
-      </p>
+      <p><strong>お気に入りの保存</strong><br>
+      ・フリックススクロールバーの一番下（上から4つ目）にお気に入りを保存（①～⑤まで）できます。<br>
+      ・スクロールバーを長押し（約3秒以上）すると保存されます。<br>
+      ・既に保存されている場合は上書きされます。</p>
 
       <p class="note">
-        ※ ★ は本アプリのデフォルト設定です。保存できません<br>
-        ※ アプリ起動直後のみ1回転します<br>（仕様です）<br>
-        ※ 一部端末（主にタブレット等）では、<br>
-        長押し保存機能が使えない場合があります
+        ※ ★は本アプリのデフォルト設定です。保存できません。<br>
+        ※ アプリ起動直後のみタップすると1回転します。<br>
+        ※ 一部端末（主にタブレット等）では長押し保存機能が使えない場合があります。
       </p>
 
-      <p>
-        上記をご理解の上、<br>
-        アプリをご使用ください
-      </p>
+      <p><strong>お気に入りの削除</strong><br>
+      ・フリックススクロールバーを横にスライドし、削除できます。</p>
+
+      <p>上記をご理解の上、アプリをご使用ください。</p>
 
     </div>
 
-    <button
-      class="help-close"
-      type="button"
-      id="closeMatchInfo">
-      閉じる
-    </button>
+    <button class="help-close" type="button" id="closeMatchInfo">閉じる</button>
 
   </div>
 </div>
