@@ -1101,33 +1101,50 @@ button:hover { opacity: 0.9; }
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25); /* 背景を少し薄く */
+  background: rgba(0, 0, 0, 0.25);
   z-index: 1000;
 }
 
 /* ===== モーダル本体 ===== */
 .support-modal-content {
-  max-width: 300px;               /* 横幅を小さく */
+  max-width: 300px;
   margin: 15vh auto 0;
   padding: 16px 18px;
-  background: #f9f9f9;            /* 明るい背景 */
-  color: #333;                     /* 文字は濃いめ */
+  background: #f9f9f9;
+  color: #333;
   font-size: 13px;
   line-height: 1.6;
   border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15); /* 軽めの影 */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   text-align: center;
 }
 
 .support-modal-content a {
-  color: #4CAF50;                 /* リンクも明るくアクセント */
+  color: #4CAF50;
   text-decoration: underline;
 }
+
+/* === ★ ここから：OFUSE中央寄せの正解 ★ === */
+
+/* OFUSE全体を包むラッパー */
+.support-modal-content .ofuse-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0;
+}
+
+/* 念のため：OFUSEが生成するiframe対策 */
+.support-modal-content .ofuse-wrap iframe {
+  display: block;
+}
+
+/* === ★ ここまで ★ === */
 
 .support-close {
   margin-top: 12px;
   font-size: 12px;
-  background: #e0e0e0;            /* ボタンも明るく */
+  background: #e0e0e0;
   border: none;
   color: #333;
   cursor: pointer;
@@ -1137,7 +1154,7 @@ button:hover { opacity: 0.9; }
 }
 
 .support-close:hover {
-  background: #d4d4d4;             /* ホバーで少し濃く */
+  background: #d4d4d4;
   color: #000;
 }
 
@@ -2949,9 +2966,7 @@ body::after {
 
 <!-- 著作権関連表示 -->
 
-<!-- OFUSE設置設定画面用（フッター・トリガーのみ） -->
-
-<!-- OFUSEボタン（フッター左側に設置） -->
+<!-- OFUSEボタン -->
 <section class="support-section">
   <a href="#" id="openSupportModal">OFUSEで応援する</a>
 </section>
@@ -2960,12 +2975,24 @@ body::after {
 <div id="supportModal" class="support-modal" aria-hidden="true">
   <div class="support-modal-content">
     <p>
-      このスコアボードアプリは、<br>無料でご利用いただけます。<br>
+      このスコアボードアプリは、<br>
+      無料でご利用いただけます。<br>
       もし役に立ったと感じていただけたら、<br>
       開発の励みになりますので<br>
-      <a href="https://ofuse.me/tokdot" target="_blank" rel="noopener">
-        OFUSEで応援する
+    </p>
+
+    <!-- ★ OFUSEをラップ（中央寄せの決め手） -->
+    <div class="ofuse-wrap">
+      <a
+        data-ofuse-widget-button
+        href="https://ofuse.me/o?uid=142822"
+        data-ofuse-id="142822"
+      >
+        OFUSEで応援を送る
       </a>
+    </div>
+
+    <p>
       をお願いします。
     </p>
 
@@ -7928,5 +7955,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 </script>
+</body>
+</html>
+
+<script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
+
 </body>
 </html>
