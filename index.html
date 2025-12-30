@@ -380,7 +380,7 @@ button:hover { opacity: 0.9; }
    =============================== */
 .help-footer-btn {
   position: fixed;
-  bottom: 10px;
+  bottom: 2px;
   right: 12px;
 
   width: 36px;
@@ -530,7 +530,7 @@ button:hover { opacity: 0.9; }
    =============================== */
 .match-info-btn {
   position: fixed;
-  bottom: 10px;
+  bottom: 2px;
   right: 12px;
 
   width: 36px;
@@ -940,11 +940,61 @@ button:hover { opacity: 0.9; }
   transform: translateY(3px);
 }
 
+/* アプリURLコピー用（コンパクト版） */
+.share-url-wrapper-compact {
+  display: flex;
+  flex-wrap: wrap;       /* 画面幅が狭い場合のみ改行 */
+  max-width: 400px;
+  width: 90%;
+  margin: 8px auto;
+  gap: 4px;
+  font-size: 10px;
+  align-items: center;
+}
+
+.share-label {
+  flex: 0 0 auto;        /* ラベルは必要な幅だけ確保 */
+  white-space: nowrap;
+  margin-right: 4px;     /* ラベルとURLの距離を調整 */
+}
+
+#appURL {
+  flex: 1 1 auto;        /* 入力欄が残り幅いっぱい */
+  min-width: 120px;
+  padding: 4px 6px;
+  font-size: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+#copyURL {
+  padding: 4px 6px;
+  font-size: 10px;
+  background-color: #2a5298;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#copyURL:hover {
+  background-color: #1e3c72;
+}
+
+/* アプリURLコピー用（コンパクト版） */
+
+#settingsFooter, .other-text {
+  margin-top: 4px;
+}
+
 /* 著作権関連 */
 #settingsFooter {
-  margin-top: 6px;
-  padding-top: 6px;
-  font-size: 13px;
+  margin-top: 0px;
+  padding-top: 4px;
+  font-size: 12px;
   text-align: center;
   opacity: 0.6;
   cursor: pointer;
@@ -2416,18 +2466,18 @@ body::after {
   position: absolute;
   top: 0; bottom: 0;
 }
-.bg-court { left: 0; width: 60%; }
-.bg-out { right: 0; width: 40%; }
+.bg-court { left: 0; width: 65%; }
+.bg-out { right: 0; width: 35%; }
 
 /* 白線 */
 .divider, .divider-left {
   position: absolute;
   top: 0; bottom: 0;
-  width: 2px;
+  width: 5px;
   background: #fff;
 }
-.divider { right: 40%; }
-.divider-left { left: 162px; }
+.divider { right: 35%; }
+.divider-left { left: 158px; }
 
 /* 文字レイヤー（ノーマルに変更） */
 .label-court, .label-out {
@@ -2442,7 +2492,7 @@ body::after {
   font-family: "Kosugi Maru", sans-serif; /* フォント追加 */
 }
 .label-court { left: 0; width: 60%; text-align: center; }
-.label-out { left: 50%; right: 0; text-align: center; }
+.label-out { left: 56%; right: 0; text-align: center; }
 
 .picker-wrapper::-webkit-scrollbar { display: none; }
 
@@ -2718,7 +2768,7 @@ body::after {
 
     <!-- タイトル + ヘルプボタン -->
     <div class="setup-header">
-      <span id="setupInfoText" class="setup-title">▲▽▲▽▲ 設定画面 ▲▽▲▽▲</span>
+      <span id="setupInfoText" class="setup-title">▲▽▲▽▲▽▲ 設定画面 ▲▽▲▽▲▽▲</span>
       <button id="helpButtonFooter" class="help-footer-btn" aria-label="インフォメーション">i</button>
 
     </div>
@@ -2828,6 +2878,21 @@ body::after {
     <div class="start-wrapper">
       <button class="start-btn" onclick="startMatch()">試合開始</button>
     </div>
+
+<!-- アプリURLコピー（コンパクト・ラベル付き） -->
+<div class="share-url-wrapper-compact">
+  <span class="share-label">アプリURLを友達と共有：</span>
+  <input type="text" id="appURL" value="https://tok-dot.github.io" readonly>
+  <button id="copyURL">コピー</button>
+</div>
+
+<!-- シンプルOKダイアログ -->
+<div id="simpleAlertDialog" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:10000;">
+  <div style="background:#fff; padding:16px 24px; border-radius:8px; text-align:center; min-width:180px;">
+    <div id="simpleAlertMessage" style="margin-bottom:12px; font-size:14px; color:#333;"></div>
+    <button onclick="simpleAlertOK()" style="padding:6px 12px; font-size:12px; border:none; border-radius:4px; background:#2a5298; color:#fff; cursor:pointer;">OK</button>
+  </div>
+</div>
 
 <!-- 著作権関連表示 -->
 <div id="settingsFooter">
@@ -3246,19 +3311,19 @@ body::after {
 
       <h4>◎ ゲーム開始前にやること</h4>
 
-      <p><strong>観戦場所とチームの位置を合わせる</strong><br>
+      <p><strong>□ 観戦場所とチームの位置を合わせる</strong><br>
       観戦する場所を基準に、チームの位置（コートを回転）を調整します。</p>
 
-      <p><strong>選手のポジションを合わせる</strong><br>
+      <p><strong>□ 選手のポジションを合わせる</strong><br>
       コート内のチームをタップして変更できます。<br>
       ※ ゲーム中もポジションの変更は可能です。</p>
 
-      <p><strong>サーバーをタップ</strong><br>
+      <p><strong>□ サーバーをタップ</strong><br>
       コート内のサーバーをタップします。</p>
 
       <h4>◎ ゲームが開始されたら</h4>
 
-      <p><strong>[ vs ] ボタンをタップ</strong><br>
+      <p><strong>□ [ vs ] ボタンをタップ</strong><br>
       両チーム・ペア名の間にある [ vs ]（対戦）ボタンをタップします。</p>
 
       <p class="note">
@@ -3307,12 +3372,21 @@ body::after {
 
       <p class="note">
         ※ ★は本アプリのデフォルト設定です。保存できません。<br>
-        ※ アプリ起動直後のみタップすると1回転します。<br>
+        ※ お気に入りスクロールバーは、アプリ起動直後のみフリックすると1回転します。<br>
         ※ 一部端末（主にタブレット等）では長押し保存機能が使えない場合があります。
       </p>
 
       <p><strong>お気に入りの削除</strong><br>
       ・フリックススクロールバーを横にスライドし、削除できます。</p>
+
+      <!-- 追加分：会場のお天気登録 -->
+      <p><strong>会場のお天気登録</strong></p>
+
+      <p><strong>お天気登録</strong><br>
+      ・日時とお天気ボックスをタップして会場の住所を入力して[ 検索 ]します<br>
+      ・表示地点（自動判定）： ●●● が表示されたら[ 決定 ]します<br>
+      ・10分おきに、情報が更新されます
+      </p>
 
       <p>上記をご理解の上、アプリをご使用ください。</p>
 
@@ -5363,16 +5437,19 @@ function resetMatchState() {
 // -------------------- 試合リセットボタン --------------------
 
 function resetMatch() {
+    // ボタンを水色グラデーションに
+    const blueGradient = 'linear-gradient(to bottom, #a0dfff, #5eb8ff)';
+
     showConfirm('試合をリセットしますか？', function(result){
-        if(result) {
-            resetMatchState(); // 共通処理呼び出し
-        }
-        // resultがfalseなら何もしない（キャンセル）
-    });
+        if (result) resetMatchState();
+    }, blueGradient);
 }
 
 // -------------------- 試合画面（リセット）から設定画面に戻るボタン) --------------------
 function returnToSetup() {
+    // OKボタンをオレンジグラデーションに
+    const orangeGradient = 'linear-gradient(to bottom, #ffca7a, #ff8c00)';
+
     showConfirm('設定画面に戻りますか？<br>試合データはリセットされます', function(result){
         if(result) {
             resetMatchState(); // 共通処理呼び出し
@@ -5381,8 +5458,7 @@ function returnToSetup() {
             document.getElementById('gameScreen').style.display = 'none';
             document.getElementById('setupScreen').style.display = 'flex';
         }
-        // resultがfalseならキャンセルなので何もしない
-    });
+    }, orangeGradient);
 }
 
 // --------------------------- 試合リセット関連 ---------------------------
@@ -7181,6 +7257,25 @@ buildFavoritesPicker();
 });
 /* ------------------- 色の組み合わせお気に入り終り ------------------- */
 
+/* ------------------- アプリURLをコピーして友達に共有 ------------------- */
+
+document.getElementById('copyURL').addEventListener('click', () => {
+  const urlField = document.getElementById('appURL');
+  urlField.select();
+  urlField.setSelectionRange(0, 99999); // スマホ対応
+
+  navigator.clipboard.writeText(urlField.value)
+    .then(() => {
+      // コピー成功時にシンプルダイアログを表示
+      showSimpleAlert("URLをコピーしました!");
+    })
+    .catch(() => {
+      showSimpleAlert("コピーに失敗しました");
+    });
+});
+
+/* ------------------- アプリURLをコピーして友達に共有 ------------------- */
+
 /* ------------------- お天気 高速安全版（最終・アラート付き） ------------------- */
 
 const locationCache = {};
@@ -7608,23 +7703,81 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- ==================== 戻るボタン終了防止 ==================== -->
 
 <!-- ==================== OK・キャンセル　ダイアログ ==================== -->
-  function showConfirm(message, callback) {
+  function showConfirm(message, callback, okColor) {
     const dialog = document.getElementById('confirmDialog');
-    document.getElementById('confirmMessage').innerHTML = message; // textContent → innerHTML に変更
+    const confirmMessage = document.getElementById('confirmMessage');
+    confirmMessage.innerHTML = message;
+
+    // ボタン取得
+    const okBtn = dialog.querySelector('button[onclick="okConfirm()"]');
+    const cancelBtn = dialog.querySelector('button[onclick="closeConfirm()"]');
+
+    if (!okBtn || !cancelBtn) return;
+
+    // 元の背景・色・影を保持
+    const okOriginal = {
+        bg: okBtn.style.background,
+        color: okBtn.style.color,
+        shadow: okBtn.style.boxShadow,
+        radius: okBtn.style.borderRadius,
+    };
+    const cancelOriginal = {
+        bg: cancelBtn.style.background,
+        color: cancelBtn.style.color,
+        shadow: cancelBtn.style.boxShadow,
+        radius: cancelBtn.style.borderRadius,
+    };
+
+    // OKボタンの色・ぷっくり感
+    if (okColor) {
+        okBtn.style.background = okColor;
+        okBtn.style.color = '#ffffff';
+        okBtn.style.borderRadius = '12px';
+        okBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.15)';
+    }
+
+    // キャンセルボタンもぷっくり感（白でも浮いて見える）
+    cancelBtn.style.borderRadius = '12px';
+    cancelBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.1)';
+
+    // ダイアログ表示
     dialog.style.display = 'flex';
 
-    // OKが押された時の処理
+    // OKクリック
     window.okConfirm = function() {
+        // 元に戻す
+        okBtn.style.background = okOriginal.bg;
+        okBtn.style.color = okOriginal.color;
+        okBtn.style.boxShadow = okOriginal.shadow;
+        okBtn.style.borderRadius = okOriginal.radius;
+
+        cancelBtn.style.background = cancelOriginal.bg;
+        cancelBtn.style.color = cancelOriginal.color;
+        cancelBtn.style.boxShadow = cancelOriginal.shadow;
+        cancelBtn.style.borderRadius = cancelOriginal.radius;
+
         dialog.style.display = 'none';
         callback(true);
-    }
+    };
 
-    // キャンセルが押された時の処理
+    // キャンセルクリック
     window.closeConfirm = function() {
+        // 元に戻す
+        okBtn.style.background = okOriginal.bg;
+        okBtn.style.color = okOriginal.color;
+        okBtn.style.boxShadow = okOriginal.shadow;
+        okBtn.style.borderRadius = okOriginal.radius;
+
+        cancelBtn.style.background = cancelOriginal.bg;
+        cancelBtn.style.color = cancelOriginal.color;
+        cancelBtn.style.boxShadow = cancelOriginal.shadow;
+        cancelBtn.style.borderRadius = cancelOriginal.radius;
+
         dialog.style.display = 'none';
         callback(false);
-    }
+    };
 }
+
 <!-- ==================== OK・キャンセル　ダイアログ ==================== -->
 
 <!-- ==================== シンプルOK・キャンセル　ダイアログ ==================== -->
