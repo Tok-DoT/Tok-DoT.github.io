@@ -360,216 +360,18 @@ button:hover { opacity: 0.9; }
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
-  height: 52px;
+  height: 48px;
 }
 
 .setup-title {
   font-size: 18px;
   line-height: 48px;
   margin: 0;
-}
-
-/* ===============================
-   設定画面 インフォメーションボタン
-   （試合画面と同じ思想）
-   =============================== */
-.help-footer-btn {
-  position: fixed;
-  bottom: 2px;
-  right: 12px;
-
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-
-  background-color: #2f80ed;
-  color: #ffffff;
-  border: 2px solid #ffffff;
-
-  font-size: 20px;
-  font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1;
-
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  z-index: 999;
-}
-
-.help-footer-btn:hover {
-  background-color: #1c6ed5;
-  transform: scale(1.05);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-}
-
-.help-footer-btn:active {
-  transform: scale(0.95);
-}
-
-/* ===============================
-   共通 インフォメーションモーダル
-   （設定画面・試合画面 共通）
-   =============================== */
-
-/* モーダル背景 */
-.help-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  z-index: 2000;
-}
-
-/* 表示時 */
-.help-modal.show {
-  display: block;
-}
-
-/* モーダル本体 */
-.help-modal-content {
-  max-width: 400px;           /* 幅調整 */
-  width: 90%;                 /* 画面幅に応じて縮小 */
-  max-height: 75vh;           /* 高さ制限 */
-  margin: 12vh auto 0;        /* 上余白＋中央寄せ */
-  padding: 18px 20px;
-  background: #f9f9f9;
-  color: #333;
-  font-size: 16px;            /* ベース文字サイズを少し大きく */
-  line-height: 1.6;           /* 読みやすい行間 */
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* モーダル本文（スクロール可能） */
-.modal-body {
-  overflow-y: auto;
-  padding-right: 8px;         /* スクロールバーとの隙間 */
-  font-size: 1em;             /* ベースサイズと統一 */
-  line-height: 1.6;           /* 読みやすく */
-}
-
-/* 見出し */
-.help-modal-content h2 {
-  text-align: center;
-  margin-bottom: 14px;
-  font-size: 1.4em;           /* タイトルを大きめ */
-}
-
-.help-modal-content h3 {
-  margin-top: 18px;
-  margin-bottom: 10px;
-  font-size: 1.2em;           /* 段落との差をはっきり */
-}
-
-/* 段落 */
-.modal-body p {
-  margin-bottom: 14px;
-  font-size: 1em;             /* 統一文字サイズ */
-  line-height: 1.6;
-}
-
-/* リスト */
-.modal-body ul {
-  margin-bottom: 14px;
-  padding-left: 20px;
-  font-size: 1em;             /* 統一文字サイズ */
-  line-height: 1.6;
-}
-
-/* 閉じるボタン */
-.help-close {
-  margin-top: 16px;
-  font-size: 14px;            /* 読みやすく調整 */
-  background: #e0e0e0;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 6px;
-  align-self: center;
-  transition: background 0.2s, color 0.2s;
-}
-
-.help-close:hover {
-  background: #d4d4d4;
-  color: #000;
-}
-
-/* 注意書き・補足 */
-.help-modal-content .modal-body .note {
-  font-size: 13px;            /* 少し大きめ */
-  color: #666;
-  line-height: 1.5;
-  background: rgba(0,0,0,0.03); /* 背景を付ける */
-  padding: 8px 12px;
-  margin: 10px 0;
-  border-left: 3px solid #6fd3f5;
-  border-radius: 6px;
-}
-
-/* ===============================
-   試合画面 インフォメーションボタン
-   =============================== */
-.match-info-btn {
-  position: fixed;
-  bottom: 2px;
-  right: 12px;
-
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-
-  background-color: #2f80ed;  /* 統一 */
-  color: #ffffff;
-  border: 2px solid #ffffff;
-
-  font-size: 20px;
-  font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  z-index: 999;
-}
-
-.match-info-btn:hover {
-  background-color: #1c6ed5;  /* 統一 */
-  transform: scale(1.05);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-}
-
-.match-info-btn:active {
-  transform: scale(0.95);
 }
 
 /* 下余白透明枠 */
@@ -960,16 +762,19 @@ button:hover { opacity: 0.9; }
 }
 
 #appURL {
-  flex: 1 1 auto;        /* 入力欄が残り幅いっぱい */
-  min-width: 120px;
+  flex: 1 1 180px;   /* ← ここがポイント */
+  max-width: 260px;  /* 伸びすぎ防止 */
+  min-width: 120px;  /* 潰れ防止 */
   padding: 4px 6px;
-  font-size: 10px;
+  font-size: 9px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #f9f9f9;
   overflow-x: auto;
   white-space: nowrap;
+  margin-right: 4px;
 }
+
 
 #copyURL {
   padding: 4px 6px;
@@ -1183,6 +988,204 @@ button:hover { opacity: 0.9; }
 
 /* -- OFUSE設置 -- */
 
+/* ===============================
+   設定画面 インフォメーションボタン
+   （試合画面と同じ思想）
+   =============================== */
+.help-footer-btn {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  background-color: #2f80ed;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+
+  font-size: 20px;
+  font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 999;
+}
+
+.help-footer-btn:hover {
+  background-color: #1c6ed5;
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.help-footer-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===============================
+   共通 インフォメーションモーダル
+   （設定画面・試合画面 共通）
+   =============================== */
+
+/* モーダル背景 */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+/* 表示時 */
+.help-modal.show {
+  display: block;
+}
+
+/* モーダル本体 */
+.help-modal-content {
+  max-width: 400px;           /* 幅調整 */
+  width: 90%;                 /* 画面幅に応じて縮小 */
+  max-height: 75vh;           /* 高さ制限 */
+  margin: 12vh auto 0;        /* 上余白＋中央寄せ */
+  padding: 18px 20px;
+  background: #f9f9f9;
+  color: #333;
+  font-size: 16px;            /* ベース文字サイズを少し大きく */
+  line-height: 1.6;           /* 読みやすい行間 */
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* モーダル本文（スクロール可能） */
+.modal-body {
+  overflow-y: auto;
+  padding-right: 8px;         /* スクロールバーとの隙間 */
+  font-size: 1em;             /* ベースサイズと統一 */
+  line-height: 1.6;           /* 読みやすく */
+}
+
+/* 見出し */
+.help-modal-content h2 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.4em;           /* タイトルを大きめ */
+}
+
+.help-modal-content h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-size: 1.2em;           /* 段落との差をはっきり */
+}
+
+/* 段落 */
+.modal-body p {
+  margin-bottom: 14px;
+  font-size: 1em;             /* 統一文字サイズ */
+  line-height: 1.6;
+}
+
+/* リスト */
+.modal-body ul {
+  margin-bottom: 14px;
+  padding-left: 20px;
+  font-size: 1em;             /* 統一文字サイズ */
+  line-height: 1.6;
+}
+
+/* 閉じるボタン */
+.help-close {
+  margin-top: 16px;
+  font-size: 14px;            /* 読みやすく調整 */
+  background: #e0e0e0;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  align-self: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.help-close:hover {
+  background: #d4d4d4;
+  color: #000;
+}
+
+/* 注意書き・補足 */
+.help-modal-content .modal-body .note {
+  font-size: 13px;            /* 少し大きめ */
+  color: #666;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.03); /* 背景を付ける */
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-left: 3px solid #6fd3f5;
+  border-radius: 6px;
+}
+
+/* ===============================
+   試合画面 インフォメーションボタン
+   =============================== */
+.match-info-btn {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  background-color: #2f80ed;  /* 統一 */
+  color: #ffffff;
+  border: 2px solid #ffffff;
+
+  font-size: 20px;
+  font-weight: bold;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 999;
+}
+
+.match-info-btn:hover {
+  background-color: #1c6ed5;  /* 統一 */
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.match-info-btn:active {
+  transform: scale(0.95);
+}
+
 /* ------------------------------------------- 設定画面全体 ------------------------------------------- */
 
 /* 試合画面全体 */
@@ -1227,10 +1230,10 @@ button:hover { opacity: 0.9; }
 #dateWeatherContainer {
     width: 100%;
     max-width: 400px; /* ← 390px → 400px */
-    margin: 2px auto;
+    margin: 1px auto;
     display: flex;
     flex-direction: column;   /* ※2段表示を維持 */
-    gap: 4px;
+    gap: 2px;
     padding: 6px 10px;
     background: rgba(0, 0, 0, 0.25);
     border-radius: 12px;
@@ -1403,8 +1406,8 @@ button:hover { opacity: 0.9; }
   font-weight: bold;
   color: #ffffff;
   letter-spacing: 1px;
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: 1px;
+  margin-bottom: 1px;
   font-family: "Kosugi Maru", sans-serif;
 
   /* 折り返し禁止 + はみ出し防止 */
@@ -1460,7 +1463,7 @@ button:hover { opacity: 0.9; }
 
 /* 試合画面_--- ペア名表示 --- */
 .pair-name{
-  font-size:16px;
+  font-size:15px;
   text-align:center;
   margin:3px 0;
 }
@@ -1589,8 +1592,11 @@ button:hover { opacity: 0.9; }
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
-  /* 軽めの影で明るさを維持 */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
+  /* ★ うっすら発光（世界観を壊さない） */
+  text-shadow:
+    0 0 2px rgba(255, 255, 255, 0.6),
+    0 0 4px rgba(255, 200, 255, 0.4),
+    1px 1px 2px rgba(0, 0, 0, 0.15);
 
   /* アニメーション速度 */
   animation: rainbowShift 3s linear infinite;
@@ -1607,8 +1613,8 @@ button:hover { opacity: 0.9; }
   font-size: 20px;
   font-weight: bold;
   text-align: center;
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 
   /* オプション: 少し光らせたい場合 */
   text-shadow: 0 0 3px rgba(255, 215, 0, 0.8);
@@ -1622,14 +1628,14 @@ button:hover { opacity: 0.9; }
   align-items: center;
   flex-direction: column; /* ← 上下の伸びを許可 */
   width: 100%;  /* ← 横幅を固定 */
-  height: 140px; /* ← 縦幅を固定 */
+  height: 134px; /* ← 縦幅を固定 */
   max-width: 100%;
-  margin: 2px auto;
+  margin: 1px auto;
   /* border: 2px solid red; */ /* 確認用は不要 */
   padding: 0px; /* ← はみ出し防止の余白を追加 */
   box-sizing: border-box;
   background: rgba(0, 0, 0, 0.3); /* ← 半透明の黒背景（透明度30%） */
-  border-radius: 10px; /* ← Rをつける（角丸） */
+  border-radius: 14px; /* ← Rをつける（角丸） */
 }
 
 /* --- 試合画面_得点表示標準 --- */
@@ -1735,7 +1741,7 @@ button:hover { opacity: 0.9; }
 /* 中央のS文字 */
 .middle-symbol {
   color: red;
-  font-size: 14px;
+  font-size: 12px;
   font-family: "Saira", sans-serif;
   font-weight: 700;
   line-height: 1;
@@ -2026,12 +2032,12 @@ button:hover { opacity: 0.9; }
 
 /* 試合画面_アナウンスベース */
 #showInfo {
-  font-size: 16px;
-  height: 30px;
+  font-size: 15px;
+  height: 28px;
   font-weight: bold;
   text-align: center;
   margin-top: 3px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 /* 試合画面アナウンス（試合画面読込み直後に表示） */
@@ -2050,12 +2056,12 @@ button:hover { opacity: 0.9; }
 
 /* 試合画面_アナウンス（メイン） */
 #infoText {
-  font-size: 16px;
-  height: 30px;
+  font-size: 15px;
+  height: 28px;
   font-weight: bold;
   text-align: center;
   margin-top: 3px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 /* --- 補助エリア（ボタンや追加情報用） --- */
@@ -2128,7 +2134,7 @@ button:hover { opacity: 0.9; }
   transform: translate(-50%, -50%);
   width: 72px;
   max-width: 100%;
-  height: 30px;
+  height: 32px;
   line-height: 30px;
   color: #000;
   text-align: center;
@@ -2191,7 +2197,7 @@ button:hover { opacity: 0.9; }
 /* 試合画面_--- コート内選手（ぷっくり・フラット版） --- */
 .player-box {
   width: 72px;
-  height: 30px;
+  height: 32px;
   line-height: 30px;
   background: #f0f0f0;
   color: #000;
@@ -2248,7 +2254,7 @@ button:hover { opacity: 0.9; }
 /* 左右の回転ボタン領域 */
 #courtSideLeft,
 #courtSideRight {
-  width: 50px;
+  width: 60px;
   height: 230px;
   position: absolute;
   top: 50%;
@@ -2286,8 +2292,8 @@ button:hover { opacity: 0.9; }
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
+  width: 39px;
+  height: 39px;
   margin: auto;
 }
 
@@ -2319,7 +2325,7 @@ button:hover { opacity: 0.9; }
 .team-picker-wrapper {
   width: 330px;
   height: 30px;
-  margin: 2px auto;
+  margin: 1px auto;
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
@@ -2389,7 +2395,7 @@ body::after {
 .scorePicker-wrap {
   width: 330px;
   height: 30px;
-  margin: 2px auto;
+  margin: 1px auto;
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
@@ -2476,7 +2482,7 @@ body::after {
 .picker-wrapper {
   width: 330px;
   height: 30px;
-  margin: 2px auto;
+  margin: 1px auto;
   overflow-x: hidden;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
@@ -2513,11 +2519,11 @@ body::after {
 .divider, .divider-left {
   position: absolute;
   top: 0; bottom: 0;
-  width: 5px;
+  width: 3px;
   background: #fff;
 }
 .divider { right: 35%; }
-.divider-left { left: 159px; }
+.divider-left { left: 160px; }
 
 /* 文字レイヤー（ノーマルに変更） */
 .label-court, .label-out {
@@ -2557,7 +2563,7 @@ body::after {
 .favorites-picker-wrapper {
   width: 330px;
   height: 30px;
-  margin: 2px auto;
+  margin: 1px auto;
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -2653,7 +2659,7 @@ body::after {
   flex: 0 0 auto;
   min-width: 120px;
   max-width: 180px;
-  padding: 2px;
+  padding: 1px;
   margin: 1px 0;
   font-size: 18px;
   border-radius: 12px; /* 角丸強めでぷっくり感 */
@@ -2702,7 +2708,7 @@ body::after {
   flex: 0 0 auto;
   min-width: 120px;
   max-width: 180px;
-  padding: 2px;
+  padding: 1px;
   margin: 1px 0;
   font-size: 18px;
   border-radius: 12px; /* 丸み強めでぷっくり感 */
@@ -2751,7 +2757,7 @@ body::after {
   background: transparent; /* 背景を透明 */
 }
 
-/* ===== 上から舞い落ちる紙吹雪（回転ランダム／サイン波揺れ／長時間版） ===== */
+/* ===== 上から舞い落ちる紙吹雪（超ランダム横揺れ版） ===== */
 .confetti {
   position: fixed;
   top: -10px;
@@ -2764,16 +2770,30 @@ body::after {
   animation: confettiFall linear forwards;
 }
 
-/* 🎐 落下中にサイン波の横揺れと回転ランダムを加える */
+/* 🌪 横揺れを多重合成 */
 @keyframes confettiFall {
   0% {
-    transform: translateX(0) translateY(0) rotate(var(--start-rotate));
+    transform:
+      translateX(0)
+      translateY(0)
+      rotate(var(--start-rotate));
     opacity: 1;
   }
+
   100% {
-    transform: translateX(calc(var(--drift) + sin(var(--t) * 3.1415) * var(--wind) * 1vw))
-               translateY(100vh)
-               rotate(calc(var(--start-rotate) + var(--rotate-speed) * 1turn));
+    transform:
+      translateX(
+        calc(
+          var(--drift)
+          + sin(var(--t) * 6.283) * var(--wind1) * 1vw
+          + sin(var(--t) * 13.17) * var(--wind2) * 0.8vw
+          + sin(var(--t) * 31.4) * var(--wind3) * 0.4vw
+        )
+      )
+      translateY(100vh)
+      rotate(
+        calc(var(--start-rotate) + var(--rotate-speed) * 1turn)
+      );
     opacity: 0.8;
   }
 }
@@ -2808,14 +2828,14 @@ body::after {
 
     <!-- タイトル + ヘルプボタン -->
     <div class="setup-header">
-      <span id="setupInfoText" class="setup-title">▲▽▲▽▲▽▲ 設定画面 ▲▽▲▽▲▽▲</span>
+      <span id="setupInfoText" class="setup-title">▽▲▽ 設定画面 ▽▲▽</span>
       <button id="helpButtonFooter" class="help-footer-btn" aria-label="インフォメーション">i</button>
 
     </div>
 
     <div id="setupSubFrame">
       <span id="setupHintTextTop" class="blink-text" style="font-size:16px; color:white;">
-        大会名・チーム名・選手名等を入力・保存・呼出
+        大会・チーム・選手等を入力・保存・呼出
       </span>
     </div>
 
@@ -3040,33 +3060,115 @@ body::after {
 
     <div class="modal-body">
 
-      <h3>はじめての方へ</h3>
-      <p>
-        Smash!!!! は、インターネットを使って動作するアプリです。
-        スマートフォンのブラウザから「ホーム画面に追加」（iPhone・Androidともに対応）すると、
-        他のアプリと同じように、アイコンをタップして起動できます。
-      </p>
+      <!-- ===============================
+           このアプリについて
+           =============================== -->
 
       <h3>このアプリについて</h3>
       <p>
-        このアプリは、ソフトテニス ダブルスマッチの観戦をどなたでも気軽に楽しめるように作られています。
+        このアプリは、ソフトテニスのダブルスマッチ観戦を
+        どなたでも気軽に楽しめるように作られています。
         特にソフトテニスの試合ではスコアボードが無いことも多く、
-        「今の得点はどうなっているの？」と分かりにくい場面があります。
+        「今の得点はどうなっているの？」と
+        分かりにくい場面があります。
       </p>
       <p>
         このアプリは、観戦しながら得点を記録するだけで、
         試合の流れや状況が自然に分かるように設計しています。
-        難しい操作はありませんので、スマートフォンに不慣れな方でも安心してお使いいただけます。
+        難しい操作はありませんので、
+        スマートフォンに不慣れな方でも安心してお使いいただけます。
       </p>
 
       <p class="note">
-        ※ 公式な記録を残すものではありません。観戦や応援を楽しむための補助ツールです。
+        ※ 公式な記録を残すものではありません。
+        観戦や応援を楽しむための補助ツールです。
       </p>
+
+      <!-- ===============================
+           はじめての方へ
+           =============================== -->
+
+      <h3>はじめての方へ</h3>
+      <p>
+        Smash!!!! は、インターネットを使って動作するアプリです。
+        スマートフォンのブラウザから
+        「ホーム画面に追加」（iPhone・Androidともに対応）すると、
+        他のアプリと同じように、
+        アイコンをタップして起動できます。
+      </p>
+
+      <!-- ===============================
+           ホーム画面に追加（フル版・固定表示）
+           =============================== -->
+
+      <h3>ホーム画面に追加について</h3>
+      <p>
+        Smash!!!! は、スマートフォンのブラウザから
+        「ホーム画面に追加」することで、
+        アプリのようにアイコンをタップして起動できます。
+      </p>
+
+      <h4>LINEでURLを開いた場合の注意</h4>
+      <p>
+        LINEのトーク画面でURLを開いた場合、
+        LINE内ブラウザで表示されるため、
+        そのままでは「ホーム画面に追加」が表示されません。
+      </p>
+      <p>
+        必ず <strong>Safari（iPhone）</strong> や
+        <strong>Chrome（Android）</strong> で
+        開き直してください。
+      </p>
+
+      <h4>iPhone の場合（LINE → Safari）</h4>
+      <ol>
+        <li>LINEのトーク画面で Smash!!!! のURLをタップ</li>
+        <li>画面右下（または右上）の <strong>共有アイコン</strong> をタップ</li>
+        <li>「Safariで開く」を選択</li>
+        <li>Safariで表示されたら、下部の <strong>共有ボタン</strong> をタップ</li>
+        <li>「ホーム画面に追加」を選択</li>
+        <li>名前を確認して「追加」をタップ</li>
+      </ol>
+
+      <p class="note">
+        ※ 画面が横向きの状態では
+        「ホーム画面に追加」が表示されないことがあります。<br>
+        表示されない場合は、<strong>画面を縦向き</strong>にしてください。
+      </p>
+
+      <h4>Android の場合（LINE → Chrome）</h4>
+      <ol>
+        <li>LINEのトーク画面で Smash!!!! のURLをタップ</li>
+        <li>画面右下の <strong>︙（メニュー）</strong> をタップ</li>
+        <li>「ブラウザで開く」または「Chromeで開く」を選択</li>
+        <li>Chrome右上の <strong>︙（メニュー）</strong> をタップ</li>
+        <li>「ホーム画面に追加」を選択</li>
+        <li>表示名を確認して追加</li>
+      </ol>
+
+      <p class="note">
+        ※ 機種やAndroidのバージョンによっては、
+        表示名が「アプリをインストール」など
+        異なる場合があります。
+      </p>
+
+      <p class="note">
+        ※ 「ホーム画面に追加」が見つからない場合は、<br>
+        ・ブラウザで開けているか<br>
+        ・画面が縦向きか<br>
+        をご確認ください。
+      </p>
+
+      <!-- ===============================
+           設定画面について
+           =============================== -->
 
       <h3>設定画面について</h3>
       <p>
-        設定画面では、試合のゲームマッチ数を確認し、［試合開始］ボタンを押すだけで準備が完了します。
-        最初に大会名やチーム・ペア名を入力すると、観戦がより楽しめます。
+        設定画面では、試合のゲームマッチ数を確認し、
+        ［試合開始］ボタンを押すだけで準備が完了します。
+        最初に大会名やチーム・ペア名を入力すると、
+        観戦がより楽しめます。
       </p>
 
       <h3>大会名の入力・保存</h3>
@@ -3086,7 +3188,8 @@ body::after {
       </ul>
 
       <p class="note">
-        ※ 保存した内容を削除する場合は、一覧から選択して削除してください。
+        ※ 保存した内容を削除する場合は、
+        一覧から選択して削除してください。
       </p>
 
       <h3>ゲームマッチ数の選択</h3>
@@ -3097,7 +3200,10 @@ body::after {
 
       <h3>ひとこと</h3>
       <p>
-        操作に迷ったときは、端末の戻るボタンでリロード（アプリの再起動）して最初からやり直しても問題ありません。
+        操作に迷ったときは、
+        端末の戻るボタンでリロード
+        （アプリの再起動）して
+        最初からやり直しても問題ありません。
         ご自身のペースでゆっくりお使いください。
       </p>
 
@@ -3106,6 +3212,7 @@ body::after {
     <button class="help-close" type="button" id="closeHelp">閉じる</button>
   </div>
 </div>
+
 
 </div> <!-- setupScreen閉じ -->
 </div> <!-- setup-block閉じ -->
@@ -3793,6 +3900,10 @@ let matchWinnerTimeoutId = null;     // 勝利表示タイマー
 const MAX_HISTORY = 100;             // Undo 履歴上限
 let readyMessageTimers = [];
 
+// ==================== iphoneカクつき問題用 ====================
+let lastThemeColor = null;
+let favScrollTimer;
+
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
 
@@ -4209,46 +4320,73 @@ function preCheckFinal() {
     }
 }
 
-// 🎊 上から舞い落ちる紙吹雪（回転ランダム／サイン波揺れ／長時間版）
+// 🎊 上から舞い落ちる紙吹雪（横揺れ暴走版）
 function launchConfetti() {
   const colors = [
     '#ff4d4d', '#ffb84d', '#ffff4d', '#4dff4d',
     '#4dffff', '#4d4dff', '#b84dff', '#ffffff', '#ff66b3'
   ];
-  
-  const confettiCount = 300; // 豪華版
+
+  const confettiCount = 300;
 
   for (let i = 0; i < confettiCount; i++) {
     const confetti = document.createElement('div');
     confetti.classList.add('confetti');
 
-    // 🎨 ランダム設定
-    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    confetti.style.width = 6 + Math.random() * 8 + 'px';
+    // 🎨 見た目
+    confetti.style.backgroundColor =
+      colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.width  = 6 + Math.random() * 8 + 'px';
     confetti.style.height = 6 + Math.random() * 8 + 'px';
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.opacity = 0.5 + Math.random() * 0.5;
-    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    confetti.style.left   = Math.random() * 100 + 'vw';
+    confetti.style.opacity = 0.4 + Math.random() * 0.6;
+    confetti.style.borderRadius =
+      Math.random() > 0.6 ? '50%' : '2px';
 
-    // ⏱ 落下時間と遅延を長く
-    confetti.style.animationDuration = (5 + Math.random() * 5) + 's'; // 5〜10秒
-    confetti.style.animationDelay = Math.random() * 2 + 's';
+    // ⏱ 落下
+    confetti.style.animationDuration =
+      (6 + Math.random() * 6) + 's'; // 6〜12秒
+    confetti.style.animationDelay =
+      Math.random() * 2 + 's';
 
-    // 🎐 横揺れ設定（-100〜+100px）
-    confetti.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
-    confetti.style.setProperty('--wind', (Math.random() * 2 - 1).toFixed(2));
+    // 🌪 横揺れパラメータ（超重要）
+    confetti.style.setProperty(
+      '--drift',
+      (Math.random() * 300 - 150) + 'px'
+    );
 
-    // サイン波用の時刻変数
-    confetti.style.setProperty('--t', Math.random().toFixed(2));
+    confetti.style.setProperty(
+      '--wind1',
+      (Math.random() * 5 + 2).toFixed(2)   // 大揺れ
+    );
+    confetti.style.setProperty(
+      '--wind2',
+      (Math.random() * 4 + 1).toFixed(2)   // 中揺れ
+    );
+    confetti.style.setProperty(
+      '--wind3',
+      (Math.random() * 3 + 0.5).toFixed(2) // 細かい揺れ
+    );
 
-    // 回転ランダム
-    confetti.style.setProperty('--start-rotate', (Math.random() * 360).toFixed(0) + 'deg');
-    confetti.style.setProperty('--rotate-speed', (1 + Math.random() * 2).toFixed(2)); // 1～3回転
+    // 位相（時間）
+    confetti.style.setProperty(
+      '--t',
+      (Math.random() * 10).toFixed(2)
+    );
+
+    // 🔄 回転
+    confetti.style.setProperty(
+      '--start-rotate',
+      (Math.random() * 360).toFixed(0) + 'deg'
+    );
+    confetti.style.setProperty(
+      '--rotate-speed',
+      (1 + Math.random() * 3).toFixed(2)
+    );
 
     document.body.appendChild(confetti);
 
-    // 🎬 アニメーション終了後に削除
-    setTimeout(() => confetti.remove(), 11000); // 10秒＋余裕
+    setTimeout(() => confetti.remove(), 13000);
   }
 }
 
@@ -6398,11 +6536,15 @@ updateTeamPickerCenter();
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 (function(){
   const scorePicker = document.getElementById('scorePickerCustom');
+  if(!scorePicker) return; // ← ★これだけが重要
+
   const ITEM_H = 40;
   const LOOPS = 3;
 
   let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
   let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
+
+  /* 以降はあなたのコードを一切変更していません */
 
   function toRGB(color){
     const div = document.createElement("div");
@@ -6719,6 +6861,8 @@ const brightCombos = [
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 
 /* ------------------- 背景とコートの色（テニス風パターン） ------------------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+
 const combos = [
   // ===========================
   // ✅ デフォルト（維持）
@@ -6857,6 +7001,8 @@ const combos = [
 ];
 
 const wrapper = document.getElementById("picker");
+if(!wrapper) return;   // ← ここで安全停止（関数内なのでOK）
+
 const itemHeight = 30;
 
 // アイテム生成
@@ -6903,25 +7049,37 @@ function updateCenter(){
   const wrapperRect = wrapper.getBoundingClientRect();
   let closest = null;
   let minDist = Infinity;
+
   items.forEach(item=>{
     const rect = item.getBoundingClientRect();
     const itemCenter = rect.top + rect.height/2;
     const wrapperCenter = wrapperRect.top + wrapperRect.height/2;
     const dist = Math.abs(itemCenter - wrapperCenter);
-    if(dist<minDist){ minDist = dist; closest = item; }
+    if(dist < minDist){
+      minDist = dist;
+      closest = item;
+    }
   });
+
   items.forEach(it=>it.classList.remove("center"));
+
   if(closest){
     closest.classList.add("center");
+
     const courtColor = closest.querySelector(".bg-court").style.background;
     const outColor = closest.querySelector(".bg-out").style.background;
 
-    document.getElementById("courtContainer").style.background = courtColor;
+    const courtContainer = document.getElementById("courtContainer");
+    if(courtContainer){
+      courtContainer.style.background = courtColor;
+    }
+
     document.body.style.background = outColor;
 
-    // PWA用 theme-color を更新
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if(metaTheme) metaTheme.setAttribute("content", outColor);
+if(metaTheme && metaTheme.getAttribute("content") !== outColor){
+  metaTheme.setAttribute("content", outColor);
+}
 
     return {courtColor, outColor};
   }
@@ -6946,43 +7104,50 @@ function selectSavedItem(){
       const cCourt = item.querySelector(".bg-court").style.background;
       const cOut = item.querySelector(".bg-out").style.background;
       if(cCourt === savedCourt && cOut === savedOut){
-        const targetIndex = i % combos.length;
-        wrapper.scrollTop = targetIndex * itemHeight;
+        wrapper.scrollTop = (i % combos.length) * itemHeight;
         updateCenter();
         return;
       }
     }
   }
 
-  // 保存なしの場合は従来通り中央アイテム
   wrapper.scrollTop = combos.length * itemHeight;
   updateCenter();
 }
 
-// 無限スクロール + 保存
+// 無限スクロール + 保存（iPhoneカクつき対策版）
 let scrollTimer;
+let rafId = null;
+
 wrapper.addEventListener("scroll", ()=>{
   const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
+
+  // 無限スクロール補正（最低限）
   if(wrapper.scrollTop < itemHeight){
-    wrapper.scrollTop += combos.length*itemHeight;
+    wrapper.scrollTop += combos.length * itemHeight;
   } else if(wrapper.scrollTop > maxScroll - itemHeight){
-    wrapper.scrollTop -= combos.length*itemHeight;
+    wrapper.scrollTop -= combos.length * itemHeight;
   }
 
-  clearTimeout(scrollTimer);
-  scrollTimer = setTimeout(()=>{
-    const colors = updateCenter();
-    if(colors){
-      localStorage.setItem('courtColor', colors.courtColor);
-      localStorage.setItem('outColor', colors.outColor);
-      localStorage.setItem('scrollTop', wrapper.scrollTop);
-    }
-  }, 150);
+  // 🔽 scroll中は何もしない
+  if(rafId) cancelAnimationFrame(rafId);
+
+  rafId = requestAnimationFrame(()=>{
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(()=>{
+      const colors = updateCenter();
+      if(colors){
+        localStorage.setItem('courtColor', colors.courtColor);
+        localStorage.setItem('outColor', colors.outColor);
+        localStorage.setItem('scrollTop', wrapper.scrollTop);
+      }
+    }, 120); // ← 指を離してからだけ処理
+  });
 });
 
-// 初期表示
 window.addEventListener("load", selectSavedItem);
 
+});
 /* ------------------- 背景とコートの色（終り） ------------------- */
 
 /* ------------------- 色の組み合わせお気に入り ------------------- */
@@ -6996,7 +7161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     out: "#006400"
   };
   const MAX_FAVORITES = 5;
-  const ITEM_H = 30;
+  const FAV_ITEM_H = 30;
   const SAVE_TIME = 2000;
   const DELETE_THRESHOLD = 180;
 
@@ -7027,7 +7192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getCenterFavoriteIndex() {
     const scrollTop = favWrapper.scrollTop;
-    return Math.round(scrollTop / ITEM_H) % TOTAL_ITEMS;
+    return Math.round(scrollTop / FAV_ITEM_H) % TOTAL_ITEMS;
   }
 
  function buildFavoritesPicker() {
@@ -7203,26 +7368,31 @@ div.addEventListener('pointercancel', () => {
   }
 
   requestAnimationFrame(() => {
-    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * ITEM_H : currentScroll;
+    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * FAV_ITEM_H : currentScroll;
     updateFavoritesActive();
   });
 }
 
 favWrapper.addEventListener('scroll', () => {
   const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
-  const SAFE_ZONE = ITEM_H * 2;
+  const SAFE_ZONE = FAV_ITEM_H * 2;
 
+  // 無限スクロール補正（最低限）
   if (favWrapper.scrollTop < SAFE_ZONE) {
     requestAnimationFrame(() => {
-      favWrapper.scrollTop += TOTAL_ITEMS * ITEM_H;
+      favWrapper.scrollTop += TOTAL_ITEMS * FAV_ITEM_H;
     });
   } else if (favWrapper.scrollTop > maxScroll - SAFE_ZONE) {
     requestAnimationFrame(() => {
-      favWrapper.scrollTop -= TOTAL_ITEMS * ITEM_H;
+      favWrapper.scrollTop -= TOTAL_ITEMS * FAV_ITEM_H;
     });
   }
 
-  updateFavoritesActive();
+  // 🔥 ここを修正
+  clearTimeout(favScrollTimer);
+  favScrollTimer = setTimeout(() => {
+    updateFavoritesActive();  // scroll停止後だけ呼ぶ
+  }, 120); // 120ms後に1回だけ
 });
 
   /* --------------------------------------------------------
@@ -7270,7 +7440,7 @@ favWrapper.addEventListener('scroll', () => {
     const bgB = item.querySelector('.team-scroll-bgB');
     if (bgA) bgA.style.background = f.team_scroll_bgA;
     if (bgB) bgB.style.background = f.team_scroll_bgB;
-    teamWrapper.scrollTop = ITEM_H * centerIndex;
+    teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
     if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
    }
 
@@ -7285,7 +7455,7 @@ favWrapper.addEventListener('scroll', () => {
       const bgOut = item.querySelector('.bg-out');
       if (bgCourt) bgCourt.style.background = f.court;
       if (bgOut) bgOut.style.background = f.out;
-      courtWrapper.scrollTop = ITEM_H * centerIndex;
+      courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
       if (typeof updateCenter === 'function') updateCenter();
     }
 
@@ -7300,7 +7470,7 @@ favWrapper.addEventListener('scroll', () => {
 
       forceApplyScoreColor(lblA, lblB, f);
 
-      scoreWrapper.scrollTop = ITEM_H * centerIndex;
+      scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
     }
   }
 
