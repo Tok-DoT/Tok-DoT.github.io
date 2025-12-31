@@ -444,13 +444,13 @@ button:hover { opacity: 0.9; }
 .help-modal-content {
   max-width: 400px;           /* 幅調整 */
   width: 90%;                 /* 画面幅に応じて縮小 */
-  max-height: 70vh;           /* 高さ制限 */
-  margin: 15vh auto 0;        /* 上余白＋中央寄せ */
-  padding: 16px 18px;
+  max-height: 75vh;           /* 高さ制限 */
+  margin: 12vh auto 0;        /* 上余白＋中央寄せ */
+  padding: 18px 20px;
   background: #f9f9f9;
   color: #333;
-  font-size: 15px;            /* ベース文字サイズを少し大きく */
-  line-height: 1.5;
+  font-size: 16px;            /* ベース文字サイズを少し大きく */
+  line-height: 1.6;           /* 読みやすい行間 */
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   text-align: left;
@@ -462,46 +462,49 @@ button:hover { opacity: 0.9; }
 /* モーダル本文（スクロール可能） */
 .modal-body {
   overflow-y: auto;
-  padding-right: 5px;         /* スクロールバーとの隙間 */
-  font-size: 1em;             /* 統一文字サイズ */
+  padding-right: 8px;         /* スクロールバーとの隙間 */
+  font-size: 1em;             /* ベースサイズと統一 */
+  line-height: 1.6;           /* 読みやすく */
 }
 
 /* 見出し */
 .help-modal-content h2 {
   text-align: center;
-  margin-bottom: 12px;
-  font-size: 1.2em;           /* 見出しを少し大きく */
+  margin-bottom: 14px;
+  font-size: 1.4em;           /* タイトルを大きめ */
 }
 
 .help-modal-content h3 {
-  margin-top: 16px;
-  margin-bottom: 8px;
-  font-size: 1em;             /* 統一文字サイズ */
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-size: 1.2em;           /* 段落との差をはっきり */
 }
 
 /* 段落 */
 .modal-body p {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   font-size: 1em;             /* 統一文字サイズ */
+  line-height: 1.6;
 }
 
 /* リスト */
 .modal-body ul {
-  margin-bottom: 12px;
-  padding-left: 18px;
+  margin-bottom: 14px;
+  padding-left: 20px;
   font-size: 1em;             /* 統一文字サイズ */
+  line-height: 1.6;
 }
 
 /* 閉じるボタン */
 .help-close {
-  margin-top: 12px;
-  font-size: 13px;            /* 読みやすく調整 */
+  margin-top: 16px;
+  font-size: 14px;            /* 読みやすく調整 */
   background: #e0e0e0;
   border: none;
   color: #333;
   cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
   align-self: center;
   transition: background 0.2s, color 0.2s;
 }
@@ -513,17 +516,15 @@ button:hover { opacity: 0.9; }
 
 /* 注意書き・補足 */
 .help-modal-content .modal-body .note {
-  font-size: 12px;    /* 文字サイズ */
-  color: #666;        /* 色 */
-  line-height: 1.4;   /* 行間 */
-  background: rgba(0,0,0,0.03); /* 背景を付ける場合 */
+  font-size: 13px;            /* 少し大きめ */
+  color: #666;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.03); /* 背景を付ける */
   padding: 8px 12px;
   margin: 10px 0;
   border-left: 3px solid #6fd3f5;
   border-radius: 6px;
 }
-
-
 
 /* ===============================
    試合画面 インフォメーションボタン
@@ -946,8 +947,8 @@ button:hover { opacity: 0.9; }
   flex-wrap: wrap;       /* 画面幅が狭い場合のみ改行 */
   max-width: 400px;
   width: 90%;
-  margin: 14px auto;
-  gap: 2px;
+  margin: 10px auto;
+  gap: 1px;
   font-size: 10px;
   align-items: center;
 }
@@ -987,17 +988,28 @@ button:hover { opacity: 0.9; }
 /* アプリURLコピー用（コンパクト版） */
 
 #settingsFooter, .other-text {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 /* 著作権関連 */
 #settingsFooter {
   margin-top: 0px;
-  padding-top: 2px;
+  padding-top: 0px;
   font-size: 12px;
   text-align: center;
   opacity: 0.6;
   cursor: pointer;
+}
+
+.terms-hint {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.terms-intro {
+  font-size: 0.9em;
+  opacity: 0.7;
+  margin-bottom: 10px;
 }
 
 /* モーダル全体 */
@@ -1032,7 +1044,7 @@ button:hover { opacity: 0.9; }
   max-width: 400px;
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: 70vh;
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
   transform: translateY(30px);
   transition: transform 0.3s ease;
@@ -1049,29 +1061,40 @@ button:hover { opacity: 0.9; }
   padding-right: 5px;
 }
 
-/* 閉じるボタン */
-.close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  font-weight: bold;
-  align-self: flex-end;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.close:hover {
-  color: #f00;
-}
-
+/* タイトル */
 .modal-content h2 {
   font-size: 1.2em;
   margin-bottom: 10px;
 }
 
+/* 本文 */
 .modal-body p {
   font-size: 0.95em;
   line-height: 1.5;
+}
+
+.terms-end {
+  font-size: 0.85em;
+  opacity: 0.6;
+  margin-top: 10px;
+}
+
+/* ★ 下部「閉じる」ボタン（新設） */
+.terms-close {
+  margin-top: 12px;
+  font-size: 13px;
+  background: #e0e0e0;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 6px;
+  align-self: center;
+  transition: background 0.2s;
+}
+
+.terms-close:hover {
+  background: #d4d4d4;
 }
 
 /* 著作権関連 */
@@ -2913,14 +2936,17 @@ body::after {
 
 <!-- 著作権関連表示 -->
 <div id="settingsFooter">
-  © 2025-2026 Tok.DoT / Hiroki Sato. All rights reserved.
+  © 2025–2026 Tok.DoT. All rights reserved.<br>
+  <span class="terms-hint">利用規約・免責事項</span>
 </div>
 
 <!-- 利用規約ダイアログ -->
 <div id="termsDialog" class="modal">
   <div class="modal-content">
-    <button class="close">✕</button>
     <h2>Smash!!!! 利用規約</h2>
+<p class="terms-intro">
+  本アプリを安心してご利用いただくための内容です。
+</p>
     <div class="modal-body">
       <p>
   最終更新日：2025年12月25日<br><br>
@@ -2960,7 +2986,12 @@ body::after {
         - 本アプリでは、任意で開発者を支援できるリンク（OFUSE）を設置しています。<br>
         - 支援は完全に自由であり、利用や登録は不要です。
       </p>
+<p class="terms-end">
+  ここまでご確認いただきありがとうございます。
+</p>
     </div>
+    <!-- ★ 下部に閉じるボタン -->
+    <button class="terms-close" type="button">閉じる</button>
   </div>
 </div>
 
@@ -6041,8 +6072,8 @@ const teamCombos = [
   // ==============================
   // デフォルト色
   // ==============================
-  {teamA:"#ffffff", teamB:"#ffff00"}, 
   {teamA:"#ffff00", teamB:"#ffffff"}, 
+  {teamA:"#ffffff", teamB:"#ffff00"},  
 
   // ==============================
   // ややビビッド・高コントラスト
@@ -6896,8 +6927,8 @@ window.addEventListener("load", selectSavedItem);
 /* ------------------- 色の組み合わせお気に入り ------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const DEFAULT_FAVORITE = {
-    team_scroll_bgA: "#FFFFFF",
-    team_scroll_bgB: "#FFFF00",
+    team_scroll_bgA: "#FFFF00",
+    team_scroll_bgB: "#FFFFFF",
     scoreA_color: "#00CED1",
     scoreB_color: "#D2691E",
     court: "#228B22",
@@ -7849,25 +7880,25 @@ function showSimpleAlert(message, callback) {
 // 利用規約モーダル
 const footer = document.getElementById("settingsFooter");
 const modal = document.getElementById("termsDialog");
-const closeBtn = modal.querySelector(".close");
+const closeBtn = modal.querySelector(".terms-close");
 
 // フッタークリックで表示
 footer.addEventListener("click", () => {
   modal.classList.add("show");
-  document.body.style.overflow = "hidden"; // 背景スクロール防止
+  document.body.style.overflow = "hidden";
 });
 
-// 閉じるボタン
+// 下部「閉じる」ボタン
 closeBtn.addEventListener("click", () => {
   modal.classList.remove("show");
-  document.body.style.overflow = "auto"; 
+  document.body.style.overflow = "auto";
 });
 
-// モーダル外クリックで閉じる
-window.addEventListener("click", (e) => {
+// モーダル外タップで閉じる
+modal.addEventListener("click", (e) => {
   if (e.target === modal) {
     modal.classList.remove("show");
-    document.body.style.overflow = "auto"; 
+    document.body.style.overflow = "auto";
   }
 });
 
