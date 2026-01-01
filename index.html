@@ -3850,6 +3850,10 @@ let matchWinnerTimeoutId = null;     // 勝利表示タイマー
 const MAX_HISTORY = 100;             // Undo 履歴上限
 let readyMessageTimers = [];
 
+// ==================== iphoneカクつき問題用 ====================
+let lastThemeColor = null;
+let favScrollTimer;
+
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
 
@@ -6482,11 +6486,15 @@ updateTeamPickerCenter();
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 (function(){
   const scorePicker = document.getElementById('scorePickerCustom');
+  if(!scorePicker) return; // ← ★これだけが重要
+
   const ITEM_H = 40;
   const LOOPS = 3;
 
   let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
   let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
+
+  /* 以降はあなたのコードを一切変更していません */
 
   function toRGB(color){
     const div = document.createElement("div");
@@ -6803,6 +6811,8 @@ const brightCombos = [
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 
 /* ------------------- 背景とコートの色（テニス風パターン） ------------------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+
 const combos = [
   // ===========================
   // ✅ デフォルト（維持）
@@ -6941,6 +6951,8 @@ const combos = [
 ];
 
 const wrapper = document.getElementById("picker");
+if(!wrapper) return;   // ← ここで安全停止（関数内なのでOK）
+
 const itemHeight = 30;
 
 // アイテム生成
@@ -6987,25 +6999,37 @@ function updateCenter(){
   const wrapperRect = wrapper.getBoundingClientRect();
   let closest = null;
   let minDist = Infinity;
+
   items.forEach(item=>{
     const rect = item.getBoundingClientRect();
     const itemCenter = rect.top + rect.height/2;
     const wrapperCenter = wrapperRect.top + wrapperRect.height/2;
     const dist = Math.abs(itemCenter - wrapperCenter);
-    if(dist<minDist){ minDist = dist; closest = item; }
+    if(dist < minDist){
+      minDist = dist;
+      closest = item;
+    }
   });
+
   items.forEach(it=>it.classList.remove("center"));
+
   if(closest){
     closest.classList.add("center");
+
     const courtColor = closest.querySelector(".bg-court").style.background;
     const outColor = closest.querySelector(".bg-out").style.background;
 
-    document.getElementById("courtContainer").style.background = courtColor;
+    const courtContainer = document.getElementById("courtContainer");
+    if(courtContainer){
+      courtContainer.style.background = courtColor;
+    }
+
     document.body.style.background = outColor;
 
-    // PWA用 theme-color を更新
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if(metaTheme) metaTheme.setAttribute("content", outColor);
+if(metaTheme && metaTheme.getAttribute("content") !== outColor){
+  metaTheme.setAttribute("content", outColor);
+}
 
     return {courtColor, outColor};
   }
@@ -7030,43 +7054,50 @@ function selectSavedItem(){
       const cCourt = item.querySelector(".bg-court").style.background;
       const cOut = item.querySelector(".bg-out").style.background;
       if(cCourt === savedCourt && cOut === savedOut){
-        const targetIndex = i % combos.length;
-        wrapper.scrollTop = targetIndex * itemHeight;
+        wrapper.scrollTop = (i % combos.length) * itemHeight;
         updateCenter();
         return;
       }
     }
   }
 
-  // 保存なしの場合は従来通り中央アイテム
   wrapper.scrollTop = combos.length * itemHeight;
   updateCenter();
 }
 
-// 無限スクロール + 保存
+// 無限スクロール + 保存（iPhoneカクつき対策版）
 let scrollTimer;
+let rafId = null;
+
 wrapper.addEventListener("scroll", ()=>{
   const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
+
+  // 無限スクロール補正（最低限）
   if(wrapper.scrollTop < itemHeight){
-    wrapper.scrollTop += combos.length*itemHeight;
+    wrapper.scrollTop += combos.length * itemHeight;
   } else if(wrapper.scrollTop > maxScroll - itemHeight){
-    wrapper.scrollTop -= combos.length*itemHeight;
+    wrapper.scrollTop -= combos.length * itemHeight;
   }
 
-  clearTimeout(scrollTimer);
-  scrollTimer = setTimeout(()=>{
-    const colors = updateCenter();
-    if(colors){
-      localStorage.setItem('courtColor', colors.courtColor);
-      localStorage.setItem('outColor', colors.outColor);
-      localStorage.setItem('scrollTop', wrapper.scrollTop);
-    }
-  }, 150);
+  // 🔽 scroll中は何もしない
+  if(rafId) cancelAnimationFrame(rafId);
+
+  rafId = requestAnimationFrame(()=>{
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(()=>{
+      const colors = updateCenter();
+      if(colors){
+        localStorage.setItem('courtColor', colors.courtColor);
+        localStorage.setItem('outColor', colors.outColor);
+        localStorage.setItem('scrollTop', wrapper.scrollTop);
+      }
+    }, 120); // ← 指を離してからだけ処理
+  });
 });
 
-// 初期表示
 window.addEventListener("load", selectSavedItem);
 
+});
 /* ------------------- 背景とコートの色（終り） ------------------- */
 
 /* ------------------- 色の組み合わせお気に入り ------------------- */
@@ -7080,7 +7111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     out: "#006400"
   };
   const MAX_FAVORITES = 5;
-  const ITEM_H = 30;
+  const FAV_ITEM_H = 30;
   const SAVE_TIME = 2000;
   const DELETE_THRESHOLD = 180;
 
@@ -7111,7 +7142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getCenterFavoriteIndex() {
     const scrollTop = favWrapper.scrollTop;
-    return Math.round(scrollTop / ITEM_H) % TOTAL_ITEMS;
+    return Math.round(scrollTop / FAV_ITEM_H) % TOTAL_ITEMS;
   }
 
  function buildFavoritesPicker() {
@@ -7287,26 +7318,31 @@ div.addEventListener('pointercancel', () => {
   }
 
   requestAnimationFrame(() => {
-    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * ITEM_H : currentScroll;
+    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * FAV_ITEM_H : currentScroll;
     updateFavoritesActive();
   });
 }
 
 favWrapper.addEventListener('scroll', () => {
   const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
-  const SAFE_ZONE = ITEM_H * 2;
+  const SAFE_ZONE = FAV_ITEM_H * 2;
 
+  // 無限スクロール補正（最低限）
   if (favWrapper.scrollTop < SAFE_ZONE) {
     requestAnimationFrame(() => {
-      favWrapper.scrollTop += TOTAL_ITEMS * ITEM_H;
+      favWrapper.scrollTop += TOTAL_ITEMS * FAV_ITEM_H;
     });
   } else if (favWrapper.scrollTop > maxScroll - SAFE_ZONE) {
     requestAnimationFrame(() => {
-      favWrapper.scrollTop -= TOTAL_ITEMS * ITEM_H;
+      favWrapper.scrollTop -= TOTAL_ITEMS * FAV_ITEM_H;
     });
   }
 
-  updateFavoritesActive();
+  // 🔥 ここを修正
+  clearTimeout(favScrollTimer);
+  favScrollTimer = setTimeout(() => {
+    updateFavoritesActive();  // scroll停止後だけ呼ぶ
+  }, 120); // 120ms後に1回だけ
 });
 
   /* --------------------------------------------------------
@@ -7340,13 +7376,15 @@ favWrapper.addEventListener('scroll', () => {
     requestAnimationFrame(() => { applyColors(); requestAnimationFrame(applyColors); });
   }
 
-  function applyFavorite(displayIndex) {
-    const f = getFavoriteByDisplayIndex(displayIndex);
-    if (!f) return;
+function applyFavorite(displayIndex) {
+  const f = getFavoriteByDisplayIndex(displayIndex);
+  if (!f) return;
 
-    // チーム
-    const teamWrapper = document.getElementById('teamPicker');
-    if (teamWrapper) {
+  // ----------------------
+  // チームスクロールバー
+  // ----------------------
+  const teamWrapper = document.getElementById('teamPicker');
+  if (teamWrapper) {
     const items = teamWrapper.querySelectorAll('.team-picker-item');
     const centerIndex = Math.floor(items.length / 3);
     const item = items[centerIndex];
@@ -7354,39 +7392,50 @@ favWrapper.addEventListener('scroll', () => {
     const bgB = item.querySelector('.team-scroll-bgB');
     if (bgA) bgA.style.background = f.team_scroll_bgA;
     if (bgB) bgB.style.background = f.team_scroll_bgB;
-    teamWrapper.scrollTop = ITEM_H * centerIndex;
+    teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
     if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
-   }
-
-
-    // コート
-    const courtWrapper = document.getElementById('picker');
-    if (courtWrapper) {
-      const items = courtWrapper.querySelectorAll('.picker-item');
-      const centerIndex = Math.floor(items.length / 3);
-      const item = items[centerIndex];
-      const bgCourt = item.querySelector('.bg-court');
-      const bgOut = item.querySelector('.bg-out');
-      if (bgCourt) bgCourt.style.background = f.court;
-      if (bgOut) bgOut.style.background = f.out;
-      courtWrapper.scrollTop = ITEM_H * centerIndex;
-      if (typeof updateCenter === 'function') updateCenter();
-    }
-
-    // 得点盤
-    const scoreWrapper = document.getElementById('scorePickerCustom');
-    if (scoreWrapper) {
-      const items = scoreWrapper.querySelectorAll('.scorePicker-item');
-      const centerIndex = Math.floor(items.length / 3);
-      const item = items[centerIndex];
-      const lblA = item.querySelector('.scorePicker-labelA span');
-      const lblB = item.querySelector('.scorePicker-labelB span');
-
-      forceApplyScoreColor(lblA, lblB, f);
-
-      scoreWrapper.scrollTop = ITEM_H * centerIndex;
-    }
   }
+
+  // ----------------------
+  // コートスクロールバー
+  // ----------------------
+  const courtWrapper = document.getElementById('picker');
+  if (courtWrapper) {
+    const items = courtWrapper.querySelectorAll('.picker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const bgCourt = item.querySelector('.bg-court');
+    const bgOut = item.querySelector('.bg-out');
+    if (bgCourt) bgCourt.style.background = f.court;
+    if (bgOut) bgOut.style.background = f.out;
+    courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+
+    // ★ ここで画面の背景とコートを即反映
+    const courtContainer = document.getElementById('courtContainer');
+    if (courtContainer) courtContainer.style.background = f.court;
+    document.body.style.background = f.out;
+
+    // meta theme-color も更新
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', f.out);
+  }
+
+  // ----------------------
+  // 得点盤
+  // ----------------------
+  const scoreWrapper = document.getElementById('scorePickerCustom');
+  if (scoreWrapper) {
+    const items = scoreWrapper.querySelectorAll('.scorePicker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const lblA = item.querySelector('.scorePicker-labelA span');
+    const lblB = item.querySelector('.scorePicker-labelB span');
+
+    forceApplyScoreColor(lblA, lblB, f);
+
+    scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+  }
+}
 
   function deleteFavorite(realIndex) {
     favorites[realIndex] = null;
