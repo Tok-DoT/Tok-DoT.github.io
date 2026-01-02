@@ -994,8 +994,8 @@ button:hover { opacity: 0.9; }
    =============================== */
 .help-footer-btn {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
+  bottom: 20px;
+  right: 14px;
 
   width: 36px;
   height: 36px;
@@ -1003,7 +1003,7 @@ button:hover { opacity: 0.9; }
 
   background-color: #2f80ed;
   color: #ffffff;
-  border: 2px solid #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.65);
 
   font-size: 20px;
   font-weight: bold;
@@ -1015,7 +1015,7 @@ button:hover { opacity: 0.9; }
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.28);
 
   transition:
     background-color 0.2s ease,
@@ -1027,7 +1027,8 @@ button:hover { opacity: 0.9; }
 
 .help-footer-btn:hover {
   background-color: #1c6ed5;
-  transform: scale(1.05);
+  transform: scale(1.03);
+
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
 
@@ -1140,13 +1141,34 @@ button:hover { opacity: 0.9; }
   border-radius: 6px;
 }
 
+/* ------------ モーダル内のロゴ表示 ------------ */
+/* このアプリについて：ロゴ */
+.about-logo {
+  margin: 12px 0 8px;
+}
+
+.about-logo img {
+  width: 120px;
+  height: auto;
+  opacity: 0.95;    /* 下げすぎないのがポイント */
+}
+
+/* コンセプト文 */
+.about-concept {
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  color: #333;
+  text-align: left;   /* ← 中央寄せにしない */
+}
+
 /* ===============================
    試合画面 インフォメーションボタン
    =============================== */
 .match-info-btn {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
+  bottom: 20px;
+  right: 14px;
 
   width: 36px;
   height: 36px;
@@ -1154,7 +1176,7 @@ button:hover { opacity: 0.9; }
 
   background-color: #2f80ed;  /* 統一 */
   color: #ffffff;
-  border: 2px solid #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.65);
 
   font-size: 20px;
   font-weight: bold;
@@ -1166,7 +1188,7 @@ button:hover { opacity: 0.9; }
   justify-content: center;
 
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.28);
 
   transition:
     background-color 0.2s ease,
@@ -1178,7 +1200,7 @@ button:hover { opacity: 0.9; }
 
 .match-info-btn:hover {
   background-color: #1c6ed5;  /* 統一 */
-  transform: scale(1.05);
+  transform: scale(1.03);
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
 
@@ -1468,21 +1490,31 @@ button:hover { opacity: 0.9; }
   margin:3px 0;
 }
 
+/* アプリ全体共通の消灯処理 */
+.inactive {
+  opacity: 0.4;        /* 消灯イメージ */
+  pointer-events: none; /* クリック無効化 */
+}
+
 /* 試合画面_vs（レディ）ボタン設定（オレンジ背景・白文字・ぷっくり） */
 .ready-btn {
   width: 40px;
-  height: 30px;
-  background: linear-gradient(to bottom, #ffca7a, #FFA500); /* 上から下のグラデーションで立体感 */
+  height: 40px;              /* ← 高さを幅と同じに */
+  background: linear-gradient(to bottom, #ffca7a, #FFA500);
   border: none;
-  border-radius: 10px;
+  border-radius: 50%;        /* ← これで完全な〇 */
   cursor: pointer;
-  font-size: 14px;
-  color: #ffffff; /* 白文字 */
+  font-size: 16px;
+  color: #ffffff;
   font-weight: bold;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); /* ぷっくり立体感 */
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
   font-family: "Kosugi Maru", sans-serif;
   margin: 0px 5px;
+
+  display: flex;             /* 文字を中央に */
+  align-items: center;
+  justify-content: center;
 }
 
 .ready-btn:hover {
@@ -1505,12 +1537,6 @@ button:hover { opacity: 0.9; }
   box-shadow: 0 3px 5px rgba(0,0,0,0.3); /* 立体感を維持 */
   opacity: 1; /* グレー化防止 */
   transition: all 0.2s ease;
-}
-
-/* 試合画面_vs（レディ）ボタン押す前の消灯処理（従来の透明化） */
-.inactive {
-  opacity: 0.4;        /* 消灯イメージ */
-  pointer-events: none; /* クリック無効化 */
 }
 
 /* 試合画面_vs（レディ）ボタン設定終り */
@@ -2750,6 +2776,59 @@ body::after {
     inset 0 -2px 4px rgba(0,0,0,0.25);
 }
 
+/* -------------------------- リロードボタン -------------------------- */
+
+/* 左下 固定 リロードボタン */
+.reloadFab {
+  position: fixed;
+  left: 14px;
+  bottom: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+
+  border: 2px solid rgba(255, 255, 255, 0.65); /* ← 追加：インフォと統一 */
+
+  box-shadow: 0 3px 8px rgba(255, 75, 43, 0.35);
+  cursor: pointer;
+
+  z-index: 3000;
+
+  display: block;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+/* ⟳ を完全中央に固定 */
+.reloadFab::before {
+  content: "⟳";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  font-size: 17px;
+  color: #ffffff;
+  opacity: 0.9;
+  line-height: 1;
+}
+
+/* hover：影だけ少し強調 */
+.reloadFab:hover {
+  box-shadow: 0 4px 10px rgba(255, 75, 43, 0.45);
+}
+
+/* active（押し込み：控えめ） */
+.reloadFab:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(255, 75, 43, 0.35) inset;
+}
+
+/* -------------------------- リロードボタン -------------------------- */
+
 /* 透明枠ボタン用の共通クラス(予備) */
 .extraControls {
   text-align: center;   /* 中央揃え */
@@ -2939,6 +3018,9 @@ body::after {
       <button class="start-btn" onclick="startMatch()">試合開始</button>
     </div>
 
+<!-- iOS対策：リロードボタン（左下固定） -->
+<button class="reloadFab" onclick="showExitConfirm()"></button>
+
 <!-- アプリURLコピー（コンパクト・ラベル付き） -->
 <div class="share-url-wrapper-compact">
   <span class="share-label">アプリURLを友達と共有：</span>
@@ -3060,21 +3142,18 @@ body::after {
 
     <div class="modal-body">
 
-      <!-- このアプリについて -->
-      <h3>このアプリについて</h3>
-      <p>
-        このアプリは、ソフトテニスのダブルスマッチを
-        どなたでも気軽に応援できるように作られています。
-        特にスコアボードがない試合では、「今の得点は？」が
-        分かりにくい場面があります。
-      </p>
-      <p>
-        得点を記録するだけで試合の流れや状況が自然に分かるように設計されており、
-        操作も簡単なのでスマートフォンに不慣れな方でも安心です。
-      </p>
-      <p class="note">
-        ※ 公式記録用ではなく、応援を楽しむ補助ツールです。
-      </p>
+<!-- このアプリについて -->
+<h3>このアプリについて</h3>
+
+<div class="about-logo">
+  <img src="icon-192.png" alt="Smash!!!! ロゴ">
+</div>
+
+<p class="about-concept">
+  試合に<br>
+  そっと寄り添う<br>
+  応援アプリ
+</p>
 
       <!-- はじめての方へ -->
       <h3>はじめての方へ</h3>
@@ -3147,9 +3226,9 @@ body::after {
 
       <h3>ひとこと</h3>
       <p>
-        操作に迷った場合は、端末の戻るボタンでリロード（再起動）して
-        最初からやり直しても問題ありません。
-        ご自身のペースでゆっくりお使いください。
+        操作に迷ったときは、左下の赤い⟳ボタンでリロードしてください。
+        いつでも最初からやり直せます。
+        ご自身のペースで、ゆっくりお使いください。
       </p>
 
     </div>
@@ -3321,7 +3400,7 @@ body::after {
 
 <div id="independentTextFrame">
   <span id="infoText" class="blink-text">
-    ① サーバーをタップ → ② [ vs ]をタップ
+    ① サーバーをタップ → ②（ vs ）をタップ
   </span>
 </div>
 
@@ -3409,6 +3488,9 @@ body::after {
 <!-- コート下に余白 -->
 <div id="extraAreaBottom" style="width:100%; height:20px;"></div>
 
+<!-- iOS対策：リロードボタン（左下固定） -->
+<button class="reloadFab" onclick="showExitConfirm()"></button>
+
 <!-- 試合画面用 インフォメーションモーダル -->
 <div id="matchInfoModal" class="help-modal" aria-hidden="true">
   <div class="help-modal-content">
@@ -3439,8 +3521,8 @@ body::after {
       <h4>ゲーム開始後の操作</h4>
       <ul>
         <li>
-          <strong>[ vs ] ボタンをタップ</strong><br>
-          両チーム・ペア名の間にある [ vs ] をタップすると試合が開始されます。
+          <strong>（ vs ）ボタンをタップ</strong><br>
+          両チーム・ペア名の間にある（ vs ）をタップすると試合が開始されます。
         </li>
         <li>
           <strong>ポイントの追加</strong><br>
@@ -4073,7 +4155,7 @@ function handleReadyButton() {
 
   if (!selectedServer.team) {
     const infoText = document.getElementById("infoText");
-    infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+    infoText.textContent = "① サーバーをタップ → ②（ vs ）をタップ";
     infoText.style.color = "#ff8080";
     infoText.classList.add("blink-text");
     readyMessageTimers.push(setTimeout(() => infoText.classList.remove("blink-text"), 1000));
@@ -4245,7 +4327,7 @@ function startMatch() {
 
     // サーバー案内表示
     const infoText = document.getElementById("infoText");
-    infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+    infoText.textContent = "① サーバーをタップ → ②（ vs ）をタップ";
     infoText.style.color = "#ffffff";
     infoText.classList.add("blink-text");
     setTimeout(() => { infoText.classList.remove("blink-text"); }, 1000);
@@ -5577,7 +5659,7 @@ function resetMatchState() {
 
     const infoText = document.getElementById("infoText");
     if (infoText) {
-        infoText.textContent = "① サーバーをタップ → ② [ vs ]をタップ";
+        infoText.textContent = "① サーバーをタップ → ②（ vs ）をタップ";
         infoText.style.color = "#ffffff";
         infoText.classList.add("blink-text");
         setTimeout(()=>infoText.classList.remove("blink-text"),1000);
