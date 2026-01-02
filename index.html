@@ -1041,7 +1041,7 @@ button:hover { opacity: 0.9; }
    （設定画面・試合画面 共通）
    =============================== */
 
-/* モーダル背景 */
+/* ----------------- モーダル背景 ----------------- */
 .help-modal {
   display: none;
   position: fixed;
@@ -1052,20 +1052,23 @@ button:hover { opacity: 0.9; }
 
 /* 表示時 */
 .help-modal.show {
-  display: block;
+  display: flex;
+  align-items: flex-start; /* 上寄せ */
+  justify-content: center;
+  overflow-y: auto;
+  padding: 12vh 0 20px 0; /* 上下余白 */
 }
 
-/* モーダル本体 */
+/* ----------------- モーダル本体 ----------------- */
 .help-modal-content {
-  max-width: 400px;           /* 幅調整 */
-  width: 90%;                 /* 画面幅に応じて縮小 */
-  max-height: 75vh;           /* 高さ制限 */
-  margin: 12vh auto 0;        /* 上余白＋中央寄せ */
+  max-width: 400px;
+  width: 90%;
+  max-height: 75vh;
   padding: 18px 20px;
   background: #f9f9f9;
   color: #333;
-  font-size: 16px;            /* ベース文字サイズを少し大きく */
-  line-height: 1.6;           /* 読みやすい行間 */
+  font-size: 16px;
+  line-height: 1.6;
   border-radius: 8px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   text-align: left;
@@ -1074,46 +1077,66 @@ button:hover { opacity: 0.9; }
   overflow: hidden;
 }
 
-/* モーダル本文（スクロール可能） */
+/* ----------------- モーダル本文（スクロール可能） ----------------- */
 .modal-body {
   overflow-y: auto;
-  padding-right: 8px;         /* スクロールバーとの隙間 */
-  font-size: 1em;             /* ベースサイズと統一 */
-  line-height: 1.6;           /* 読みやすく */
+  padding-right: 8px;  /* スクロールバーとの隙間 */
+  font-size: 1em;
+  line-height: 1.6;
 }
 
-/* 見出し */
+/* ----------------- 見出し ----------------- */
 .help-modal-content h2 {
   text-align: center;
   margin-bottom: 14px;
-  font-size: 1.4em;           /* タイトルを大きめ */
+  font-size: 1.4em;
 }
 
 .help-modal-content h3 {
   margin-top: 18px;
   margin-bottom: 10px;
-  font-size: 1.2em;           /* 段落との差をはっきり */
+  font-size: 1.2em;
 }
 
-/* 段落 */
+/* ネストされた小見出し */
+.help-modal-content h4 {
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+/* ----------------- 段落・リスト ----------------- */
 .modal-body p {
   margin-bottom: 14px;
-  font-size: 1em;             /* 統一文字サイズ */
+  font-size: 1em;
   line-height: 1.6;
 }
 
-/* リスト */
-.modal-body ul {
+.modal-body ul,
+.modal-body ol {
   margin-bottom: 14px;
   padding-left: 20px;
-  font-size: 1em;             /* 統一文字サイズ */
+  font-size: 1em;
   line-height: 1.6;
 }
 
-/* 閉じるボタン */
+/* ----------------- 注意書き ----------------- */
+.help-modal-content .note {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.03);
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-left: 3px solid #6fd3f5;
+  border-radius: 6px;
+}
+
+/* ----------------- 閉じるボタン ----------------- */
 .help-close {
   margin-top: 16px;
-  font-size: 14px;            /* 読みやすく調整 */
+  font-size: 14px;
   background: #e0e0e0;
   border: none;
   color: #333;
@@ -1129,16 +1152,53 @@ button:hover { opacity: 0.9; }
   color: #000;
 }
 
-/* 注意書き・補足 */
-.help-modal-content .modal-body .note {
-  font-size: 13px;            /* 少し大きめ */
-  color: #666;
-  line-height: 1.5;
-  background: rgba(0,0,0,0.03); /* 背景を付ける */
-  padding: 8px 12px;
-  margin: 10px 0;
-  border-left: 3px solid #6fd3f5;
-  border-radius: 6px;
+/* ----------------- アコーディオン共通 ----------------- */
+.accordion-content {
+  display: none;
+  padding-left: 12px;
+  margin-bottom: 10px;
+}
+
+.accordion-content.open {
+  display: block;
+}
+
+/* トグルタイトル */
+.accordion-toggle {
+  cursor: pointer;
+  user-select: none;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.accordion-toggle:hover {
+  color: #ff416c; /* 任意で強調色 */
+}
+
+/* ネストトグル */
+.accordion-toggle.nested {
+  font-weight: 500;
+  font-size: 0.95em;
+  margin-left: 8px;
+}
+
+/* ネスト内容 */
+.accordion-content.nested {
+  padding-left: 16px;
+}
+
+/* 矢印表示 */
+.accordion-toggle::after {
+  content: " ▼";
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.accordion-toggle.open::after {
+  content: " ▲";
 }
 
 /* ------------ モーダル内のロゴ表示 ------------ */
@@ -1496,18 +1556,18 @@ button:hover { opacity: 0.9; }
   pointer-events: none; /* クリック無効化 */
 }
 
-/* 試合画面_vs（レディ）ボタン設定（オレンジ背景・白文字・ぷっくり） */
+/* -------------------------- 試合画面_vs（レディ）ボタン -------------------------- */
 .ready-btn {
-  width: 40px;
-  height: 40px;              /* ← 高さを幅と同じに */
+  width: 34px;               /* 少し小さく */
+  height: 34px;              /* 幅に合わせる */
   background: linear-gradient(to bottom, #ffca7a, #FFA500);
   border: none;
-  border-radius: 50%;        /* ← これで完全な〇 */
+  border-radius: 50%;        /* 完全な〇 */
   cursor: pointer;
-  font-size: 16px;
+  font-size: 16px;           /* 文字サイズも調整 */
   color: #ffffff;
   font-weight: bold;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3); /* ぷっくり感維持 */
   transition: all 0.2s ease;
   font-family: "Kosugi Maru", sans-serif;
   margin: 0px 5px;
@@ -1531,15 +1591,14 @@ button:hover { opacity: 0.9; }
 /* Readyボタンが押せない状態（水色・クリック無効化・ぷっくり維持） */
 .ready-btn.inactive {
   background: linear-gradient(to bottom, #A6DFFF, #87CEFA); /* 水色グラデーション */
-  color: #ffffff; /* 白文字 */
-  pointer-events: none; /* クリック無効化 */
+  color: #ffffff; 
+  pointer-events: none;
   cursor: default;
-  box-shadow: 0 3px 5px rgba(0,0,0,0.3); /* 立体感を維持 */
-  opacity: 1; /* グレー化防止 */
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  opacity: 1; 
   transition: all 0.2s ease;
 }
-
-/* 試合画面_vs（レディ）ボタン設定終り */
+/* -------------------------- 試合画面_vs（レディ）ボタン 終わり -------------------------- */
 
 /* 試合画面_--- コントロールボタン --- */
 .controls{
@@ -1620,9 +1679,9 @@ button:hover { opacity: 0.9; }
 
   /* ★ うっすら発光（世界観を壊さない） */
   text-shadow:
-    0 0 2px rgba(255, 255, 255, 0.6),
-    0 0 4px rgba(255, 200, 255, 0.4),
-    1px 1px 2px rgba(0, 0, 0, 0.15);
+  0 0 1px rgba(255,255,255,0.4),
+  0 0 2px rgba(255,200,255,0.3),
+  1px 1px 1px rgba(0,0,0,0.1);
 
   /* アニメーション速度 */
   animation: rainbowShift 3s linear infinite;
@@ -1643,7 +1702,7 @@ button:hover { opacity: 0.9; }
   margin-bottom: 2px;
 
   /* オプション: 少し光らせたい場合 */
-  text-shadow: 0 0 3px rgba(255, 215, 0, 0.8);
+  text-shadow: 0 0 1.5px rgba(255, 215, 0, 0.5);
 }
 
 /* 試合画面_得点盤用透明枠内始め */
@@ -2424,7 +2483,9 @@ body::after {
   margin: 1px auto;
   overflow-x: hidden;
   overflow-y: scroll;
+
   scroll-snap-type: y mandatory;
+
   border-radius:10px;
   border: 2px solid #fff;
   background:#222;
@@ -2432,6 +2493,11 @@ body::after {
   position:relative;
   padding-top: 0;
   padding-bottom: 0;
+
+  /* ===== iOS / Android スクロール最適化（追加） ===== */
+  -webkit-overflow-scrolling: touch;   /* iOS 慣性スクロール */
+  overscroll-behavior: contain;         /* 余計なバウンス抑制 */
+  contain: layout paint;                /* ★ Safari 高速化の要 */
 }
 
 .scorePicker-item {
@@ -2441,7 +2507,12 @@ body::after {
   margin:0;
   border-radius:6px;
   overflow:hidden;
+
   transition: transform .22s;
+
+  /* ===== 描画最適化（追加） ===== */
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 .scorePicker-item.center {
@@ -2450,19 +2521,30 @@ body::after {
 }
 
 /* 背景左右 */
-.scorePicker-bgA, .scorePicker-bgB {
-  position:absolute; top:0; bottom:0; width:50%;
+.scorePicker-bgA,
+.scorePicker-bgB {
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:50%;
+
+  /* 背景描画も軽くする */
+  will-change: transform;
 }
 .scorePicker-bgA { left:0; }
 .scorePicker-bgB { right:0; }
 
 /* ラベル左右：中央の白線が正しく中央に来るよう調整 */
-.scorePicker-labelA, .scorePicker-labelB {
+.scorePicker-labelA,
+.scorePicker-labelB {
   position:absolute;
-  top:0; bottom:0;
+  top:0;
+  bottom:0;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   background:#000;
   border:1px solid #fff;
   box-sizing:border-box;
@@ -2470,6 +2552,9 @@ body::after {
   z-index:8;
   pointer-events:none;
   width:50%;
+
+  /* テキスト再描画軽減 */
+  will-change: transform;
 }
 
 /* 左右ぴったり半分に分割 */
@@ -2477,24 +2562,32 @@ body::after {
 .scorePicker-labelB { right:0; }
 
 /* 数字部分（変形・縁取り） */
-.scorePicker-labelA span, .scorePicker-labelB span {
+.scorePicker-labelA span,
+.scorePicker-labelB span {
   font-size:30px;
   transform-origin:center;
   display:inline-block;
   transform: scaleX(2.8) scaleY(0.68);
   line-height:1;
+
   text-shadow:
     0.6px 0.6px 0 #fff,
     -0.6px -0.6px 0 #fff,
     0.6px -0.6px 0 #fff,
     -0.6px 0.6px 0 #fff;
+
   padding:2px 6px;
   border-radius:4px;
+
+  /* Safari テキスト描画安定化 */
+  backface-visibility: hidden;
 }
 
-.scorePicker-wrap::-webkit-scrollbar { display:none; }
+.scorePicker-wrap::-webkit-scrollbar {
+  display:none;
+}
 
-/* ------------------- 中央拡大時の文字位置ズレ補正（追加部分） ------------------- */
+/* ------------------- 中央拡大時の文字位置ズレ補正 ------------------- */
 .scorePicker-item.center .scorePicker-labelA span {
   transform: translateX(50%) scaleX(2.8) scaleY(0.68);
 }
@@ -2502,7 +2595,8 @@ body::after {
 .scorePicker-item.center .scorePicker-labelB span {
   transform: translateX(-50%) scaleX(2.8) scaleY(0.68);
 }
-/* ------------------- 得点盤文字色とロゴ背景色の変更終り（中央修正） ------------------- */
+/* ------------------- 得点盤文字色とロゴ背景色の変更終り ------------------- */
+
 
 /* ------------------- 背景とコートの色（始り） ------------------- */
 .picker-wrapper {
@@ -2789,14 +2883,19 @@ body::after {
 
   background: linear-gradient(135deg, #ff416c, #ff4b2b);
 
-  border: 2px solid rgba(255, 255, 255, 0.65); /* ← 追加：インフォと統一 */
+  border: 2px solid rgba(255, 255, 255, 0.65); /* 縁をインフォと統一 */
 
   box-shadow: 0 3px 8px rgba(255, 75, 43, 0.35);
   cursor: pointer;
 
   z-index: 3000;
 
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box; /* ← 枠を含めてサイズ計算 */
+
   transition:
     box-shadow 0.2s ease,
     transform 0.2s ease;
@@ -2805,15 +2904,18 @@ body::after {
 /* ⟳ を完全中央に固定 */
 .reloadFab::before {
   content: "⟳";
+
+  font-size: 20px;       /* 少し大きめ */
+  font-weight: 600;
+
+  color: #ffffff;
+  opacity: 0.95;
+  line-height: 1;
+
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-
-  font-size: 17px;
-  color: #ffffff;
-  opacity: 0.9;
-  line-height: 1;
+  transform: translate(-45%, -53%); /* X軸・Y軸とも中央 */
 }
 
 /* hover：影だけ少し強調 */
@@ -3142,88 +3244,88 @@ body::after {
 
     <div class="modal-body">
 
-<!-- このアプリについて -->
-<h3>このアプリについて</h3>
-
-<div class="about-logo">
-  <img src="icon-192.png" alt="Smash!!!! ロゴ">
-</div>
-
-<p class="about-concept">
-  試合に<br>
-  そっと寄り添う<br>
-  応援アプリ
-</p>
-
-      <!-- はじめての方へ -->
-      <h3>はじめての方へ</h3>
-      <p>
-        Smash!!!! はインターネットブラウザで動作するアプリです。
-        スマートフォンから「ホーム画面に追加」（iPhone・Android対応）すると、
-        他のアプリと同じようにアイコンから起動できます。
+      <!-- このアプリについて（折りたたみなし） -->
+      <h3>このアプリについて</h3>
+      <div class="about-logo">
+        <img src="icon-192.png" alt="Smash!!!! ロゴ">
+      </div>
+      <p class="about-concept">
+        試合に<br>
+        そっと寄り添う<br>
+        応援アプリ
       </p>
 
-      <h4>LINEでURLを開いた場合の注意</h4>
-      <p>
-        LINE内ブラウザでは「ホーム画面に追加」が表示されないため、
-        <strong>Safari（iPhone）</strong> または <strong>Chrome（Android）</strong> で開き直してください。
-      </p>
+      <!-- はじめての方へ（折りたたみ） -->
+      <h3 class="accordion-toggle">はじめての方へ</h3>
+      <div class="accordion-content">
+        <p>
+          Smash!!!! はインターネットブラウザで動作するアプリです。
+          スマートフォンから「ホーム画面に追加」（iPhone・Android対応）すると、
+          他のアプリと同じようにアイコンから起動できます。
+        </p>
 
-      <h4>iPhone の場合（LINE → Safari）</h4>
-      <ol>
-        <li>LINEで Smash!!!! のURLをタップ</li>
-        <li>画面右下（または右上）の <strong>共有アイコン</strong> をタップ</li>
-        <li>「Safariで開く」を選択</li>
-        <li>Safariで表示されたら下部の <strong>共有ボタン</strong> をタップ</li>
-        <li>「ホーム画面に追加」を選択</li>
-        <li>名前を確認して「追加」をタップ</li>
-      </ol>
+        <h4 class="accordion-toggle nested">LINEでURLを開いた場合の注意</h4>
+        <div class="accordion-content nested">
+          <p>
+            LINE内ブラウザでは「ホーム画面に追加」が表示されないため、
+            <strong>Safari（iPhone）</strong> または <strong>Chrome（Android）</strong> で開き直してください。
+          </p>
+        </div>
 
-      <p class="note">
-        ※ 画面が横向きでは表示されない場合があります。縦向きで確認してください。
-      </p>
+        <h4 class="accordion-toggle nested">iPhone の場合（LINE → Safari）</h4>
+        <div class="accordion-content nested">
+          <ol>
+            <li>LINEで Smash!!!! のURLをタップ</li>
+            <li>画面右下（または右上）のメニューから <strong>共有アイコン</strong> をタップ</li>
+            <li>「Safariで開く」を選択</li>
+            <li>Safariで表示されたら下部の <strong>共有ボタン</strong> をタップ</li>
+            <li>「ホーム画面に追加」を選択</li>
+            <li>名前を確認して「追加」をタップ</li>
+          </ol>
+        </div>
 
-      <h4>Android の場合（LINE → Chrome）</h4>
-      <ol>
-        <li>LINEで Smash!!!! のURLをタップ</li>
-        <li>画面右下の <strong>︙（メニュー）</strong> をタップ</li>
-        <li>「ブラウザで開く」または「Chromeで開く」を選択</li>
-        <li>Chrome右上の <strong>︙（メニュー）</strong> をタップ</li>
-        <li>「ホーム画面に追加」を選択</li>
-        <li>表示名を確認して追加</li>
-      </ol>
+        <h4 class="accordion-toggle nested">Android の場合（LINE → Chrome）</h4>
+        <div class="accordion-content nested">
+          <ol>
+            <li>LINEで Smash!!!! のURLをタップ</li>
+            <li>画面右下の <strong>︙（メニュー）</strong> をタップ</li>
+            <li>「ブラウザで開く」または「Chromeで開く」を選択</li>
+            <li>Chrome右上の <strong>︙（メニュー）</strong> をタップ</li>
+            <li>「ホーム画面に追加」を選択</li>
+            <li>表示名を確認して追加</li>
+          </ol>
+        </div>
+      </div>
 
-      <p class="note">
-        ※ 機種やAndroidのバージョンによって表示名が「アプリをインストール」など異なる場合があります。
-      </p>
-      <p class="note">
-        ※ 「ホーム画面に追加」が見つからない場合は、ブラウザで開いているか、画面が縦向きかをご確認ください。
-      </p>
+      <!-- 設定画面について（折りたたみ） -->
+      <h3 class="accordion-toggle">設定画面について</h3>
+      <div class="accordion-content">
+        <p>
+          設定画面ではゲームマッチ数の選択や［試合開始］で準備完了。
+          大会名やチーム・ペア名を入力すると、応援がより楽しめます。
+        </p>
 
-      <!-- 設定画面について -->
-      <h3>設定画面について</h3>
-      <p>
-        設定画面ではゲームマッチ数の選択や［試合開始］で準備完了。
-        大会名やチーム・ペア名を入力すると、応援がより楽しめます。
-      </p>
+        <h4 class="accordion-toggle nested">大会名等の入力・保存・呼出</h4>
+        <div class="accordion-content nested">
+          <ul>
+            <li>大会名・チーム名や選手名を入力</li>
+            <li>▽ 保存ボタンで端末に保存</li>
+            <li>▲ 呼び出しボタンで再入力可能</li>
+            <li>初期化ボタンで入力内容を消去</li>
+          </ul>
+          <p class="note">※ 保存内容を削除する場合は、一覧から選択してください。</p>
+        </div>
 
-      <h3>大会名・チーム/選手名の入力・保存</h3>
-      <ul>
-        <li>大会名・チーム名や選手名を入力</li>
-        <li>▽ 保存ボタンで端末に保存</li>
-        <li>▲ 呼び出しボタンで再入力可能</li>
-        <li>初期化ボタンで入力内容を消去</li>
-      </ul>
-      <p class="note">
-        ※ 保存内容を削除する場合は、一覧から選択してください。
-      </p>
+        <h4 class="accordion-toggle nested">ゲームマッチ数の選択</h4>
+        <div class="accordion-content nested">
+          <ul>
+            <li>試合のゲームマッチ数を選択</li>
+            <li>［試合開始］ボタンで試合スタート</li>
+          </ul>
+        </div>
+      </div>
 
-      <h3>ゲームマッチ数の選択</h3>
-      <ul>
-        <li>試合のゲームマッチ数を選択</li>
-        <li>［試合開始］ボタンで試合スタート</li>
-      </ul>
-
+      <!-- ひとこと（常に表示） -->
       <h3>ひとこと</h3>
       <p>
         操作に迷ったときは、左下の赤い⟳ボタンでリロードしてください。
@@ -3236,7 +3338,6 @@ body::after {
     <button class="help-close" type="button" id="closeHelp">閉じる</button>
   </div>
 </div>
-
 
 </div> <!-- setupScreen閉じ -->
 </div> <!-- setup-block閉じ -->
@@ -3491,7 +3592,7 @@ body::after {
 <!-- iOS対策：リロードボタン（左下固定） -->
 <button class="reloadFab" onclick="showExitConfirm()"></button>
 
-<!-- 試合画面用 インフォメーションモーダル -->
+<!-- 試合画面 インフォメーションモーダル -->
 <div id="matchInfoModal" class="help-modal" aria-hidden="true">
   <div class="help-modal-content">
 
@@ -3500,103 +3601,59 @@ body::after {
     <div class="modal-body">
 
       <h3>試合画面について</h3>
+      <p>ゲーム開始前・開始後の操作や、応援の楽しみ方をご紹介します。</p>
 
-      <h4>ゲーム開始前にやること</h4>
-      <ul>
-        <li>
-          <strong>応援場所とチームの位置を合わせる</strong><br>
-          応援する場所を基準に、チームの位置（コートの回転）を調整します。
-        </li>
-        <li>
-          <strong>選手のポジションを合わせる</strong><br>
-          コート内のチームをタップしてポジションを変更できます。
-          ※ ゲーム中も変更可能です。
-        </li>
-        <li>
-          <strong>サーバーを設定</strong><br>
-          コート内のデュースサイドの選手をタップして、最初のサービスサイドを決定します。
-        </li>
-      </ul>
+      <h4 class="accordion-toggle">ゲーム開始前にやること</h4>
+      <div class="accordion-content">
+        <ul>
+          <li><strong>応援場所とチームの位置を合わせる</strong><br>応援する場所を基準に、チームの位置（コートの回転）を調整します。</li>
+          <li><strong>選手のポジションを合わせる</strong><br>コート内のチームをタップしてポジションを変更可能。※ゲーム中も変更可</li>
+          <li><strong>サーバーを設定</strong><br>コート内のデュースサイドの選手をタップして、最初のサービスサイドを決定します。</li>
+        </ul>
+      </div>
 
-      <h4>ゲーム開始後の操作</h4>
-      <ul>
-        <li>
-          <strong>（ vs ）ボタンをタップ</strong><br>
-          両チーム・ペア名の間にある（ vs ）をタップすると試合が開始されます。
-        </li>
-        <li>
-          <strong>ポイントの追加</strong><br>
-          ポイント盤をタップしてポイントを加算します。
-        </li>
-        <li>
-          <strong>ポイントを戻す</strong><br>
-          [ Tok.DoT ] のロゴをタップしてポイントを戻せます。
-        </li>
-        <li>
-          <strong>サービスサイドチームの表示</strong><br>
-          サーブ権を持つチームのⓢボールが点灯します。
-        </li>
-        <li>
-          <strong>コート回転</strong><br>
-          コート両サイドをタップで回転。中央をタップするとデフォルト位置に戻ります。
-        </li>
-        <li>
-          <strong>試合画面のリセット</strong><br>
-          [ リセット ] ボタンでゲーム開始前の状態に戻ります。
-        </li>
-        <li>
-          <strong>設定画面に戻る</strong><br>
-          [ 設定 ] ボタンで設定画面に戻ります。
-        </li>
-      </ul>
+      <h4 class="accordion-toggle">ゲーム開始後の操作</h4>
+      <div class="accordion-content">
+        <ul>
+          <li><strong>（ vs ）ボタンをタップ</strong><br>両チーム・ペア名の間にある（ vs ）をタップすると試合が開始されます。</li>
+          <li><strong>ポイントの追加</strong><br>ポイント盤をタップしてポイントを加算します。</li>
+          <li><strong>ポイントを戻す</strong><br>[ Tok.DoT ] のロゴをタップしてポイントを戻せます。</li>
+          <li><strong>サービスサイドチームの表示</strong><br>サーブ権を持つチームのⓢボールが点灯します。</li>
+          <li><strong>コート回転</strong><br>コート両サイドをタップで回転。中央をタップするとデフォルト位置に戻ります。</li>
+          <li><strong>試合画面のリセット</strong><br>[ リセット ] ボタンでゲーム開始前の状態に戻ります。</li>
+          <li><strong>設定画面に戻る</strong><br>[ 設定 ] ボタンで設定画面に戻ります。</li>
+        </ul>
+        <p class="note">※ ポイント0-0・ゲームカウント0-0時点ではサーバー変更可能です。ゲーム中は変更不可。ポイント0-0・ゲームカウント0-0まで戻すとリセットと同じ状態になります。</p>
+      </div>
 
-      <p class="note">
-        ※ ポイント0-0・ゲームカウント0-0時点ではサーバー変更可能です。<br>
-        ※ ゲーム中はサーバーを変更できません。<br>
-        ※ ポイント0-0・ゲームカウント0-0まで戻すと、リセットと同じ状態になります。
-      </p>
+      <h4 class="accordion-toggle">より楽しく応援するために</h4>
+      <div class="accordion-content">
+        <ul>
+          <li><strong>試合画面のカスタマイズ</strong><br>コート下のフリックスクロールバーで画面の色や表示を調整できます。</li>
+          <li><strong>お気に入りの保存</strong><br>フリックススクロールバーの一番下（★の下、①～⑤）にお気に入りを保存可能。長押しで保存。既存データは上書きされます。</li>
+          <li><strong>お気に入りの削除</strong><br>フリックススクロールバーを横にスライドして削除できます。</li>
+        </ul>
 
-      <h4>より楽しく応援するために</h4>
-      <ul>
-        <li>
-          <strong>試合画面のカスタマイズ</strong><br>
-          コート下のフリックスクロールバーで画面の色や表示を調整できます。
-        </li>
-        <li>
-          <strong>お気に入りの保存</strong><br>
-          フリックススクロールバーの一番下（★の下、①～⑤）にお気に入りを保存可能。<br>
-          長押し（約3秒以上）で保存。既存データは上書きされます。
-        </li>
-        <li>
-          <strong>お気に入りの削除</strong><br>
-          フリックススクロールバーを横にスライドして削除できます。
-        </li>
-      </ul>
+        <h5 class="accordion-toggle nested">会場のお天気登録</h5>
+        <div class="accordion-content nested">
+          <ol>
+            <li>日時とお天気ボックスをタップして会場住所を入力し [ 検索 ]</li>
+            <li>表示地点（自動判定）を確認して [ 決定 ]</li>
+            <li>情報は10分おきに更新されます</li>
+          </ol>
+        </div>
 
-      <p class="note">
-        ※ ★はデフォルト設定で保存できません。<br>
-        ※ お気に入りスクロールバーは起動直後、フリックすると一度だけ回転します。<br>
-        ※ 一部端末（主にタブレット等）では長押し保存機能が使えない場合があります。
-      </p>
-
-      <h4>会場のお天気登録</h4>
-      <ol>
-        <li>日時とお天気ボックスをタップして会場住所を入力し [ 検索 ]</li>
-        <li>表示地点（自動判定）を確認して [ 決定 ]</li>
-        <li>情報は10分おきに更新されます</li>
-      </ol>
-
-      <h4>思い出を記録</h4>
-      <p>
-        端末のスクリーンショット機能を使って試合の思い出を残せます。
-      </p>
+        <h5 class="accordion-toggle nested">思い出を記録</h5>
+        <div class="accordion-content nested">
+          <p>端末のスクリーンショット機能を使って試合の思い出を残せます。</p>
+        </div>
+      </div>
 
       <p>上記をご理解の上でアプリをご使用ください。</p>
 
     </div>
 
     <button class="help-close" type="button" id="closeMatchInfo">閉じる</button>
-
   </div>
 </div>
 
@@ -4175,7 +4232,7 @@ function handleReadyButton() {
   const finalDisplay = document.getElementById('finalDisplay');
   if (!finalDisplay) return;
 
-  function formatPair(team) {
+function formatPair(team) {
     const base =
       (team === 'A')
         ? `${playerA1}・${playerA2}`
@@ -6433,7 +6490,11 @@ const teamCombos = [
 const pickerWrapper = document.getElementById("teamPicker");
 const pickerItemHeight = 30;
 
-// アイテム作成（縦スクロール＆3周ループ）
+// ------------------- CSSタッチスクロール対応 -------------------
+pickerWrapper.style.overflowY = 'scroll';
+pickerWrapper.style.webkitOverflowScrolling = 'touch';
+
+// ------------------- アイテム作成（縦スクロール＆3周ループ） -------------------
 for (let loop = 0; loop < 3; loop++) {
   teamCombos.forEach(c => {
     const div = document.createElement("div");
@@ -6464,102 +6525,127 @@ for (let loop = 0; loop < 3; loop++) {
   });
 }
 
-
-// 保存値があれば初期スクロール位置を設定
+// ------------------- 保存値があれば初期スクロール位置を設定 -------------------
 function setInitialScroll() {
   const savedA = localStorage.getItem("teamAColor");
   const savedB = localStorage.getItem("teamBColor");
   const items = document.querySelectorAll("#teamPicker .team-picker-item");
+
+  let initialIndex = teamCombos.length; // デフォルトは中央周
 
   if (savedA && savedB) {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const cA = item.querySelector(".team-scroll-bgA").style.background;
       const cB = item.querySelector(".team-scroll-bgB").style.background;
-
       if (cA === savedA && cB === savedB) {
-        const targetIndex = i % teamCombos.length;
-        pickerWrapper.scrollTop = targetIndex * pickerItemHeight;
+        initialIndex = i % teamCombos.length;
         break;
       }
     }
-  } else {
-    pickerWrapper.scrollTop = teamCombos.length * pickerItemHeight;
   }
+
+  pickerWrapper.scrollTop = Math.round(initialIndex * pickerItemHeight);
 }
 
-
-// ===========================
-// A/B 入替え対応版
-// ===========================
+// ------------------- A/B 入替え対応版 -------------------
 function updateTeamPickerCenter() {
   const items = document.querySelectorAll("#teamPicker .team-picker-item");
   const wrapperRect = pickerWrapper.getBoundingClientRect();
   let closest = null;
   let minDist = Infinity;
+  const wrapperCenter = Math.round(wrapperRect.top + wrapperRect.height / 2);
 
   items.forEach(item => {
     const rect = item.getBoundingClientRect();
-    const itemCenter = rect.top + rect.height / 2;
-    const wrapperCenter = wrapperRect.top + wrapperRect.height / 2;
+    const itemCenter = Math.round(rect.top + rect.height / 2);
     const dist = Math.abs(itemCenter - wrapperCenter);
     if (dist < minDist) { minDist = dist; closest = item; }
   });
 
   items.forEach(it => it.classList.remove("center"));
 
-  if (closest) {
-    closest.classList.add("center");
+  if (!closest) return;
 
-    // スクロールバー左右の色
-    const colorLeft = closest.querySelector(".team-scroll-bgA").style.background;
-    const colorRight = closest.querySelector(".team-scroll-bgB").style.background;
+  closest.classList.add("center");
 
-    let finalA, finalB;
+  const colorLeft = closest.querySelector(".team-scroll-bgA").style.background;
+  const colorRight = closest.querySelector(".team-scroll-bgB").style.background;
 
-    // ★ A/B 入替え状態に応じて左右を反転 ★
-    if (typeof isSwappedAB !== "undefined" && isSwappedAB) {
-      // 入れ替え後：左 = B、右 = A
-      finalA = colorRight;
-      finalB = colorLeft;
-    } else {
-      // 通常：左 = A、右 = B
-      finalA = colorLeft;
-      finalB = colorRight;
-    }
-
-    // チーム背景更新
-    document.querySelectorAll(".bg-teamA").forEach(el => el.style.background = finalA);
-    document.querySelectorAll(".bg-teamB").forEach(el => el.style.background = finalB);
-
-    // CSS変数更新
-    document.documentElement.style.setProperty('--teamB-bg-color', finalB);
-
-    // 保存
-    localStorage.setItem("teamAColor", finalA);
-    localStorage.setItem("teamBColor", finalB);
-
-    // スコアに応じたブロックバー更新
-    if (typeof updateScore === "function") updateScore();
+  let finalA = colorLeft;
+  let finalB = colorRight;
+  if (typeof isSwappedAB !== "undefined" && isSwappedAB) {
+    finalA = colorRight;
+    finalB = colorLeft;
   }
+
+  document.querySelectorAll(".bg-teamA").forEach(el => el.style.background = finalA);
+  document.querySelectorAll(".bg-teamB").forEach(el => el.style.background = finalB);
+  document.documentElement.style.setProperty('--teamB-bg-color', finalB);
+
+  localStorage.setItem("teamAColor", finalA);
+  localStorage.setItem("teamBColor", finalB);
+
+  if (typeof updateScore === "function") updateScore();
 }
 
-
-// スクロールイベント（無限スクロール）
+// ------------------- スクロールイベント（無限スクロール補正） -------------------
 pickerWrapper.addEventListener("scroll", () => {
   const maxScroll = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
 
-  if (pickerWrapper.scrollTop < pickerItemHeight) {
-    pickerWrapper.scrollTop += teamCombos.length * pickerItemHeight;
-  } else if (pickerWrapper.scrollTop > maxScroll - pickerItemHeight) {
-    pickerWrapper.scrollTop -= teamCombos.length * pickerItemHeight;
+  if (pickerWrapper.scrollTop <= pickerItemHeight) {
+    pickerWrapper.scrollTop = Math.round(pickerWrapper.scrollTop + teamCombos.length * pickerItemHeight);
+  } else if (pickerWrapper.scrollTop >= maxScroll - pickerItemHeight) {
+    pickerWrapper.scrollTop = Math.round(pickerWrapper.scrollTop - teamCombos.length * pickerItemHeight);
   }
 
   updateTeamPickerCenter();
 });
 
+// ------------------- タッチスクロール後にスナップ（中央揃え） -------------------
+let isTouching = false;
+let snapTimeout;
 
-// 初期表示
+pickerWrapper.addEventListener('touchstart', () => { 
+  isTouching = true;
+  if (snapTimeout) clearTimeout(snapTimeout);
+});
+
+pickerWrapper.addEventListener('touchend', () => {
+  isTouching = false;
+  // 慣性スクロールが終わった後に中央にスナップ
+  snapTimeout = setTimeout(() => {
+    snapToCenter();
+  }, 50); 
+});
+
+// ------------------- スナップ処理 -------------------
+function snapToCenter() {
+  const items = document.querySelectorAll("#teamPicker .team-picker-item");
+  const wrapperRect = pickerWrapper.getBoundingClientRect();
+  const wrapperCenter = Math.round(wrapperRect.top + wrapperRect.height / 2);
+
+  let closest = null;
+  let minDist = Infinity;
+
+  items.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    const itemCenter = Math.round(rect.top + rect.height / 2);
+    const dist = Math.abs(itemCenter - wrapperCenter);
+    if (dist < minDist) { minDist = dist; closest = item; }
+  });
+
+  if (!closest) return;
+
+  const itemTop = closest.offsetTop;
+  const scrollTarget = itemTop - Math.floor(pickerWrapper.clientHeight / 2) + Math.floor(pickerItemHeight / 2);
+  pickerWrapper.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+
+  // スナップ後に色を更新
+  setTimeout(updateTeamPickerCenter, 200);
+}
+
+// ------------------- 初期表示 -------------------
 setInitialScroll();
 updateTeamPickerCenter();
 
@@ -6573,6 +6659,7 @@ updateTeamPickerCenter();
   const ITEM_H = 40;
   const LOOPS = 3;
 
+  let scorePickerTicking = false; // ← ★ここ！！！
   let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
   let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
 
@@ -6879,12 +6966,25 @@ const brightCombos = [
   }
 
   // スクロール無限ループ
-  scorePicker.addEventListener('scroll', ()=>{
-    const max = scorePicker.scrollHeight - scorePicker.clientHeight;
-    if(scorePicker.scrollTop < ITEM_H) scorePicker.scrollTop += brightCombos.length*ITEM_H;
-    else if(scorePicker.scrollTop > max - ITEM_H) scorePicker.scrollTop -= brightCombos.length*ITEM_H;
-    scorePickerUpdate();
-  });
+scorePicker.addEventListener('scroll', () => {
+  const max = scorePicker.scrollHeight - scorePicker.clientHeight;
+
+  if (scorePicker.scrollTop < ITEM_H) {
+    scorePicker.scrollTop += brightCombos.length * ITEM_H;
+  } else if (scorePicker.scrollTop > max - ITEM_H) {
+    scorePicker.scrollTop -= brightCombos.length * ITEM_H;
+  }
+
+  // ★ iOS / Android 共通：1フレーム1回だけ
+  if (!scorePickerTicking) {
+    scorePickerTicking = true;
+    requestAnimationFrame(() => {
+      scorePickerUpdate();
+      scorePickerTicking = false;
+    });
+  }
+
+}, { passive: true });
 
   scorePickerBuild();
   scorePickerSetInitial();
@@ -7109,8 +7209,12 @@ function updateCenter(){
     document.body.style.background = outColor;
 
     const metaTheme = document.querySelector('meta[name="theme-color"]');
-if(metaTheme && metaTheme.getAttribute("content") !== outColor){
-  metaTheme.setAttribute("content", outColor);
+if(metaTheme){
+  requestAnimationFrame(()=>{
+    if(metaTheme.getAttribute("content") !== outColor){
+      metaTheme.setAttribute("content", outColor);
+    }
+  });
 }
 
     return {courtColor, outColor};
@@ -7150,32 +7254,37 @@ function selectSavedItem(){
 // 無限スクロール + 保存（iPhoneカクつき対策版）
 let scrollTimer;
 let rafId = null;
+let pickerTicking = false;
 
 wrapper.addEventListener("scroll", ()=>{
   const maxScroll = wrapper.scrollHeight - wrapper.clientHeight;
 
-  // 無限スクロール補正（最低限）
+  // 無限スクロール補正（即時OK）
   if(wrapper.scrollTop < itemHeight){
     wrapper.scrollTop += combos.length * itemHeight;
   } else if(wrapper.scrollTop > maxScroll - itemHeight){
     wrapper.scrollTop -= combos.length * itemHeight;
   }
 
-  // 🔽 scroll中は何もしない
-  if(rafId) cancelAnimationFrame(rafId);
+  // ★ scroll中は描画しない（iOS最重要）
+  if(!pickerTicking){
+    pickerTicking = true;
+    requestAnimationFrame(()=>{
+      pickerTicking = false;
+    });
+  }
 
-  rafId = requestAnimationFrame(()=>{
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(()=>{
-      const colors = updateCenter();
-      if(colors){
-        localStorage.setItem('courtColor', colors.courtColor);
-        localStorage.setItem('outColor', colors.outColor);
-        localStorage.setItem('scrollTop', wrapper.scrollTop);
-      }
-    }, 120); // ← 指を離してからだけ処理
-  });
-});
+  // ★ 指を離した「後」だけ反映
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(()=>{
+    const colors = updateCenter();
+    if(colors){
+      localStorage.setItem('courtColor', colors.courtColor);
+      localStorage.setItem('outColor', colors.outColor);
+      localStorage.setItem('scrollTop', wrapper.scrollTop);
+    }
+  }, 140); // ← iOSは120より140が安定
+}, { passive:true });
 
 window.addEventListener("load", selectSavedItem);
 
@@ -8197,67 +8306,71 @@ window.addEventListener('click', (e) => {
 });
 
 // ===============================
-// 設定画面 インフォメーションモーダル
+// 共通：アコーディオン設定（CSS ::after で矢印制御）
+// ===============================
+function setupAccordion(modal) {
+  modal.querySelectorAll('.accordion-toggle').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      const content = toggle.nextElementSibling;
+      content.classList.toggle('open');
+      toggle.classList.toggle('open'); // CSS ::after が ▲ ▼ を切り替える
+    });
+  });
+}
+
+// ===============================
+// モーダル開閉設定
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ----- 設定画面モーダル -----
   const helpButton = document.getElementById("helpButtonFooter");
   const helpModal  = document.getElementById("helpModal");
   const closeHelp  = document.getElementById("closeHelp");
 
-  if (!helpButton || !helpModal || !closeHelp) return;
+  if (helpButton && helpModal && closeHelp) {
+    helpButton.addEventListener("click", () => {
+      helpModal.style.display = "flex";
+      helpModal.setAttribute("aria-hidden", "false");
+    });
 
-  helpButton.addEventListener("click", () => {
-    helpModal.style.display = "block";
-    helpModal.setAttribute("aria-hidden", "false");
-  });
-
-  closeHelp.addEventListener("click", () => {
-    helpModal.style.display = "none";
-    helpModal.setAttribute("aria-hidden", "true");
-  });
-
-  // モーダル外クリックで閉じる
-  helpModal.addEventListener("click", (e) => {
-    if (e.target === helpModal) {
+    const closeHelpModal = () => {
       helpModal.style.display = "none";
       helpModal.setAttribute("aria-hidden", "true");
-    }
-  });
+      // 全アコーディオンを閉じる
+      helpModal.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+      helpModal.querySelectorAll('.accordion-toggle').forEach(t => t.classList.remove('open'));
+    };
 
-});
+    closeHelp.addEventListener("click", closeHelpModal);
+    helpModal.addEventListener("click", (e) => { if(e.target === helpModal) closeHelpModal(); });
 
+    setupAccordion(helpModal);
+  }
 
-// ===============================
-// 試合画面 インフォメーションモーダル
-// ===============================
-document.addEventListener("DOMContentLoaded", () => {
+  // ----- 試合画面モーダル -----
+  const matchBtn  = document.getElementById("matchInfoButton");
+  const matchModal = document.getElementById("matchInfoModal");
+  const closeMatch = document.getElementById("closeMatchInfo");
 
-  const openBtn  = document.getElementById("matchInfoButton");
-  const modal    = document.getElementById("matchInfoModal");
-  const closeBtn = document.getElementById("closeMatchInfo");
+  if (matchBtn && matchModal && closeMatch) {
+    matchBtn.addEventListener("click", () => {
+      matchModal.style.display = "flex";
+      matchModal.setAttribute("aria-hidden", "false");
+    });
 
-  if (!openBtn || !modal || !closeBtn) return;
+    const closeMatchModal = () => {
+      matchModal.style.display = "none";
+      matchModal.setAttribute("aria-hidden", "true");
+      matchModal.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+      matchModal.querySelectorAll('.accordion-toggle').forEach(t => t.classList.remove('open'));
+    };
 
-  // 開く
-  openBtn.addEventListener("click", () => {
-    modal.style.display = "flex";
-    modal.setAttribute("aria-hidden", "false");
-  });
+    closeMatch.addEventListener("click", closeMatchModal);
+    matchModal.addEventListener("click", (e) => { if(e.target === matchModal) closeMatchModal(); });
 
-  // 閉じる
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-  });
-
-  // 背景クリックで閉じる
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.style.display = "none";
-      modal.setAttribute("aria-hidden", "true");
-    }
-  });
+    setupAccordion(matchModal);
+  }
 
 });
 
