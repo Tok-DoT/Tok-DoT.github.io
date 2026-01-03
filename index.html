@@ -7675,7 +7675,7 @@ function applyFavorite(displayIndex) {
   }
 }
 
-  function deleteFavorite(realIndex) {
+function deleteFavorite(realIndex) {
     favorites[realIndex] = null;
     localStorage.setItem('favorites3bars', JSON.stringify(favorites));
     buildFavoritesPicker();
