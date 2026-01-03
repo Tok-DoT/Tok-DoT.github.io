@@ -2917,7 +2917,7 @@ body::after {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-45%, -53%); /* X軸・Y軸とも中央 */
+  transform: translate(-45%, -58%); /* X軸・Y軸とも中央 */
 }
 
 /* hover：影だけ少し強調 */
@@ -3621,7 +3621,7 @@ body::after {
     <div class="modal-body">
 
       <h3>試合画面について</h3>
-      <p>ゲーム開始前・開始後の操作や、より楽しく応援するためにをご紹介します。</p>
+      <p>ゲーム開始前・開始後の操作や、より楽しく応援するために をご紹介します。</p>
 
       <h4 class="accordion-toggle">ゲーム開始前にやること</h4>
       <div class="accordion-content">
@@ -4218,6 +4218,27 @@ function swapPlayers(team) {
     showServerBlink(team);
 }
 
+// ----------------------------------- コート回転（iOS対応版） -----------------------------------
+let currentRotation = 0;
+
+// iOS判定
+const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+function rotateCourt(deg) {
+  currentRotation += deg;
+
+  const court = document.getElementById('courtWrapper');
+  court.style.transition = 'transform 0.4s ease';
+
+  if (isiOS) {
+    // iOSのみGPU強制＆ジャンプ防止
+    let normalized = currentRotation % 360;
+    court.style.transform = `rotate(${normalized}deg) translateZ(0)`;
+  } else {
+    court.style.transform = `rotate(${currentRotation}deg)`;
+  }
+}
+
 // --- タイマー全キャンセル関数 ---
 function cancelReadyDisplayTimers() {
     readyMessageTimers.forEach(t => clearTimeout(t));
@@ -4252,7 +4273,7 @@ function handleReadyButton() {
   const finalDisplay = document.getElementById('finalDisplay');
   if (!finalDisplay) return;
 
-function formatPair(team) {
+  function formatPair(team) {
     const base =
       (team === 'A')
         ? `${playerA1}・${playerA2}`
