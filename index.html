@@ -6684,7 +6684,7 @@ updateTeamPickerCenter();
     return "#" + result.map(x=>parseInt(x).toString(16).padStart(2,'0')).join('').toUpperCase();
   }
 
-const brightCombos = [
+  const brightCombos = [
   // ==============================
   // デフォルト（青/緑）
   // ==============================
@@ -6919,6 +6919,16 @@ const brightCombos = [
     requestAnimationFrame(applyColors);
   }
 
+  // 中央＋前後n個色反映関数
+  function reflectColors(centerIdx, n){
+    const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
+    const start = Math.max(0, centerIdx-n);
+    const end = Math.min(items.length-1, centerIdx+n);
+    for(let i=start; i<=end; i++){
+      forceApplyScore(items[i]);
+    }
+  }
+
   function scorePickerUpdate(){
     const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
     if(items.length===0) return;
@@ -6939,12 +6949,29 @@ const brightCombos = [
     items.forEach(it=>it.classList.remove('center'));
     items[closestIdx].classList.add('center');
 
-    // 中央＋前後5個分の色反映
-    const start = Math.max(0, closestIdx-5);
-    const end = Math.min(items.length-1, closestIdx+5);
-    for(let i=start; i<=end; i++){
-      forceApplyScore(items[i]);
-    }
+    // 停止中は中央＋前後5個
+    reflectColors(closestIdx, 5);
+  }
+
+  // フリック中の軽量色反映（中央＋前後1個）
+  function scorePickerPreview(){
+    const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
+    if(items.length===0) return;
+
+    const wrapperRect = scorePicker.getBoundingClientRect();
+    let closestIdx = 0;
+    let minDist = Infinity;
+
+    items.forEach((it, idx)=>{
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height/2 - (wrapperRect.top+wrapperRect.height/2));
+      if(d < minDist){
+        minDist = d;
+        closestIdx = idx;
+      }
+    });
+
+    reflectColors(closestIdx, 1); // 前後1個だけ軽く反映
   }
 
   function scorePickerSetInitial(){
@@ -6969,7 +6996,7 @@ const brightCombos = [
   }
 
   // 無限スクロール
-  scorePicker.addEventListener('scroll', () => {
+  function handleScroll(){
     const max = scorePicker.scrollHeight - scorePicker.clientHeight;
 
     if (scorePicker.scrollTop < ITEM_H) {
@@ -6977,17 +7004,34 @@ const brightCombos = [
     } else if (scorePicker.scrollTop > max - ITEM_H) {
       scorePicker.scrollTop -= brightCombos.length * ITEM_H;
     }
+  }
 
-    // 1フレーム1回だけ更新（iPhone対策）
+  // スクロール + touchmove 対応
+  scorePicker.addEventListener('scroll', () => {
+    handleScroll();
     if (!scorePickerTicking) {
       scorePickerTicking = true;
       requestAnimationFrame(() => {
-        scorePickerUpdate();
+        scorePickerPreview(); // フリック中は軽量反映
         scorePickerTicking = false;
       });
     }
-
   }, { passive: true });
+
+  scorePicker.addEventListener('touchmove', () => {
+    if (!scorePickerTicking) {
+      scorePickerTicking = true;
+      requestAnimationFrame(() => {
+        scorePickerPreview(); // フリック中も軽く色反映
+        scorePickerTicking = false;
+      });
+    }
+  }, { passive: true });
+
+  scorePicker.addEventListener('touchend', () => {
+    // 停止後は中央＋前後5個
+    scorePickerUpdate();
+  });
 
   scorePickerBuild();
   scorePickerSetInitial();
