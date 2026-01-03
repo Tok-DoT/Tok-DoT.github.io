@@ -6660,16 +6660,14 @@ updateTeamPickerCenter();
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 (function(){
   const scorePicker = document.getElementById('scorePickerCustom');
-  if(!scorePicker) return; // ← ★これだけが重要
+  if(!scorePicker) return;
 
   const ITEM_H = 40;
   const LOOPS = 3;
 
-  let scorePickerTicking = false; // ← ★ここ！！！
+  let scorePickerTicking = false;
   let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
   let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
-
-  /* 以降はあなたのコードを一切変更していません */
 
   function toRGB(color){
     const div = document.createElement("div");
@@ -6855,7 +6853,6 @@ const brightCombos = [
   ["#D2691E","#00FFFF"], ["#00FFFF","#D2691E"]
 ];
 
-  // スクロール内容構築
   function scorePickerBuild(){
     scorePicker.innerHTML='';
     for(let loop=0; loop<LOOPS; loop++){
@@ -6886,7 +6883,6 @@ const brightCombos = [
         item.appendChild(labelB);
         scorePicker.appendChild(item);
 
-        // ★クリックで即反映
         item.addEventListener('click', () => {
           forceApplyScore(item);
         });
@@ -6894,60 +6890,61 @@ const brightCombos = [
     }
   }
 
-  // 中央色を即適用する処理（改良版）
   function forceApplyScore(item){
-  if(!item) return;
-  const colorA = item.querySelector('.scorePicker-bgA').style.background || '#0000FF';
-  const colorB = item.querySelector('.scorePicker-bgB').style.background || '#008000';
+    if(!item) return;
+    const colorA = item.querySelector('.scorePicker-bgA').style.background || '#0000FF';
+    const colorB = item.querySelector('.scorePicker-bgB').style.background || '#008000';
 
-  const applyColors = () => {
-    document.querySelectorAll('#pointAFlip .front, #pointAFlip .back').forEach(el=>el.style.color=colorA);
-    document.querySelectorAll('#pointBFlip .front, #pointBFlip .back').forEach(el=>el.style.color=colorB);
-    document.querySelectorAll('#gameAFront, #gameABack').forEach(el=>el.style.color=colorA);
-    document.querySelectorAll('#gameBFront, #gameBBack').forEach(el=>el.style.color=colorB);
+    const applyColors = () => {
+      document.querySelectorAll('#pointAFlip .front, #pointAFlip .back').forEach(el=>el.style.color=colorA);
+      document.querySelectorAll('#pointBFlip .front, #pointBFlip .back').forEach(el=>el.style.color=colorB);
+      document.querySelectorAll('#gameAFront, #gameABack').forEach(el=>el.style.color=colorA);
+      document.querySelectorAll('#gameBFront, #gameBBack').forEach(el=>el.style.color=colorB);
 
-    const lblA = item.querySelector('.scorePicker-labelA span');
-    const lblB = item.querySelector('.scorePicker-labelB span');
-    if(lblA) lblA.style.color=colorA;
-    if(lblB) lblB.style.color=colorB;
+      const lblA = item.querySelector('.scorePicker-labelA span');
+      const lblB = item.querySelector('.scorePicker-labelB span');
+      if(lblA) lblA.style.color=colorA;
+      if(lblB) lblB.style.color=colorB;
 
-    const rogo = document.querySelector('.rogo-text');
-    if(rogo){
-      rogo.style.background = `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
-      rogo.style.color='#fff';
-    }
+      const rogo = document.querySelector('.rogo-text');
+      if(rogo){
+        rogo.style.background = `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
+        rogo.style.color='#fff';
+      }
 
-    localStorage.setItem('scoreLastColorA', colorA);
-    localStorage.setItem('scoreLastColorB', colorB);
-  };
+      localStorage.setItem('scoreLastColorA', colorA);
+      localStorage.setItem('scoreLastColorB', colorB);
+    };
 
-  requestAnimationFrame(applyColors);
-}
+    requestAnimationFrame(applyColors);
+  }
 
-  // 中央色更新（スクロール用）
   function scorePickerUpdate(){
     const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
     if(items.length===0) return;
 
     const wrapperRect = scorePicker.getBoundingClientRect();
-    let closest = null;
+    let closestIdx = 0;
     let minDist = Infinity;
 
-    items.forEach(it=>{
+    items.forEach((it, idx)=>{
       const r = it.getBoundingClientRect();
       const d = Math.abs(r.top + r.height/2 - (wrapperRect.top+wrapperRect.height/2));
       if(d < minDist){
         minDist = d;
-        closest = it;
+        closestIdx = idx;
       }
     });
 
     items.forEach(it=>it.classList.remove('center'));
-    if(!closest) return;
-    closest.classList.add('center');
+    items[closestIdx].classList.add('center');
 
-    // スクロールで色変更も即適用
-    forceApplyScore(closest);
+    // 中央＋前後5個分の色反映
+    const start = Math.max(0, closestIdx-5);
+    const end = Math.min(items.length-1, closestIdx+5);
+    for(let i=start; i<=end; i++){
+      forceApplyScore(items[i]);
+    }
   }
 
   function scorePickerSetInitial(){
@@ -6971,26 +6968,26 @@ const brightCombos = [
     });
   }
 
-  // スクロール無限ループ
-scorePicker.addEventListener('scroll', () => {
-  const max = scorePicker.scrollHeight - scorePicker.clientHeight;
+  // 無限スクロール
+  scorePicker.addEventListener('scroll', () => {
+    const max = scorePicker.scrollHeight - scorePicker.clientHeight;
 
-  if (scorePicker.scrollTop < ITEM_H) {
-    scorePicker.scrollTop += brightCombos.length * ITEM_H;
-  } else if (scorePicker.scrollTop > max - ITEM_H) {
-    scorePicker.scrollTop -= brightCombos.length * ITEM_H;
-  }
+    if (scorePicker.scrollTop < ITEM_H) {
+      scorePicker.scrollTop += brightCombos.length * ITEM_H;
+    } else if (scorePicker.scrollTop > max - ITEM_H) {
+      scorePicker.scrollTop -= brightCombos.length * ITEM_H;
+    }
 
-  // ★ iOS / Android 共通：1フレーム1回だけ
-  if (!scorePickerTicking) {
-    scorePickerTicking = true;
-    requestAnimationFrame(() => {
-      scorePickerUpdate();
-      scorePickerTicking = false;
-    });
-  }
+    // 1フレーム1回だけ更新（iPhone対策）
+    if (!scorePickerTicking) {
+      scorePickerTicking = true;
+      requestAnimationFrame(() => {
+        scorePickerUpdate();
+        scorePickerTicking = false;
+      });
+    }
 
-}, { passive: true });
+  }, { passive: true });
 
   scorePickerBuild();
   scorePickerSetInitial();
