@@ -6510,153 +6510,80 @@ const teamCombos = [
 const pickerWrapper = document.getElementById("teamPicker");
 const pickerItemHeight = 30;
 
-/* ---------- CSSスクロール ---------- */
-pickerWrapper.style.overflowY = "scroll";
-pickerWrapper.style.webkitOverflowScrolling = "touch";
-
-/* ---------- 状態管理 ---------- */
+// iOS対策フラグ
 let scrollTicking = false;
+let scrollEndTimer = null;
 let isTouching = false;
-let snapTimeout = null;
 
-/* ---------- アイテム作成（3周） ---------- */
-for (let loop = 0; loop < 3; loop++) {
-  teamCombos.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "team-picker-item";
-
-    const bgA = document.createElement("div");
-    bgA.className = "team-scroll-bgA";
-    bgA.style.background = c.teamA;
-
-    const bgB = document.createElement("div");
-    bgB.className = "team-scroll-bgB";
-    bgB.style.background = c.teamB;
-
-    const labelA = document.createElement("div");
-    labelA.className = "team-scroll-labelA";
-    labelA.textContent = "Aチーム";
-
-    const labelB = document.createElement("div");
-    labelB.className = "team-scroll-labelB";
-    labelB.textContent = "Bチーム";
-
-    div.append(bgA, bgB, labelA, labelB);
-    pickerWrapper.appendChild(div);
-  });
+/* ------------------- スクロール描画更新（iOS対策） ------------------- */
+function onScrollUpdate() {
+  updateTeamPickerCenter();
+  scrollTicking = false;
 }
 
-/* ---------- 初期スクロール ---------- */
-function setInitialScroll() {
-  const savedA = localStorage.getItem("teamAColor");
-  const savedB = localStorage.getItem("teamBColor");
+/* ------------------- スクロールイベント ------------------- */
+pickerWrapper.addEventListener("scroll", () => {
 
-  let index = teamCombos.length; // 中央周
-
-  if (savedA && savedB) {
-    teamCombos.forEach((c, i) => {
-      if (c.teamA === savedA && c.teamB === savedB) {
-        index = i + teamCombos.length;
-      }
-    });
-  }
-
-  pickerWrapper.scrollTop = index * pickerItemHeight;
-}
-
-/* ---------- 中央判定 ---------- */
-function updateTeamPickerCenter() {
-  const items = document.querySelectorAll(".team-picker-item");
-  const centerY =
-    pickerWrapper.getBoundingClientRect().top +
-    pickerWrapper.clientHeight / 2;
-
-  let closest = null;
-  let min = Infinity;
-
-  items.forEach(item => {
-    const rect = item.getBoundingClientRect();
-    const d = Math.abs(rect.top + rect.height / 2 - centerY);
-    if (d < min) {
-      min = d;
-      closest = item;
-    }
-  });
-
-  if (!closest) return;
-
-  items.forEach(i => i.classList.remove("center"));
-  closest.classList.add("center");
-
-  let a = closest.querySelector(".team-scroll-bgA").style.background;
-  let b = closest.querySelector(".team-scroll-bgB").style.background;
-
-  if (typeof isSwappedAB !== "undefined" && isSwappedAB) {
-    [a, b] = [b, a];
-  }
-
-  document.querySelectorAll(".bg-teamA").forEach(el => el.style.background = a);
-  document.querySelectorAll(".bg-teamB").forEach(el => el.style.background = b);
-  document.documentElement.style.setProperty("--teamB-bg-color", b);
-
-  localStorage.setItem("teamAColor", a);
-  localStorage.setItem("teamBColor", b);
-
-  if (typeof updateScore === "function") updateScore();
-}
-
-/* ---------- scroll（超重要修正版） ---------- */
-pickerWrapper.addEventListener(
-  "scroll",
-  () => {
-    if (scrollTicking) return;
-
+  // ① 描画更新は1フレーム1回
+  if (!scrollTicking) {
     scrollTicking = true;
-    requestAnimationFrame(() => {
-      const max = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
-      const loop = teamCombos.length * pickerItemHeight;
+    requestAnimationFrame(onScrollUpdate);
+  }
 
-      if (pickerWrapper.scrollTop < pickerItemHeight) {
-        pickerWrapper.scrollTop += loop;
-      } else if (pickerWrapper.scrollTop > max - pickerItemHeight) {
-        pickerWrapper.scrollTop -= loop;
-      }
+  // ② スクロール停止検知（無限ループはここで）
+  if (scrollEndTimer) clearTimeout(scrollEndTimer);
+  scrollEndTimer = setTimeout(() => {
+    if (!isTouching) {
+      adjustInfiniteScroll();
+    }
+  }, 80);
 
-      updateTeamPickerCenter();
-      scrollTicking = false;
-    });
-  },
-  { passive: true }
-);
+}, { passive: true });
 
-/* ---------- タッチ制御 ---------- */
+/* ------------------- 無限スクロール補正（停止後のみ） ------------------- */
+function adjustInfiniteScroll() {
+  const maxScroll = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
+  const current = pickerWrapper.scrollTop;
+
+  if (current <= pickerItemHeight) {
+    pickerWrapper.scrollTop =
+      current + teamCombos.length * pickerItemHeight;
+  } else if (current >= maxScroll - pickerItemHeight) {
+    pickerWrapper.scrollTop =
+      current - teamCombos.length * pickerItemHeight;
+  }
+}
+
+/* ------------------- タッチ状態管理 ------------------- */
 pickerWrapper.addEventListener("touchstart", () => {
   isTouching = true;
-  if (snapTimeout) clearTimeout(snapTimeout);
-});
+  if (scrollEndTimer) clearTimeout(scrollEndTimer);
+}, { passive: true });
 
 pickerWrapper.addEventListener("touchend", () => {
   isTouching = false;
-  snapTimeout = setTimeout(snapToCenter, 120); // Android対策
-});
 
-/* ---------- スナップ ---------- */
+  // 慣性終了後にスナップ
+  setTimeout(() => {
+    snapToCenter();
+  }, 120);
+}, { passive: true });
+
+/* ------------------- スナップ処理 ------------------- */
 function snapToCenter() {
-  if (isTouching) return;
-
-  const items = document.querySelectorAll(".team-picker-item");
-  const centerY =
-    pickerWrapper.getBoundingClientRect().top +
-    pickerWrapper.clientHeight / 2;
+  const items = document.querySelectorAll("#teamPicker .team-picker-item");
+  const wrapperRect = pickerWrapper.getBoundingClientRect();
+  const wrapperCenter = Math.round(wrapperRect.top + wrapperRect.height / 2);
 
   let closest = null;
-  let min = Infinity;
+  let minDist = Infinity;
 
   items.forEach(item => {
     const rect = item.getBoundingClientRect();
-    const d = Math.abs(rect.top + rect.height / 2 - centerY);
-    if (d < min) {
-      min = d;
+    const itemCenter = Math.round(rect.top + rect.height / 2);
+    const dist = Math.abs(itemCenter - wrapperCenter);
+    if (dist < minDist) {
+      minDist = dist;
       closest = item;
     }
   });
@@ -6665,20 +6592,23 @@ function snapToCenter() {
 
   const target =
     closest.offsetTop -
-    pickerWrapper.clientHeight / 2 +
-    pickerItemHeight / 2;
+    Math.floor(pickerWrapper.clientHeight / 2) +
+    Math.floor(pickerItemHeight / 2);
 
   pickerWrapper.scrollTo({
-    top: Math.round(target),
+    top: target,
     behavior: "smooth"
   });
+
+  setTimeout(updateTeamPickerCenter, 200);
 }
 
-/* ---------- 初期化 ---------- */
+/* ------------------- 初期表示 ------------------- */
 setInitialScroll();
-requestAnimationFrame(updateTeamPickerCenter);
+updateTeamPickerCenter();
 
 /* ------------------- チーム名と選手名背景色変更スクロールバー終り ------------------- */
+
 
 /* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
 (function(){
