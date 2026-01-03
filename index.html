@@ -6510,7 +6510,11 @@ const teamCombos = [
 const pickerWrapper = document.getElementById("teamPicker");
 const pickerItemHeight = 30;
 
-// アイテム作成（縦スクロール＆3周ループ）
+// ------------------- CSS調整（モバイル向け） -------------------
+pickerWrapper.style.overflowY = "scroll";
+pickerWrapper.style.webkitOverflowScrolling = "touch"; // iOS慣性スクロール
+
+// ------------------- アイテム作成（縦スクロール＆3周ループ） -------------------
 for (let loop = 0; loop < 3; loop++) {
   teamCombos.forEach(c => {
     const div = document.createElement("div");
@@ -6541,8 +6545,7 @@ for (let loop = 0; loop < 3; loop++) {
   });
 }
 
-
-// 保存値があれば初期スクロール位置を設定
+// ------------------- 初期スクロール設定 -------------------
 function setInitialScroll() {
   const savedA = localStorage.getItem("teamAColor");
   const savedB = localStorage.getItem("teamBColor");
@@ -6565,20 +6568,15 @@ function setInitialScroll() {
   }
 }
 
-
-// ===========================
-// A/B 入替え対応版
-// ===========================
+// ------------------- 中央更新 -------------------
 function updateTeamPickerCenter() {
   const items = document.querySelectorAll("#teamPicker .team-picker-item");
-  const wrapperRect = pickerWrapper.getBoundingClientRect();
+  const wrapperCenter = pickerWrapper.scrollTop + pickerWrapper.clientHeight / 2;
   let closest = null;
   let minDist = Infinity;
 
   items.forEach(item => {
-    const rect = item.getBoundingClientRect();
-    const itemCenter = rect.top + rect.height / 2;
-    const wrapperCenter = wrapperRect.top + wrapperRect.height / 2;
+    const itemCenter = item.offsetTop + item.offsetHeight / 2;
     const dist = Math.abs(itemCenter - wrapperCenter);
     if (dist < minDist) { minDist = dist; closest = item; }
   });
@@ -6588,55 +6586,51 @@ function updateTeamPickerCenter() {
   if (closest) {
     closest.classList.add("center");
 
-    // スクロールバー左右の色
     const colorLeft = closest.querySelector(".team-scroll-bgA").style.background;
     const colorRight = closest.querySelector(".team-scroll-bgB").style.background;
 
     let finalA, finalB;
-
-    // ★ A/B 入替え状態に応じて左右を反転 ★
     if (typeof isSwappedAB !== "undefined" && isSwappedAB) {
-      // 入れ替え後：左 = B、右 = A
       finalA = colorRight;
       finalB = colorLeft;
     } else {
-      // 通常：左 = A、右 = B
       finalA = colorLeft;
       finalB = colorRight;
     }
 
-    // チーム背景更新
     document.querySelectorAll(".bg-teamA").forEach(el => el.style.background = finalA);
     document.querySelectorAll(".bg-teamB").forEach(el => el.style.background = finalB);
 
-    // CSS変数更新
     document.documentElement.style.setProperty('--teamB-bg-color', finalB);
 
-    // 保存
     localStorage.setItem("teamAColor", finalA);
     localStorage.setItem("teamBColor", finalB);
 
-    // スコアに応じたブロックバー更新
     if (typeof updateScore === "function") updateScore();
   }
 }
 
-
-// スクロールイベント（無限スクロール）
+// ------------------- スクロールイベント（無限スクロール＋モバイル対応） -------------------
+let rafScheduled = false;
 pickerWrapper.addEventListener("scroll", () => {
-  const maxScroll = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
+  if (!rafScheduled) {
+    rafScheduled = true;
+    requestAnimationFrame(() => {
+      rafScheduled = false;
 
-  if (pickerWrapper.scrollTop < pickerItemHeight) {
-    pickerWrapper.scrollTop += teamCombos.length * pickerItemHeight;
-  } else if (pickerWrapper.scrollTop > maxScroll - pickerItemHeight) {
-    pickerWrapper.scrollTop -= teamCombos.length * pickerItemHeight;
+      const maxScroll = pickerWrapper.scrollHeight - pickerWrapper.clientHeight;
+      if (pickerWrapper.scrollTop < pickerItemHeight) {
+        pickerWrapper.scrollTop += teamCombos.length * pickerItemHeight;
+      } else if (pickerWrapper.scrollTop > maxScroll - pickerItemHeight) {
+        pickerWrapper.scrollTop -= teamCombos.length * pickerItemHeight;
+      }
+
+      updateTeamPickerCenter();
+    });
   }
-
-  updateTeamPickerCenter();
 });
 
-
-// 初期表示
+// ------------------- 初期表示 -------------------
 setInitialScroll();
 updateTeamPickerCenter();
 
