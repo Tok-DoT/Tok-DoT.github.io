@@ -3302,11 +3302,13 @@ body::after {
       <h3 class="accordion-toggle">このアプリについて</h3>
       <div class="accordion-content">
         <p>
-          このアプリは、ソフトテニスのダブルスマッチを
-          どなたでも気軽に応援できるように作られています。
-          特にスコアボードがない試合では、「今の得点は？」が
-          分かりにくい場面があります。
-        </p>
+  このアプリは、ソフトテニスのダブルスマッチを  
+  どなたでも気軽に応援できるように作られています。  
+  スコアボードがない試合で、  
+  「今、何点だっけ？」と分かりにくい場面を  
+  サポートするためのアプリです。
+</p>
+
         <p>
           得点を記録するだけで試合の流れや状況が自然に分かるように設計されており、
           操作も簡単なのでスマートフォンに不慣れな方でも安心です。
@@ -3621,14 +3623,14 @@ body::after {
     <div class="modal-body">
 
       <h3>試合画面について</h3>
-      <p>ゲーム開始前・開始後の操作や、より楽しく応援するために をご紹介します。</p>
+      <p>ゲーム開始前・開始後の操作や『 より楽しく応援するために 』をご紹介します。</p>
 
       <h4 class="accordion-toggle">ゲーム開始前にやること</h4>
       <div class="accordion-content">
         <ul>
-          <li><strong>応援場所とチームの位置を合わせる</strong><br>応援する場所を基準に、チームの位置（コートの回転）を調整します。</li>
+          <li><strong>応援場所とチームの位置を合わせる</strong><br>応援する場所を基準に、チームの位置（コートの回転）を合わせます。</li>
           <li><strong>選手のポジションを合わせる</strong><br>コート内のチームをタップしてポジションを変更可能。※ゲーム中も変更可</li>
-          <li><strong>サービスサイドを決める</strong><br>コート内のデュースサイドにいる選手をタップして、最初のサービスサイドを決めます。</li>
+          <li><strong>サービスサイドを決める</strong><br>コート内のデュースサイドにいる選手（サーバー）をタップして、最初のサービスサイドを決めます。</li>
         </ul>
       </div>
 
@@ -3646,26 +3648,27 @@ body::after {
         <p class="note">※ ポイント0-0・ゲームカウント0-0時点ではサーバー変更可能です。ゲーム中は変更不可。ポイント0-0・ゲームカウント0-0まで戻すとリセットと同じ状態になります。</p>
       </div>
 
-      <h4 class="accordion-toggle">より楽しく応援するために</h4>
+      <h4 class="accordion-toggle">『 より楽しく応援するために 』</h4>
       <div class="accordion-content">
         <ul>
           <li><strong>試合画面のカスタマイズ</strong><br>コート下のフリックスクロールバーで画面の色や表示を調整できます。</li>
-          <li><strong>お気に入りの保存</strong><br>フリックススクロールバーの一番下（★の下、①～⑤）にお気に入りを保存可能。長押しで保存。既存データは上書きされます。</li>
-          <li><strong>お気に入りの削除</strong><br>フリックススクロールバーを横にスライドして削除できます。</li>
+          <li><strong>お気に入りの保存</strong><br>フリックススクロールバーの一番下（★の下、①～⑤）にお気に入りを保存可能。長押し（約3秒）で保存。既存データは上書きされます。</li>
+<li><strong>お気に入りの呼出</strong><br>フリックススクロールバーの一番下（★の下、①～⑤）からお気に入りを呼出可能。タップして呼出できます。※★は、アプリのデフォルトです。</li>
+          <li><strong>お気に入りの削除</strong><br>フリックススクロールバーを横にスワイプ（スライド）して削除できます。</li>
         </ul>
 
         <h5 class="accordion-toggle nested">会場のお天気登録</h5>
         <div class="accordion-content nested">
           <ol>
             <li>日時とお天気ボックスをタップして会場住所を入力し [ 検索 ]</li>
-            <li>表示地点（自動判定）を確認して [ 決定 ]</li>
+            <li>表示地点（自動判定）を確認して <br>[ 決定 ]</li>
             <li>情報は10分おきに更新されます</li>
           </ol>
         </div>
 
-        <h5 class="accordion-toggle nested">思い出を記録</h5>
+        <h5 class="accordion-toggle nested">思い出をスクリーンショットで</h5>
         <div class="accordion-content nested">
-          <p>端末のスクリーンショット機能を使って試合の思い出を残せます。</p>
+          <p>端末のスクリーンショット機能を使ってその日の思い出を残せます</p>
         </div>
       </div>
 
@@ -6657,19 +6660,20 @@ updateTeamPickerCenter();
 
 /* ------------------- チーム名と選手名背景色変更スクロールバー終り ------------------- */
 
-/* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
+/* ------------------- 得点盤文字色とロゴ背景色の変更（安定版） ------------------- */
 (function(){
   const scorePicker = document.getElementById('scorePickerCustom');
-  if(!scorePicker) return; // ← ★これだけが重要
+  if(!scorePicker) return;
 
   const ITEM_H = 40;
   const LOOPS = 3;
 
-  let scorePickerTicking = false; // ← ★ここ！！！
+  let scorePickerTicking = false;
   let savedA = localStorage.getItem('scoreLastColorA') || '#0000FF';
   let savedB = localStorage.getItem('scoreLastColorB') || '#008000';
 
-  /* 以降はあなたのコードを一切変更していません */
+  // ★ お気に入り経由フラグ（追加・最小差分）
+  let fromFavorite = false;
 
   function toRGB(color){
     const div = document.createElement("div");
@@ -6855,7 +6859,6 @@ const brightCombos = [
   ["#D2691E","#00FFFF"], ["#00FFFF","#D2691E"]
 ];
 
-  // スクロール内容構築
   function scorePickerBuild(){
     scorePicker.innerHTML='';
     for(let loop=0; loop<LOOPS; loop++){
@@ -6886,7 +6889,6 @@ const brightCombos = [
         item.appendChild(labelB);
         scorePicker.appendChild(item);
 
-        // ★クリックで即反映
         item.addEventListener('click', () => {
           forceApplyScore(item);
         });
@@ -6894,76 +6896,86 @@ const brightCombos = [
     }
   }
 
-  // 中央色を即適用する処理（改良版）
   function forceApplyScore(item){
-  if(!item) return;
-  const colorA = item.querySelector('.scorePicker-bgA').style.background || '#0000FF';
-  const colorB = item.querySelector('.scorePicker-bgB').style.background || '#008000';
+    if(!item) return;
 
-  const applyColors = () => {
-    document.querySelectorAll('#pointAFlip .front, #pointAFlip .back').forEach(el=>el.style.color=colorA);
-    document.querySelectorAll('#pointBFlip .front, #pointBFlip .back').forEach(el=>el.style.color=colorB);
-    document.querySelectorAll('#gameAFront, #gameABack').forEach(el=>el.style.color=colorA);
-    document.querySelectorAll('#gameBFront, #gameBBack').forEach(el=>el.style.color=colorB);
+    const colorA = item.querySelector('.scorePicker-bgA').style.background;
+    const colorB = item.querySelector('.scorePicker-bgB').style.background;
 
-    const lblA = item.querySelector('.scorePicker-labelA span');
-    const lblB = item.querySelector('.scorePicker-labelB span');
-    if(lblA) lblA.style.color=colorA;
-    if(lblB) lblB.style.color=colorB;
+    const applyColors = () => {
+      document.querySelectorAll('#pointAFlip .front, #pointAFlip .back')
+        .forEach(el=>el.style.color=colorA);
+      document.querySelectorAll('#pointBFlip .front, #pointBFlip .back')
+        .forEach(el=>el.style.color=colorB);
+      document.querySelectorAll('#gameAFront, #gameABack')
+        .forEach(el=>el.style.color=colorA);
+      document.querySelectorAll('#gameBFront, #gameBBack')
+        .forEach(el=>el.style.color=colorB);
 
-    const rogo = document.querySelector('.rogo-text');
-    if(rogo){
-      rogo.style.background = `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
-      rogo.style.color='#fff';
+      const lblA = item.querySelector('.scorePicker-labelA span');
+      const lblB = item.querySelector('.scorePicker-labelB span');
+      if(lblA) lblA.style.color=colorA;
+      if(lblB) lblB.style.color=colorB;
+
+      const rogo = document.querySelector('.rogo-text');
+      if(rogo){
+        rogo.style.background =
+          `linear-gradient(to bottom, ${colorA} 50%, ${colorB} 50%)`;
+        rogo.style.color='#fff';
+      }
+
+      localStorage.setItem('scoreLastColorA', colorA);
+      localStorage.setItem('scoreLastColorB', colorB);
+    };
+
+    requestAnimationFrame(applyColors);
+  }
+
+  function scorePickerUpdate(){
+    // ★ お気に入り直後は1回だけスキップ
+    if(fromFavorite){
+      fromFavorite = false;
+      return;
     }
 
-    localStorage.setItem('scoreLastColorA', colorA);
-    localStorage.setItem('scoreLastColorB', colorB);
-  };
-
-  requestAnimationFrame(applyColors);
-}
-
-  // 中央色更新（スクロール用）
-  function scorePickerUpdate(){
     const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
     if(items.length===0) return;
 
     const wrapperRect = scorePicker.getBoundingClientRect();
-    let closest = null;
+    let closestIdx = 0;
     let minDist = Infinity;
 
-    items.forEach(it=>{
+    items.forEach((it, idx)=>{
       const r = it.getBoundingClientRect();
-      const d = Math.abs(r.top + r.height/2 - (wrapperRect.top+wrapperRect.height/2));
+      const d = Math.abs(
+        r.top + r.height/2 -
+        (wrapperRect.top + wrapperRect.height/2)
+      );
       if(d < minDist){
         minDist = d;
-        closest = it;
+        closestIdx = idx;
       }
     });
 
-    items.forEach(it=>it.classList.remove('center'));
-    if(!closest) return;
-    closest.classList.add('center');
-
-    // スクロールで色変更も即適用
-    forceApplyScore(closest);
+    forceApplyScore(items[closestIdx]);
   }
 
   function scorePickerSetInitial(){
     requestAnimationFrame(()=>{
       const items = Array.from(scorePicker.querySelectorAll('.scorePicker-item'));
-      if(savedA && savedB){
-        for(let i=0; i<items.length; i++){
-          const bgA = rgbToHex(toRGB(items[i].querySelector('.scorePicker-bgA').style.background));
-          const bgB = rgbToHex(toRGB(items[i].querySelector('.scorePicker-bgB').style.background));
-
-          if(bgA === savedA && bgB === savedB){
-            const baseIdx = items[i].dataset.baseIndex;
-            scorePicker.scrollTop = Number(baseIdx)*ITEM_H + brightCombos.length*ITEM_H;
-            scorePickerUpdate();
-            return;
-          }
+      for(let i=0; i<items.length; i++){
+        const bgA = rgbToHex(toRGB(
+          items[i].querySelector('.scorePicker-bgA').style.background
+        ));
+        const bgB = rgbToHex(toRGB(
+          items[i].querySelector('.scorePicker-bgB').style.background
+        ));
+        if(bgA === savedA && bgB === savedB){
+          const baseIdx = items[i].dataset.baseIndex;
+          scorePicker.scrollTop =
+            Number(baseIdx)*ITEM_H + brightCombos.length*ITEM_H;
+          scorePickerUpdate();
+          return;
         }
       }
       scorePicker.scrollTop = brightCombos.length*ITEM_H;
@@ -6971,32 +6983,37 @@ const brightCombos = [
     });
   }
 
-  // スクロール無限ループ
-scorePicker.addEventListener('scroll', () => {
-  const max = scorePicker.scrollHeight - scorePicker.clientHeight;
-
-  if (scorePicker.scrollTop < ITEM_H) {
-    scorePicker.scrollTop += brightCombos.length * ITEM_H;
-  } else if (scorePicker.scrollTop > max - ITEM_H) {
-    scorePicker.scrollTop -= brightCombos.length * ITEM_H;
+  function handleScroll(){
+    const max = scorePicker.scrollHeight - scorePicker.clientHeight;
+    if (scorePicker.scrollTop < ITEM_H) {
+      scorePicker.scrollTop += brightCombos.length * ITEM_H;
+    } else if (scorePicker.scrollTop > max - ITEM_H) {
+      scorePicker.scrollTop -= brightCombos.length * ITEM_H;
+    }
   }
 
-  // ★ iOS / Android 共通：1フレーム1回だけ
-  if (!scorePickerTicking) {
-    scorePickerTicking = true;
-    requestAnimationFrame(() => {
-      scorePickerUpdate();
-      scorePickerTicking = false;
-    });
-  }
+  scorePicker.addEventListener('scroll', () => {
+    handleScroll();
+    if (!scorePickerTicking) {
+      scorePickerTicking = true;
+      requestAnimationFrame(() => {
+        scorePickerUpdate();
+        scorePickerTicking = false;
+      });
+    }
+  }, { passive: true });
 
-}, { passive: true });
+  scorePicker.addEventListener('touchend', scorePickerUpdate);
+
+  // ★ 外部（お気に入り）から呼ばれるフック（追加）
+  window.markScoreFromFavorite = () => {
+    fromFavorite = true;
+  };
 
   scorePickerBuild();
   scorePickerSetInitial();
 })();
-
-/* ------------------- 得点盤文字色とロゴ背景色の変更（1回クリック即反映版） ------------------- */
+/* ------------------- 得点盤文字色とロゴ背景色の変更（安定版） ------------------- */
 
 /* ------------------- 背景とコートの色（テニス風パターン） ------------------- */
 document.addEventListener("DOMContentLoaded", ()=>{
@@ -7627,6 +7644,11 @@ function applyFavorite(displayIndex) {
     const item = items[centerIndex];
     const lblA = item.querySelector('.scorePicker-labelA span');
     const lblB = item.querySelector('.scorePicker-labelB span');
+
+// ★★★ ここで「お気に入り経由」を通知 ★★★
+    if (window.markScoreFromFavorite) {
+      window.markScoreFromFavorite();
+    }
 
     forceApplyScoreColor(lblA, lblB, f);
 
