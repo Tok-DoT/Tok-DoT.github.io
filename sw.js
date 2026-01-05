@@ -1,4 +1,4 @@
-const CACHE_NAME = "softtennis-cache-v01"; // 保険としてバージョン番号残す
+const CACHE_NAME = "softtennis-cache-v66";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,60 +7,31 @@ const ASSETS = [
   "./icon-512.png",
 ];
 
-// =====================
-// Install
-// =====================
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) =>
-        Promise.all(
-          ASSETS.map((url) =>
-            fetch(url)
-              .then((res) => {
-                if (!res.ok) throw new Error(`Failed to fetch ${url}`);
-                return cache.put(url, res);
-              })
-              .catch((err) => {
-                console.warn("SW install fetch failed for", url, err);
-              })
-          )
-        )
-      )
-      .then(() => self.skipWaiting())
+      .then((cache) => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting()) // 新しい SW を即アクティブ化
   );
 });
 
-// =====================
-// Activate
-// =====================
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) =>
         Promise.all(
-          keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : null))
+          keys.map((key) => {
+            if (key !== CACHE_NAME) return caches.delete(key); // 古いキャッシュ削除
+          })
         )
       )
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()) // ページを即制御
   );
 });
 
-// =====================
-// Fetch (network-first)
-// =====================
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    fetch(event.request)
-      .then((networkRes) => {
-        // ネットワーク成功 → キャッシュ更新
-        const resClone = networkRes.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
-        return networkRes;
-      })
-      .catch(() =>
-        // ネットワーク失敗 → キャッシュから返す
-        caches.match(event.request)
-      )
+    caches.match(event.request)
+      .then((res) => res || fetch(event.request))
   );
 });

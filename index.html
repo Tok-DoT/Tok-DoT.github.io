@@ -5456,12 +5456,19 @@ function updateScore() {
   //----------------------------------------------------
   // 2) 今のゲームがファイナルか？
   //----------------------------------------------------
-  const finalThreshold = (matchType === 5 ? 2 : (matchType === 7 ? 3 : 4));
-  const isFinal = (gameA === finalThreshold && gameB === finalThreshold);
+  // 3ゲームマッチも正しく判定
+  const finalThreshold = (matchType === 3 ? 1 :
+                          matchType === 5 ? 2 :
+                          matchType === 7 ? 3 :
+                          matchType === 9 ? 4 : null);
+  const isFinal = finalThreshold !== null &&
+                  gameA === finalThreshold &&
+                  gameB === finalThreshold;
 
   //----------------------------------------------------
   // 3) デュース判定ライン
   //----------------------------------------------------
+  // ファイナルゲームは 7ポイント先取 → デュースは6ポイント以上
   const deuceBase = isFinal ? 6 : 3;
 
   let dispA = pA;
@@ -5470,44 +5477,42 @@ function updateScore() {
   //----------------------------------------------------
   // 4) デュース領域の処理
   //----------------------------------------------------
+  const deuceDisplayEl = document.getElementById("deuceDisplay");
   if (pA >= deuceBase && pB >= deuceBase) {
-
     if (pA === pB) {
-      // D - D （デュース）
       dispA = "D";
       dispB = "D";
       if (pA === deuceBase) {
-        document.getElementById("deuceDisplay").textContent = "デュース";
+        if (deuceDisplayEl) deuceDisplayEl.textContent = "デュース";
       } else {
-        document.getElementById("deuceDisplay").textContent = "デュースアゲイン";
+        if (deuceDisplayEl) deuceDisplayEl.textContent = "デュースアゲイン";
       }
     } else if (pA === pB + 1) {
       dispA = "A";
       dispB = "D";
-      document.getElementById("deuceDisplay").textContent = "";
+      if (deuceDisplayEl) deuceDisplayEl.textContent = "";
     } else if (pB === pA + 1) {
       dispA = "D";
       dispB = "A";
-      document.getElementById("deuceDisplay").textContent = "";
+      if (deuceDisplayEl) deuceDisplayEl.textContent = "";
     } else {
       dispA = pA;
       dispB = pB;
-      document.getElementById("deuceDisplay").textContent = "";
+      if (deuceDisplayEl) deuceDisplayEl.textContent = "";
     }
-
   } else {
     dispA = pA;
     dispB = pB;
-    document.getElementById("deuceDisplay").textContent = "";
+    if (deuceDisplayEl) deuceDisplayEl.textContent = "";
   }
 
   //----------------------------------------------------
   // 5) Flip 表示へ反映
   //----------------------------------------------------
-  flipAFront.textContent = dispA;
-  flipABack.textContent  = dispA;
-  flipBFront.textContent = dispB;
-  flipBBack.textContent  = dispB;
+  if (flipAFront) flipAFront.textContent = dispA;
+  if (flipABack)  flipABack.textContent  = dispA;
+  if (flipBFront) flipBFront.textContent = dispB;
+  if (flipBBack)  flipBBack.textContent  = dispB;
 
   //----------------------------------------------------
   // 6) ゲームカウント表示
@@ -5518,45 +5523,38 @@ function updateScore() {
   document.getElementById('gameBBack').textContent  = gameB;
 
   //----------------------------------------------------
-  // 7) 進捗バー更新（フラグに従って描画先を決める）
+  // 7) 進捗バー更新（ファイナル7ポイント対応）
+  //----------------------------------------------------
   const rawBarA = document.getElementById('barA');
   const rawBarB = document.getElementById('barB');
   if (rawBarA && rawBarB) {
-  // フラグに応じて Aチームのブロックをどの DOM に書き込むか決定
-  const teamADest = isBarSwapped ? rawBarB : rawBarA;
-  const teamBDest = isBarSwapped ? rawBarA : rawBarB;
+    const teamADest = isBarSwapped ? rawBarB : rawBarA;
+    const teamBDest = isBarSwapped ? rawBarA : rawBarB;
 
-  // クリア
-  teamADest.innerHTML = '';
-  teamBDest.innerHTML = '';
+    // クリア
+    teamADest.innerHTML = '';
+    teamBDest.innerHTML = '';
 
-  const maxPoints =
-    (gameA === Math.ceil(matchType / 2) - 1 &&
-     gameB === Math.ceil(matchType / 2) - 1)
-      ? 7
-      : 4;
+    // ファイナルは7ポイント、それ以外は4ポイント
+    const maxPoints = isFinal ? 7 : 4;
 
-  // チーム色取得
-  let colorA = window.getComputedStyle(document.querySelector('.bg-teamA')).backgroundColor;
-  let colorB = window.getComputedStyle(document.querySelector('.bg-teamB')).backgroundColor;
+    let colorA = window.getComputedStyle(document.querySelector('.bg-teamA')).backgroundColor;
+    let colorB = window.getComputedStyle(document.querySelector('.bg-teamB')).backgroundColor;
 
-  // ★重要★ 見た目の入れ替え（isBarSwapped）に応じて色も入れ替える
-  if (isBarSwapped) {
-    [colorA, colorB] = [colorB, colorA];
+    if (isBarSwapped) [colorA, colorB] = [colorB, colorA];
+
+    for (let i = 0; i < maxPoints; i++) {
+      const blkA = document.createElement('div');
+      blkA.className = 'score-block';
+      blkA.style.background = (i < pA) ? colorA : 'rgba(255,255,255,0.2)';
+      teamADest.appendChild(blkA);
+
+      const blkB = document.createElement('div');
+      blkB.className = 'score-block';
+      blkB.style.background = (i < pB) ? colorB : 'rgba(255,255,255,0.2)';
+      teamBDest.appendChild(blkB);
+    }
   }
-
-  for (let i = 0; i < maxPoints; i++) {
-    let blkA = document.createElement('div');
-    blkA.className = 'score-block';
-    blkA.style.background = (i < pA) ? colorA : 'rgba(255,255,255,0.2)';
-    teamADest.appendChild(blkA);
-
-    let blkB = document.createElement('div');
-    blkB.className = 'score-block';
-    blkB.style.background = (i < pB) ? colorB : 'rgba(255,255,255,0.2)';
-    teamBDest.appendChild(blkB);
-  }
-}
 
   //----------------------------------------------------
   // 8) 桁数に応じた縮小処理
@@ -5589,7 +5587,6 @@ function updateScore() {
 
   let pointCall = "";
   if (!(serverPoint === 0 && receiverPoint === 0)) {
-    // 0-0 の場合は表示しない
     pointCall = (serverPoint === receiverPoint)
       ? `${map[serverPoint]}オール`
       : `${map[serverPoint]} ${map[receiverPoint]}`;
@@ -5606,18 +5603,15 @@ function bumpDisplayVersion() {
     displayVersion++;
 }
 
-// ==================== addPoint（安全版） ====================
+// ------------------------------------ addPoint / undoPoint 修正版（安全版・フル） ------------------------------------
+
+// ==================== addPoint（安全版・統合版） ====================
 function addPoint(team) {
     bumpDisplayVersion();
     if (!matchControlsEnabled || matchEnded) return;
 
-    const finalThreshold = getFinalThreshold(matchType);
-    const inFinalGame =
-        finalThreshold !== null &&
-        gameA === finalThreshold &&
-        gameB === finalThreshold;
-
-    if (inFinalGame) totalPointsInFinal++;
+    // --- ファイナルポイント加算 ---
+    if (finalGameActive) totalPointsInFinal++;
 
     // --- Undo用履歴保存 ---
     historyStack.push({
@@ -5646,12 +5640,7 @@ function addPoint(team) {
 
     // --- ファイナル開始時サーバー初期化 ---
     let finalJustStarted = false;
-    if (!finalInitDone &&
-        finalThreshold !== null &&
-        gameA === finalThreshold - 1 &&
-        gameB === finalThreshold - 1 &&
-        scoreA === 0 && scoreB === 0
-    ) {
+    if (finalGameActive && !finalInitDone) {
         const prevReceiver = currentReceiverTeam;
         currentServerTeam = prevReceiver;
         currentReceiverTeam = prevReceiver === "A" ? "B" : "A";
@@ -5662,15 +5651,18 @@ function addPoint(team) {
         finalJustStarted = true;
     }
 
+    // --- メイン判定・スコア更新 ---
     checkGameStatus();
     updateScore();
     updatePointCall();
     if (currentServerTeam) refereeCall();
 
+    // --- 情報表示 ---
     const infoMsg = (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
     showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
     adjustAllInfoFonts();
 
+    // --- ファイナル突入時表示 ---
     if (finalJustStarted) {
         clearAllTimers();
         finalGameTimeoutId = setTimeout(() => {
@@ -5680,38 +5672,38 @@ function addPoint(team) {
     }
 }
 
-// ==================== undoPoint（安全版） ====================
+// ==================== undoPoint（安全版・統合版） ====================
 function undoPoint(event) {
     bumpDisplayVersion();
     if (event) event.stopPropagation();
     if (historyStack.length === 0) return;
 
-    isUndoing = true;       // ★ Undo開始
+    isUndoing = true;
 
-    clearAllTimers();       // ★ 既存タイマー破棄
+    clearAllTimers();
     cancelReadyDisplayTimers();
 
     const last = historyStack.pop();
 
-    // 1) 状態復元
+    // --- 状態復元 ---
     scoreA = last.scoreA;
     scoreB = last.scoreB;
     gameA  = last.gameA;
     gameB  = last.gameB;
-
-    finalGameActive = isFinalGameState(gameA, gameB, getFinalThreshold(matchType));
     deuceCount = last.deuceCount || 0;
     totalPointsInFinal = last.totalPointsInFinal || 0;
     wasDeuce = last.wasDeuce || false;
     currentServerFixed = last.currentServerFixed ?? false;
     matchEnded = last.matchEnded ?? false;
 
-    // 2) サーバー復元
+    finalGameActive = last.finalGameActive ?? false;
+    finalInitDone    = last.finalInitDone ?? false;
+    lastTotalPoints  = last.lastTotalPoints ?? 0;
+
     currentServerTeam   = last.currentServerTeam || "";
     currentReceiverTeam = last.currentReceiverTeam || "";
     updateServerIndicator();
 
-    // 3) Final 表示復元（Undo中は安全）
     const finalDisplay = document.getElementById("finalDisplay");
     if (finalDisplay) {
         finalDisplay.textContent = last.finalText || "";
@@ -5719,25 +5711,23 @@ function undoPoint(event) {
         adjustFinalDisplayFont();
     }
 
-    // 3.5) コート回転復元
     if (typeof last.rotation === "number") restoreCourtRotation(last.rotation);
 
-    // 4) デュース表示
     const deuceDisplay = document.getElementById("deuceDisplay");
     if (deuceDisplay) deuceDisplay.textContent = last.deuceText || "";
 
-    // 5) スコア・コール
+    // --- スコア・ポイントコール更新 ---
     updateScore();
     updatePointCall();
     if (currentServerTeam) refereeCall();
 
-    // 6) 完全リセット時
+    // --- 完全リセット時 ---
     if (scoreA === 0 && scoreB === 0 && gameA === 0 && gameB === 0) {
         currentServerFixed = false;
         finalGameActive = false;
+        finalInitDone = false;
 
-        document.querySelectorAll(".middle-symbol")
-            .forEach(el => el.classList.add("inactive"));
+        document.querySelectorAll(".middle-symbol").forEach(el => el.classList.add("inactive"));
 
         setTimeout(() => {
             disableMatchDisplays();
@@ -5761,17 +5751,12 @@ function undoPoint(event) {
         enableMatchDisplays();
     }
 
-    // 7) Final 内部再判定
-    preCheckFinal();
-
-    // 8) ボタン復帰
+    // --- ボタン復帰・情報表示 ---
     disableScoreButtons(false);
-
-    // 9) 情報表示
     showInfo("1ポイント戻しました");
     adjustAllInfoFonts();
 
-    isUndoing = false;  // ★ Undo終了
+    isUndoing = false;
 }
 
 // --------------------------- 試合リセット関連 ---------------------------
@@ -5853,7 +5838,7 @@ function returnToSetup() {
 
 // --------------------------- 試合リセット関連 ---------------------------
 
-// ------------------------------------ ゲーム判定 ------------------------------------
+// ------------------------------------ ゲーム判定（修正版） ------------------------------------
 
 // ==================== 初期化 ====================
 function initializeMatch() {
@@ -5869,28 +5854,43 @@ function initializeMatch() {
 
     lastTotalPoints = 0; // ファイナル専用
     matchEnded = false;
+    finalGameActive = false; // ファイナルゲーム中かどうか
     isBarSwapped = false;
 
     updateServerIndicator();
     updateScore();
     setFinalDisplay("");
+    clearAllTimers();
 }
 
 
 // ==================== メイン判定 ====================
-// ==================== checkGameStatus（統合安全版） ====================
+// ==================== checkGameStatus（統合安全版・修正版） ====================
 function checkGameStatus() {
     if (matchEnded) return;
 
     const finalThreshold = getFinalThreshold(matchType);
-    const isFinalGame = isFinalGameState(gameA, gameB, finalThreshold);
-    const winner = judgeGameWinner(scoreA, scoreB, isFinalGame);
+    const isFinalGameStart = isFinalGameState(gameA, gameB, finalThreshold);
 
-    // ★ ファイナルフラグ更新
-    finalGameActive = isFinalGame && !matchEnded;
+    // ---------- ファイナルフラグ更新（ファイナルゲーム突入時） ----------
+    if (!finalGameActive && isFinalGameStart) {
+        finalGameActive = true;
+        lastTotalPoints = 0; // サーバー交代用初期化
+        clearAllTimers();
+
+        // ★ 修正：ファイナルゲーム表示は scheduleGameCountDisplay で行うので
+        // タイマーを廃止して、ゲームカウント後に必ず表示されるようにする
+        // finalGameTimeoutId = setTimeout(() => {
+        //     if (!finalGameActive || matchEnded || isUndoing) return;
+        //     setFinalDisplay("ファイナルゲーム");
+        // }, 16000);
+    }
+
+    // ---------- 勝者判定（ファイナル中は7ポイント先取） ----------
+    const winner = judgeGameWinner(scoreA, scoreB, finalGameActive);
 
     // ---------- ファイナル中：2ポイント交代 ----------
-    if (handleFinalGameServerChange(isFinalGame)) {
+    if (handleFinalGameServerChange(finalGameActive)) {
         updateABSwapByRotation();
         updatePointCall();
 
@@ -5926,20 +5926,8 @@ function checkGameStatus() {
         scoreB = 0;
         updateScore();
 
+        // ---------- 修正：ゲームカウント後にファイナルゲーム表示 ----------
         scheduleGameCountDisplay();
-
-        // ---------- ファイナルゲーム突入表示 ----------
-        if (finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold) {
-            finalGameActive = true;
-
-            // 既存タイマー破棄
-            clearAllTimers();
-
-            finalGameTimeoutId = setTimeout(() => {
-                if (!finalGameActive || matchEnded || isUndoing) return;
-                setFinalDisplay("ファイナルゲーム");
-            }, 16000);  // 
-        }
     }
 
     // ---------- マッチ終了 ----------
@@ -5947,7 +5935,7 @@ function checkGameStatus() {
 
     if (matchResult.ended) {
         finalGameActive = false;
-        clearAllTimers(); // ★ 予約タイマー破棄
+        clearAllTimers();
 
         setFinalDisplay("ゲームセット");
         disableScoreButtons(true);
@@ -5957,7 +5945,7 @@ function checkGameStatus() {
         updateServerIndicator();
 
         matchWinnerTimeoutId = setTimeout(() => {
-            if (isUndoing) return; // Undo中は表示抑制
+            if (isUndoing) return;
 
             const teamAName = document.getElementById('displayTeamA')?.textContent || 'Aチーム';
             const teamBName = document.getElementById('displayTeamB')?.textContent || 'Bチーム';
@@ -5978,10 +5966,10 @@ function checkGameStatus() {
 // ==================== 判定ロジック ====================
 function getFinalThreshold(matchType) {
     switch (matchType) {
-        case 3: return 1;
-        case 5: return 2;
-        case 7: return 3;
-        case 9: return 4;
+        case 3: return 1; // 1-1 でファイナルゲーム
+        case 5: return 2; // 2-2
+        case 7: return 3; // 3-3
+        case 9: return 4; // 4-4
         default: return null;
     }
 }
@@ -5992,23 +5980,28 @@ function isFinalGameState(gameA, gameB, finalThreshold) {
            gameB === finalThreshold;
 }
 
-function judgeGameWinner(scoreA, scoreB, isFinalGame) {
-    if (isFinalGame) {
+// 修正版：judgeGameWinner は finalGameActive フラグで判定
+function judgeGameWinner(scoreA, scoreB, finalGameActive) {
+    if (finalGameActive) {
+        // ファイナルゲームは7ポイント先取
         if (scoreA >= 7 && scoreA - scoreB >= 2) return 'A';
         if (scoreB >= 7 && scoreB - scoreA >= 2) return 'B';
         return null;
     }
+
+    // 通常ゲームは4ポイント先取
     if (scoreA >= 4 || scoreB >= 4) {
         if (scoreA - scoreB >= 2) return 'A';
         if (scoreB - scoreA >= 2) return 'B';
     }
+
     return null;
 }
 
 
 // ==================== ファイナル中交代 ====================
-function handleFinalGameServerChange(isFinalGame) {
-    if (!isFinalGame) return false;
+function handleFinalGameServerChange(finalGameActive) {
+    if (!finalGameActive) return false;
 
     const totalPoints = scoreA + scoreB;
 
@@ -6023,6 +6016,7 @@ function handleFinalGameServerChange(isFinalGame) {
     lastTotalPoints = totalPoints;
     return false;
 }
+
 
 // ==================== マッチ終了 ====================
 function applyMatchEndLogic(matchType) {
@@ -6042,6 +6036,7 @@ function applyMatchEndLogic(matchType) {
     return { ended: false };
 }
 
+
 // ==================== 表示系 ====================
 function scheduleGameCountDisplay() {
     if (matchEnded) return;
@@ -6051,7 +6046,7 @@ function scheduleGameCountDisplay() {
     if (gameCountTimeout) clearTimeout(gameCountTimeout);
 
     gameCountTimeout = setTimeout(() => {
-        if (displayVersion !== myVersion) return; // ★ 古い命令は破棄
+        if (displayVersion !== myVersion) return;
         if (matchEnded) return;
 
         const map = ["ゼロ","ワン","ツー","スリー","フォー","ファイブ","シックス"];
@@ -6063,20 +6058,35 @@ function scheduleGameCountDisplay() {
             return map[a] + map[b];
         };
 
+        // ゲームカウントをコール
         const text =
             "ゲームカウント " +
             ((currentServerTeam === 'A') ? conv(gameA,gameB) : conv(gameB,gameA));
-
         setFinalDisplay(text);
 
-    }, 8000);
+        // ★ ここでファイナルゲーム突入なら表示
+        const finalThreshold = getFinalThreshold(matchType);
+        if (!finalGameActive && isFinalGameState(gameA, gameB, finalThreshold)) {
+            finalGameActive = true;  // フラグ更新
+            lastTotalPoints = 0;     // サーバー交代用初期化
+
+            // ファイナルゲームを表示（ゲームカウント表示後）
+            setTimeout(() => {
+                if (matchEnded || isUndoing) return;
+                setFinalDisplay("ファイナルゲーム");
+            }, 8000); // 8秒後に表示
+        }
+
+    }, 10000); // ゲームカウントの表示タイミング
 }
 
 // ==================== タイマー破棄 ====================
 function clearAllTimers() {
     if (finalGameTimeoutId) { clearTimeout(finalGameTimeoutId); finalGameTimeoutId = null; }
     if (matchWinnerTimeoutId) { clearTimeout(matchWinnerTimeoutId); matchWinnerTimeoutId = null; }
+    if (gameCountTimeout) { clearTimeout(gameCountTimeout); gameCountTimeout = null; }
 }
+
 
 // ==================== setFinalDisplay（安全版） ====================
 function setFinalDisplay(text) {
@@ -6084,22 +6094,12 @@ function setFinalDisplay(text) {
     const el = document.getElementById("finalDisplay");
     if (!el) return;
 
-    // ゲームセット後は「ファイナルゲーム」だけ表示禁止
     if (matchEnded && text === "ファイナルゲーム") return;
 
     el.textContent = text;
     adjustFinalDisplayFont();
-
-    const finalThreshold = getFinalThreshold(matchType);
-    const stillFinal =
-        finalThreshold !== null &&
-        gameA === finalThreshold &&
-        gameB === finalThreshold;
-
-    if (finalGameActive && stillFinal && text !== "ゲームセット") {
-        // 何もしない（将来拡張用）
-    }
 }
+
 
 function handleChangeSideDisplay(text) {
     if (matchEnded) return;
@@ -6107,6 +6107,7 @@ function handleChangeSideDisplay(text) {
         setTimeout(() => rotateCourt(180), 50);
     }
 }
+
 
 // ==================== ゲーム数からサーバーを再計算 ====================
 function updateServerByGameCount() {
@@ -6125,7 +6126,7 @@ function updateServerByGameCount() {
     updateServerIndicator();
 }
 
-// ------------------------------------ ゲーム判定 ------------------------------------
+// ------------------------------------ 修正版ゲーム判定終了 ------------------------------------
 
 /* ------ undopoint用コート回転を戻す関数 ------ */
 function restoreCourtRotation(rotationValue) {
@@ -6145,7 +6146,7 @@ function restoreCourtRotation(rotationValue) {
 }
 /* ------ undopoint用コート回転を戻す関数 ------ */
 
-// -------------------- ポイントコール修正版（統一版） --------------------
+// ==================== ポイントコール（安全版） ====================
 function updatePointCall() {
     if (matchEnded) return;
     if (!currentServerTeam) return;
@@ -6154,25 +6155,23 @@ function updatePointCall() {
     const infoText = document.getElementById("infoText");
     if (!pointCallDisplay || !infoText) return;
 
+    // サーバー／レシーバーのポイント取得
     const serverPoint = currentServerTeam === 'A' ? scoreA : scoreB;
     const receiverPoint = currentServerTeam === 'A' ? scoreB : scoreA;
 
-    // matchTypeに応じたファイナル閾値を取得（3ゲームマッチはnull）
-    const finalThreshold = getFinalThreshold(matchType);
-    const isFinal = finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold;
-    const deuceBase = isFinal ? 6 : 3;
+    // ファイナルフラグに応じてデュース基準を変更
+    const deuceBase = finalGameActive ? 6 : 3;
 
     let pointCall = "";
 
+    // デュース判定
     if (serverPoint >= deuceBase && receiverPoint >= deuceBase) {
         if (serverPoint === receiverPoint) {
             pointCall = "デュース";
             wasDeuce = true;
         } else if (Math.abs(serverPoint - receiverPoint) === 1) {
-            const leader = (serverPoint > receiverPoint) ? currentServerTeam : (currentServerTeam === 'A' ? 'B' : 'A');
-            pointCall = (leader === currentServerTeam)
-                ? "アドバンテージ サーバー"
-                : "アドバンテージ レシーバー";
+            const leader = serverPoint > receiverPoint ? currentServerTeam : (currentServerTeam === 'A' ? 'B' : 'A');
+            pointCall = (leader === currentServerTeam) ? "アドバンテージ サーバー" : "アドバンテージ レシーバー";
             wasDeuce = true;
         } else {
             pointCall = `${serverPoint} ${receiverPoint}`;
@@ -6186,57 +6185,59 @@ function updatePointCall() {
         wasDeuce = false;
     }
 
+    // 表示更新
     pointCallDisplay.textContent = pointCall;
     infoText.textContent = pointCall;
     infoText.style.color = "#ffffff";
 }
 
-// -------------------- 主審コール（統一版） --------------------
+// ==================== 主審コール（安全版） ====================
 function refereeCall() {
     const display = document.getElementById('deuceDisplay');
     if (!display || !currentServerTeam) return;
-    if (matchEnded) { display.textContent=""; return; }
+    if (matchEnded) { display.textContent = ""; return; }
 
     const pA = scoreA;
     const pB = scoreB;
 
-    // matchTypeに応じたファイナル閾値を取得（3ゲームマッチはnull）
-    const finalThreshold = getFinalThreshold(matchType);
-    const isFinal = finalThreshold !== null && gameA === finalThreshold && gameB === finalThreshold;
-    const deuceBase = isFinal ? 6 : 3;
+    // ファイナルフラグでデュース基準を変更
+    const deuceBase = finalGameActive ? 6 : 3;
 
-    if (pA === 0 && pB === 0) { display.textContent=""; return; }
+    // 初期リセット
+    if (pA === 0 && pB === 0) { display.textContent = ""; return; }
 
+    // デュース判定
     if (pA >= deuceBase && pB >= deuceBase) {
         if (pA === pB) {
-            display.textContent = ((!isFinal && pA===3) || (isFinal && pA===6)) ? "デュース" : "デュースアゲイン";
+            display.textContent = "デュース";
             wasDeuce = true;
-        } else if (Math.abs(pA - pB)===1) {
-            const leader = pA>pB?'A':'B';
-            display.textContent = (leader===currentServerTeam) ? "アドバンテージ サーバー" : "アドバンテージ レシーバー";
+        } else if (Math.abs(pA - pB) === 1) {
+            const leader = pA > pB ? 'A' : 'B';
+            display.textContent = (leader === currentServerTeam) ? "アドバンテージ サーバー" : "アドバンテージ レシーバー";
             wasDeuce = true;
         } else {
-            display.textContent="";
-            wasDeuce=false;
+            display.textContent = "";
+            wasDeuce = false;
         }
         return;
     }
 
-    if (isFinal) {
+    // ファイナルポイント表示（ゼロ〜シックス）
+    if (finalGameActive) {
         const finalPoints = ["ゼロ","ワン","ツー","スリー","フォー","ファイブ","シックス"];
-        if (pA===pB && pA<=6) display.textContent = finalPoints[pA]+"オール";
-        else display.textContent = currentServerTeam==='A'? finalPoints[pA]+finalPoints[pB]:finalPoints[pB]+finalPoints[pA];
+        if (pA === pB && pA <= 6) display.textContent = finalPoints[pA] + "オール";
+        else display.textContent = currentServerTeam === 'A' ? finalPoints[pA] + finalPoints[pB] : finalPoints[pB] + finalPoints[pA];
         return;
     }
 
+    // 通常ゲーム表記
     const normalCall = {
         "0,1":"ゼロワン","0,2":"ゼロツー","0,3":"ゼロスリー",
         "1,0":"ワンゼロ","1,1":"ワンオール","1,2":"ワンツー","1,3":"ワンスリー",
         "2,0":"ツーゼロ","2,1":"ツーワン","2,2":"ツーオール","2,3":"ツースリー",
         "3,0":"スリーゼロ","3,1":"スリーワン","3,2":"スリーツー"
     };
-
-    display.textContent = currentServerTeam==='A'? normalCall[`${pA},${pB}`]||"" : normalCall[`${pB},${pA}`]||"";
+    display.textContent = currentServerTeam === 'A' ? normalCall[`${pA},${pB}`] || "" : normalCall[`${pB},${pA}`] || "";
 }
 
 /* --------------------------- コート内サーバータップの可否 ---------------------------- */
@@ -8524,30 +8525,14 @@ if ('serviceWorker' in navigator) {
     // =====================================================
     // 🚀 本番環境：Service Worker を登録
     // =====================================================
-window.addEventListener('load', () => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      if (reg.waiting) {
-        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-      }
-      reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing;
-        newSW.addEventListener('statechange', () => {
-          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-            newSW.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      });
-    });
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => devLog('SW registered (production)'))
+        .catch(err => console.error('SW error:', err));
     });
   }
-});
-
+}
 // --------------------------------------------------------------------------
-
 
 </script>
 </body>
