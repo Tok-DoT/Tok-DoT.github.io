@@ -396,25 +396,23 @@ button:hover { opacity: 0.9; }
   line-height: 18px;
 }
 
-/* 下アナウンス */
+/* 下アナウンス（親） */
 #setupMessageFrame {
   width: 100%;
   text-align: center;
-  height: 20px;
   margin-bottom: 0px;
   color: white;
-  font-size: 0px;
   pointer-events: none;
 }
 
 #setupHintTextBottom {
-  width: 100%;
-  height: 20px;
-  margin: 4px 0;
-  text-align: center;
+  display: inline-block;
+  margin-top: 12px;   /* 上との距離をここで調整 */
+  margin-bottom: 6px; /* 下の間隔はそのまま */
+  padding: 0;
   color: white;
   font-size: 16px;
-  line-height: 18px;
+  line-height: 1.0;
 }
 
 /* ------------------------------------------- 大会名関連 ------------------------------------------- */
@@ -749,9 +747,9 @@ button:hover { opacity: 0.9; }
   flex-wrap: wrap;       /* 画面幅が狭い場合のみ改行 */
   max-width: 400px;
   width: 90%;
-  margin: 10px auto;
+  margin: 8px auto;
   gap: 1px;
-  font-size: 10px;
+  font-size: 10.5px;
   align-items: center;
 }
 
@@ -762,9 +760,9 @@ button:hover { opacity: 0.9; }
 }
 
 #appURL {
-  flex: 1 1 180px;   /* ← ここがポイント */
-  max-width: 260px;  /* 伸びすぎ防止 */
-  min-width: 120px;  /* 潰れ防止 */
+  flex: 0 1 140px;   /* ← ここがポイント */
+  max-width: 200px;  /* 伸びすぎ防止 */
+  min-width: 110px;  /* 潰れ防止 */
   padding: 4px 6px;
   font-size: 9px;
   border: 1px solid #ccc;
@@ -778,7 +776,7 @@ button:hover { opacity: 0.9; }
 
 #copyURL {
   padding: 4px 6px;
-  font-size: 10px;
+  font-size: 10.5px;
   background-color: #2a5298;
   color: #fff;
   border: none;
@@ -792,9 +790,27 @@ button:hover { opacity: 0.9; }
 
 /* アプリURLコピー用（コンパクト版） */
 
-#settingsFooter, .other-text {
-  margin-top: 2px;
+/* QRコード共有（中央配置・白文字） */
+.share-qr-trigger {
+  display: block;
+  width: fit-content;           /* 文字幅ぴったり */
+  margin: 3px auto 6px;         /* 上下の間隔をここで調整 */
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  cursor: pointer;
 }
+
+.share-qr-trigger:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+
+/* 間の空間 */
+#settingsFooter, .other-text {
+  margin-top: 4px;
+}
+/* 間の空間 */
 
 /* 著作権関連 */
 #settingsFooter {
@@ -906,10 +922,10 @@ button:hover { opacity: 0.9; }
 
 /* -- OFUSE設置 -- */
 .support-section {
-  font-size: 9.5px;
+  font-size: 10px;
   text-align: center;
   padding: 6px 0 4px;
-  margin-top: 10px;
+  margin-top: 6px;
   color: rgba(255, 255, 255, 0.45);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -994,7 +1010,7 @@ button:hover { opacity: 0.9; }
    =============================== */
 .help-footer-btn {
   position: fixed;
-  bottom: 20px;
+  bottom: 18px;
   right: 14px;
 
   width: 36px;
@@ -1229,7 +1245,7 @@ button:hover { opacity: 0.9; }
    =============================== */
 .match-info-btn {
   position: fixed;
-  bottom: 20px;
+  bottom: 18px;
   right: 14px;
 
   width: 36px;
@@ -2878,7 +2894,7 @@ body::after {
 .reloadFab {
   position: fixed;
   left: 14px;
-  bottom: 20px;
+  bottom: 18px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -3127,7 +3143,7 @@ body::after {
 
 <!-- アプリURLコピー（コンパクト・ラベル付き） -->
 <div class="share-url-wrapper-compact">
-  <span class="share-label">アプリURLを友達と共有：</span>
+  <span class="share-label">アプリURLで遠くの友達と共有：</span>
   <input type="text" id="appURL" value="https://tok-dot.github.io" readonly>
   <button id="copyURL">コピー</button>
 </div>
@@ -3139,6 +3155,47 @@ body::after {
     <button onclick="simpleAlertOK()" style="padding:6px 12px; font-size:12px; border:none; border-radius:4px; background:#2a5298; color:#fff; cursor:pointer;">OK</button>
   </div>
 </div>
+
+<!-- QRコード共有（モーダル起動） -->
+<div class="share-qr-trigger" id="openQrModal">
+  QRコードで近くの友達と共有
+</div>
+
+<!-- QRコード共有 モーダル -->
+<div id="qrModal" class="help-modal" aria-hidden="true">
+  <div class="help-modal-content">
+
+    <h2>QRコードで共有</h2>
+
+    <div class="modal-body" style="text-align:center;">
+
+      <p style="font-size:14px; margin-bottom:10px;">
+        スマホで読み取って、<br>
+        アプリをすぐに開けます
+      </p>
+
+      <!-- QRコード（端末内生成） -->
+      <canvas
+        id="qrCanvas"
+        width="200"
+        height="200"
+        style="display:block; margin:12px auto;"
+        aria-label="Smash!!!! アプリを開くためのQRコード">
+      </canvas>
+
+      <p style="font-size:12px; color:#666;">
+        https://tok-dot.github.io
+      </p>
+
+    </div>
+
+    <button class="help-close" id="closeQrModal">
+      閉じる
+    </button>
+
+  </div>
+</div>
+<!-- QRコード共有 モーダル -->
 
 <!-- 著作権関連表示 -->
 <div id="settingsFooter">
@@ -8101,47 +8158,6 @@ window.addEventListener('load', applyAutoScale);
 window.addEventListener('resize', onResize);
 /* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
 
-/* =========================================================
-   Service Worker 制御（開発 / 本番 完全分離・最終版）
-   ========================================================= */
-
-// ---- ローカル判定（必要に応じて増やせます）----
-const isLocal =
-  location.hostname === 'localhost' ||
-  location.hostname === '127.0.0.1' ||
-  location.hostname === '0.0.0.0' ||
-  location.hostname.startsWith('192.168.') ||
-  location.hostname.startsWith('10.') ||
-  location.hostname.match(/^172\.(1[6-9]|2\d|3[01])\./)
-
-// ---- Service Worker 対応ブラウザか ----
-if ('serviceWorker' in navigator) {
-
-  if (isLocal) {
-    // =====================================================
-    // 🧪 開発環境：Service Worker を完全に無効化
-    // =====================================================
-    window.addEventListener('load', async () => {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      for (const reg of regs) {
-        await reg.unregister();
-      }
-      devLog('SW disabled (development)');
-    });
-
-  } else {
-    // =====================================================
-    // 🚀 本番環境：Service Worker を登録
-    // =====================================================
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => devLog('SW registered (production)'))
-        .catch(err => console.error('SW error:', err));
-    });
-  }
-}
-// --------------------------------------------------------------------------
-
 <!-- ==================== 戻るボタン終了防止 ==================== -->
 
 // 戻るボタン検知
@@ -8288,6 +8304,64 @@ function showSimpleAlert(message, callback) {
 }
 <!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
 
+// QRモーダル 開く
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("openQrModal");
+  const modal    = document.getElementById("qrModal");
+  const closeBtn = document.getElementById("closeQrModal");
+  const canvas   = document.getElementById("qrCanvas");
+
+  if (!openBtn || !modal || !closeBtn || !canvas) return;
+
+  const APP_URL = "https://tok-dot.github.io";
+
+  // ------------------------------
+  // QRコード生成（端末内）
+  // ------------------------------
+  const qr = new QRious({
+    element: canvas,
+    size: 200,
+    value: APP_URL
+  });
+
+  // ------------------------------
+  // モーダルを開く
+  // ------------------------------
+  openBtn.addEventListener("click", () => {
+    openBtn.blur(); // フォーカス残り防止
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+
+    // 将来 URL を差し替える場合に備えて毎回更新
+    qr.set({ value: APP_URL });
+
+    // アクセシビリティ配慮
+    closeBtn.focus();
+  });
+
+  // ------------------------------
+  // モーダルを閉じる
+  // ------------------------------
+  const closeModal = () => {
+    closeBtn.blur();
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  closeBtn.addEventListener("click", closeModal);
+
+  // 背景クリックで閉じる
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+});
+
+
 // 利用規約モーダル
 const footer = document.getElementById("settingsFooter");
 const modal = document.getElementById("termsDialog");
@@ -8301,6 +8375,7 @@ footer.addEventListener("click", () => {
 
 // 下部「閉じる」ボタン
 closeBtn.addEventListener("click", () => {
+     closeBtn.blur();
   modal.classList.remove("show");
   document.body.style.overflow = "auto";
 });
@@ -8308,6 +8383,7 @@ closeBtn.addEventListener("click", () => {
 // モーダル外タップで閉じる
 modal.addEventListener("click", (e) => {
   if (e.target === modal) {
+    closeBtn.blur();
     modal.classList.remove("show");
     document.body.style.overflow = "auto";
   }
@@ -8324,11 +8400,15 @@ openSupportModal.addEventListener('click', (e) => {
 });
 
 supportClose.addEventListener('click', () => {
+  supportClose.blur();
   supportModal.style.display = 'none';
 });
 
 window.addEventListener('click', (e) => {
-  if (e.target === supportModal) supportModal.style.display = 'none';
+  if (e.target === supportModal) {
+    supportClose.blur();               // ★ここも必要
+    supportModal.style.display = 'none';
+  }
 });
 
 // ===============================
@@ -8361,6 +8441,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const closeHelpModal = () => {
+      closeHelp.blur();
       helpModal.style.display = "none";
       helpModal.setAttribute("aria-hidden", "true");
       // 全アコーディオンを閉じる
@@ -8369,7 +8450,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     closeHelp.addEventListener("click", closeHelpModal);
-    helpModal.addEventListener("click", (e) => { if(e.target === helpModal) closeHelpModal(); });
+helpModal.addEventListener("click", (e) => {
+  if (e.target === helpModal) {
+    closeHelp.blur();                    // ← ★追加
+    closeHelpModal();
+  }
+});
 
     setupAccordion(helpModal);
   }
@@ -8386,6 +8472,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const closeMatchModal = () => {
+      closeMatch.blur();
       matchModal.style.display = "none";
       matchModal.setAttribute("aria-hidden", "true");
       matchModal.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
@@ -8393,17 +8480,83 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     closeMatch.addEventListener("click", closeMatchModal);
-    matchModal.addEventListener("click", (e) => { if(e.target === matchModal) closeMatchModal(); });
+matchModal.addEventListener("click", (e) => {
+  if (e.target === matchModal) {
+    closeMatch.blur(); 
+    closeMatchModal();
+  }
+});
 
     setupAccordion(matchModal);
   }
 
 });
 
+/* =========================================================
+   Service Worker 制御（開発 / 本番 完全分離・最終版）
+   ========================================================= */
+
+// ---- ローカル判定（必要に応じて増やせます）----
+const isLocal =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1' ||
+  location.hostname === '0.0.0.0' ||
+  location.hostname.startsWith('192.168.') ||
+  location.hostname.startsWith('10.') ||
+  location.hostname.match(/^172\.(1[6-9]|2\d|3[01])\./)
+
+// ---- Service Worker 対応ブラウザか ----
+if ('serviceWorker' in navigator) {
+
+  if (isLocal) {
+    // =====================================================
+    // 🧪 開発環境：Service Worker を完全に無効化
+    // =====================================================
+    window.addEventListener('load', async () => {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) {
+        await reg.unregister();
+      }
+      devLog('SW disabled (development)');
+    });
+
+  } else {
+    // =====================================================
+    // 🚀 本番環境：Service Worker を登録
+    // =====================================================
+window.addEventListener('load', () => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }
+});
+
+// --------------------------------------------------------------------------
+
+
 </script>
 </body>
 </html>
 
+<!-- QR生成ライブラリ（QRious） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+<!-- OFUSE ウィジェット（async でOK） -->
 <script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
 
 </body>
