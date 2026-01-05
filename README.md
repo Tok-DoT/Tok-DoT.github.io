@@ -103,3 +103,21 @@ https://ofuse.me/tokdot
 
 本リポジトリ内の  
 ソースコード・デザイン・文章の無断転載は禁止されています。
+
+---
+
+## スクリーンショットギャラリー
+
+<div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+  
+  <img src="images/①アプリ作成会社.jpg" alt="アプリ作成会社" width="250" style="flex-shrink: 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+  <img src="images/②ソフトテニス ダブルスマッチ スコアボードアプリ.jpg" alt="アプリタイトル" width="250" style="flex-shrink: 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+  <img src="images/③アプリ名.jpg" alt="アプリ名" width="250" style="flex-shrink: 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+  <img src="images/④アプリ設定画面.jpg" alt="アプリ設定画面" width="250" style="flex-shrink: 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+  <img src="images/⑤アプリ試合画面.jpg" alt="アプリ試合画面" width="250" style="flex-shrink: 0; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+
+</div>
+
+*スクロールして各スクリーンショットを確認できます。*
+
+
