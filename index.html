@@ -5574,16 +5574,20 @@ function bumpDisplayVersion() {
     displayVersion++;
 }
 
-// ==================== addPoint（安全版） ====================
+// ==================== addPoint（安全版・修正版） ====================
 function addPoint(team) {
     bumpDisplayVersion();
     if (!matchControlsEnabled || matchEnded) return;
 
     const finalThreshold = getFinalThreshold(matchType);
-    const inFinalGame =
-        finalThreshold !== null &&
-        gameA === finalThreshold &&
-        gameB === finalThreshold;
+
+    // ★ ファイナル判定は必ず isFinalGameState に一本化
+    const inFinalGame = isFinalGameState(
+        gameA,
+        gameB,
+        finalThreshold,
+        matchType
+    );
 
     if (inFinalGame) totalPointsInFinal++;
 
@@ -5614,11 +5618,17 @@ function addPoint(team) {
 
     // --- ファイナル開始時サーバー初期化 ---
     let finalJustStarted = false;
-    if (!finalInitDone &&
-        finalThreshold !== null &&
-        gameA === finalThreshold - 1 &&
-        gameB === finalThreshold - 1 &&
-        scoreA === 0 && scoreB === 0
+
+    if (
+        !finalInitDone &&
+        isFinalGameState(
+            gameA,
+            gameB,
+            finalThreshold,
+            matchType
+        ) &&
+        scoreA === 0 &&
+        scoreB === 0
     ) {
         const prevReceiver = currentReceiverTeam;
         currentServerTeam = prevReceiver;
@@ -5635,7 +5645,8 @@ function addPoint(team) {
     updatePointCall();
     if (currentServerTeam) refereeCall();
 
-    const infoMsg = (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
+    const infoMsg =
+        (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
     showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
     adjustAllInfoFonts();
 
