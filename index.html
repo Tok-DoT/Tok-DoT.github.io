@@ -968,7 +968,15 @@ button:hover { opacity: 0.9; }
   text-decoration: underline;
 }
 
-/* === ★ ここから：OFUSE中央寄せの正解 ★ === */
+/* === ★ ここから：モーダル本文＋OFUSE中央寄せ ★ === */
+
+/* モーダル本文の最初の文章にフェードイン */
+.support-modal-content p:first-of-type {
+  opacity: 0;
+  transform: translateY(5px);
+  animation: fadeInModalText 0.6s ease forwards;
+  animation-delay: 0.1s; /* 開いた直後にふわっと表示 */
+}
 
 /* OFUSE全体を包むラッパー */
 .support-modal-content .ofuse-wrap {
@@ -976,11 +984,41 @@ button:hover { opacity: 0.9; }
   justify-content: center;
   align-items: center;
   margin: 12px 0;
+  
+  /* OFUSEボタンもふんわり表示 */
+  opacity: 0;
+  transform: translateY(5px);
+  animation: fadeInModalText 0.6s ease forwards;
+  animation-delay: 0.15s; /* 本文の後に表示 */
 }
 
 /* 念のため：OFUSEが生成するiframe対策 */
 .support-modal-content .ofuse-wrap iframe {
   display: block;
+}
+
+/* OFUSE補足説明（宗教的意味ではない旨＋フェードイン） */
+.support-modal-content .ofuse-note {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+  line-height: 1.4;
+  display: block;
+  text-align: center;
+  
+  /* アニメーション追加 */
+  opacity: 0;
+  transform: translateY(5px);
+  animation: fadeInModalText 0.6s ease forwards;
+  animation-delay: 0.2s; /* ボタンの後に表示 */
+}
+
+/* アニメーションの共通定義 */
+@keyframes fadeInModalText {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === ★ ここまで ★ === */
@@ -3287,8 +3325,11 @@ body::after {
     </div>
 
     <p>
-      をお願いします。
-    </p>
+  をお願いします。<br>
+  <span class="ofuse-note">
+    ※OFUSEという名前、響きが“お布施”に似ていますが、宗教とは関係ありません。気軽に応援やサポートの気持ちを届けられる仕組みです。
+  </span>
+</p>
 
     <button class="support-close" type="button">閉じる</button>
   </div>
