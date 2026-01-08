@@ -3071,7 +3071,7 @@ body::after {
     </div>
 
 <div class="tournament-wrapper">
-  <input type="text" id="tournamentNameInput" maxlength="20" placeholder="大会名">
+  <input type="text" id="tournamentNameInput" maxlength="18" placeholder="大会名">
 </div>
 
 <div class="tournament-buttons-row">
@@ -6208,11 +6208,12 @@ function updatePointCall() {
     let pointCall = "";
 
     // ---- デュース領域 ----
-    if (isFinal && serverPoint >= deuceBase && receiverPoint >= deuceBase) {
+    if (serverPoint >= deuceBase && receiverPoint >= deuceBase) {
 
         if (serverPoint === receiverPoint) {
-            pointCall = "デュース";
-            wasDeuce = true;
+                      // ★ 初回デュース / デュースアゲイン判定
+                      pointCall = wasDeuce ? "デュースアゲイン" : "デュース";
+                      wasDeuce = true;
 
         } else if (Math.abs(serverPoint - receiverPoint) === 1) {
 
@@ -6264,8 +6265,8 @@ function refereeCall() {
         return;
     }
 
-    // ---- デュース処理（6-6以降のみ） ----
-    if (isFinal && pA >= deuceBase && pB >= deuceBase) {
+    // ---- デュース処理 ----
+    if (pA >= deuceBase && pB >= deuceBase) {
 
         if (pA === pB) {
             display.textContent =
