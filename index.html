@@ -1540,31 +1540,24 @@ button:hover { opacity: 0.9; }
 #tournamentDisplay {
   display: block;
   width: 100%;
+  max-width: 100%;
   text-align: center;
   font-weight: bold;
+  min-height: 20px;
   color: #ffffff;
-  letter-spacing: 1px;
-  margin-top: 1px;
-  margin-bottom: 1px;
+  letter-spacing: 0.5px;
+  margin-top: 1px;   /* 上の余白 */
+  margin-bottom: 0px; /* 下の余白 */
   font-family: "Kosugi Maru", sans-serif;
 
-  /* 折り返し禁止 + はみ出し防止 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  /* デフォルトフォントサイズ */
-  font-size: 21px;
-
+  font-size: clamp(14px, 4vw, 21px); /* 画面幅に応じて自動で縮小/拡大 */
+  box-sizing: border-box;
   position: relative;
   z-index: 5;
-}
-
-/* 狭い画面（600px以下）では大会名も縮小 */
-@media (max-width: 600px) {
-  #tournamentDisplay {
-    font-size: 4.6vw;  /* finalDisplay より少し大きめ */
-  }
 }
 
 /* 試合画面_--- チーム名表示（ぷっくり・フラット版） --- */
@@ -8355,24 +8348,26 @@ document.getElementById("addressConfirmBtn").onclick = ()=>{
 
 /* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
 function applyAutoScale() {
-  const baseW = 400;   // 基準幅
-  const baseH = 800;   // 基準高さ
+  const app = document.getElementById("appScaleWrapper");
+  if (!app) return;
+
+  // 元のサイズを取得（初期表示状態のサイズ）
+  const rect = app.getBoundingClientRect();
+  const baseW = rect.width;
+  const baseH = rect.height;
 
   const screenW = window.innerWidth;
   const screenH = window.innerHeight;
 
-  // 横縦比を考慮して縮小
+  // 横幅・高さの比率を考慮して縮小（縦横比維持＆画面に完全収める）
   const scale = Math.min(screenW / baseW, screenH / baseH);
 
-  const app = document.getElementById("appScaleWrapper");
-  if (!app) return;
-
-  // transform と origin を明示
+  // スケール適用
   app.style.transform = `scale(${scale})`;
   app.style.transformOrigin = "top left";
-  
-  // 中央配置
-  app.style.position = "fixed";   // ★ ← 修正！
+
+  // 画面中央に配置
+  app.style.position = "fixed";
   app.style.left = `${(screenW - baseW * scale) / 2}px`;
   app.style.top  = `${(screenH - baseH * scale) / 2}px`;
 }
