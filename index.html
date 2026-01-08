@@ -528,6 +528,7 @@ button:hover { opacity: 0.9; }
 
 .tournament-select {
   flex: 1;
+  min-width: 0;
   height: 38px;
   font-size: 16px;
   text-align: center;
@@ -8346,43 +8347,6 @@ document.getElementById("addressConfirmBtn").onclick = ()=>{
 
 /* ------------------- お天気 高速安全版 最終・アラート付き 完了 ------------------- */
 
-/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
-function applyAutoScale() {
-  const app = document.getElementById("appScaleWrapper");
-  if (!app) return;
-
-  // 元のサイズを取得（初期表示状態のサイズ）
-  const rect = app.getBoundingClientRect();
-  const baseW = rect.width;
-  const baseH = rect.height;
-
-  const screenW = window.innerWidth;
-  const screenH = window.innerHeight;
-
-  // 横幅・高さの比率を考慮して縮小（縦横比維持＆画面に完全収める）
-  const scale = Math.min(screenW / baseW, screenH / baseH);
-
-  // スケール適用
-  app.style.transform = `scale(${scale})`;
-  app.style.transformOrigin = "top left";
-
-  // 画面中央に配置
-  app.style.position = "fixed";
-  app.style.left = `${(screenW - baseW * scale) / 2}px`;
-  app.style.top  = `${(screenH - baseH * scale) / 2}px`;
-}
-
-/* 軽量化：連続リサイズで処理を間引く */
-let resizeTimeout;
-function onResize() {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(applyAutoScale, 50);
-}
-
-window.addEventListener('load', applyAutoScale);
-window.addEventListener('resize', onResize);
-/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
-
 <!-- ==================== 戻るボタン終了防止 ==================== -->
 
 // 戻るボタン検知
@@ -8716,6 +8680,41 @@ matchModal.addEventListener("click", (e) => {
   }
 
 });
+
+/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
+function applyAutoScale() {
+  const baseW = 400;   // 基準幅
+  const baseH = 800;   // 基準高さ
+
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+
+  // 横縦比を考慮して縮小
+  const scale = Math.min(screenW / baseW, screenH / baseH);
+
+  const app = document.getElementById("appScaleWrapper");
+  if (!app) return;
+
+  // transform と origin を明示
+  app.style.transform = `scale(${scale})`;
+  app.style.transformOrigin = "top left";
+  
+  // 中央配置
+  app.style.position = "fixed";   // ★ ← 修正！
+  app.style.left = `${(screenW - baseW * scale) / 2}px`;
+  app.style.top  = `${(screenH - baseH * scale) / 2}px`;
+}
+
+/* 軽量化：連続リサイズで処理を間引く */
+let resizeTimeout;
+function onResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(applyAutoScale, 50);
+}
+
+window.addEventListener('load', applyAutoScale);
+window.addEventListener('resize', onResize);
+/* --------------------------- スケーリング（全スマホ対応版） ---------------------------- */
 
 /* =========================================================
    Service Worker 制御（開発 / 本番 完全分離・最終版）
