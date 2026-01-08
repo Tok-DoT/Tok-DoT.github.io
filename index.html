@@ -1091,6 +1091,28 @@ button:hover { opacity: 0.9; }
   transform: scale(0.95);
 }
 
+/* ------------ インフォメーション用 Smash 表示（微調整） ------------ */
+.about-smash {
+  margin-top: 10px;
+  margin-left: 18px;        /* ← ほんのり右へ */
+  text-align: left;        /* コンセプト文と揃える */
+  font-family: 'Rubik Doodle Shadow', system-ui;
+  font-size: 1.5rem;       /* ← 1.8rem → 1.5rem */
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.about-smash .name {
+  color: #444;             /* 真っ白にしないのが上品 */
+}
+
+.about-smash .exclamations {
+  margin-left: 2px;
+  font-weight: bold;
+  animation: rainbowColors 4s linear infinite;
+}
+
+
 /* ===============================
    共通 インフォメーションモーダル
    （設定画面・試合画面 共通）
@@ -1273,6 +1295,7 @@ button:hover { opacity: 0.9; }
 /* コンセプト文 */
 .about-concept {
   font-size: 15px;
+  margin-left: 18px;
   line-height: 1.7;
   margin-bottom: 32px;
   color: #333;
@@ -3347,6 +3370,11 @@ body::after {
         そっと寄り添う<br>
         応援アプリ
       </p>
+
+<div class="about-smash">
+  <span class="name">Smash</span
+  ><span class="exclamations">!!!!</span>
+</div>
 
       <!-- はじめての方へ（折りたたみ） -->
       <h3 class="accordion-toggle">はじめての方へ</h3>
