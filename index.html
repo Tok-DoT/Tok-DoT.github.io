@@ -18,11 +18,32 @@
 <!-- PWA用 -->
 <meta name="theme-color" content="#006400">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ソフトテニスSB">
 
 <!-- マニフェスト（別ファイル） -->
 <link rel="manifest" href="manifest.json">
+
+<script>
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if(isIOS){
+    // iOS PWA向け
+    const metaIOS = document.createElement('meta');
+    metaIOS.name = "apple-mobile-web-app-status-bar-style";
+    metaIOS.content = "black-translucent";
+    document.head.appendChild(metaIOS);
+
+    const metaAppTitle = document.createElement('meta');
+    metaAppTitle.name = "apple-mobile-web-app-title";
+    metaAppTitle.content = "ソフトテニスSB";
+    document.head.appendChild(metaAppTitle);
+  } else {
+    // Android / Chrome向け
+    const metaAndroid = document.createElement('meta');
+    metaAndroid.name = "theme-color";
+    metaAndroid.content = "#006400";
+    document.head.appendChild(metaAndroid);
+  }
+</script>
 
 <!-- Google Analytics (集計ツール)-->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJXT1XNPN2"></script>
@@ -3163,7 +3184,7 @@ body::after {
         <button onclick="applyToTeam('A')" class="team-restore-btn">▲</button>
 
         <select id="teamList" class="team-restore-select">
-          <option value="">-- チーム・ペアを選択 --</option>
+          <option value="">-- チーム・ペア/選手を選択 --</option>
         </select>
 
         <button onclick="applyToTeam('B')" class="team-restore-btn">▲</button>
@@ -3172,7 +3193,7 @@ body::after {
 
     <button onclick="deleteSelectedOption('teamList', saveTeamsToLocalStorage)"
       class="delete-button">
-      チーム・ペア削除
+      チーム・ペア/選手削除
     </button>
 
     <div id="setupMessageFrame"></div>
@@ -3441,7 +3462,7 @@ body::after {
       <div class="accordion-content">
         <p>
           設定画面ではゲームマッチ数を選択し［試合開始］で準備完了。
-          大会名やチーム・ペア名を入力すると、応援がより楽しめます。
+          大会名やチーム・ペア/選手を入力すると、応援がより楽しめます。
         </p>
 
         <h4 class="accordion-toggle nested">大会名等の入力・保存・呼出</h4>
@@ -3538,7 +3559,7 @@ body::after {
 <!-- 試合画面大会名表示 -->
 <div id="tournamentDisplay"></div>
 
-<!-- 試合画面チーム名とペア名表示 -->
+<!-- 試合画面チーム名とペア/選手表示 -->
 <div id="centerWrapper">
   <div id="outerContainer">
     
@@ -3763,7 +3784,7 @@ body::after {
       <h4 class="accordion-toggle">ゲーム開始後の操作</h4>
       <div class="accordion-content">
         <ul>
-          <li><strong>（ vs ）ボタンをタップ</strong><br>両チーム・ペア名の中央にある（ vs ）をタップすると試合が開始されます。</li>
+          <li><strong>（ vs ）ボタンをタップ</strong><br>両チーム・ペア/選手の中央にある（ vs ）をタップすると試合が開始されます。</li>
           <li><strong>ポイントの追加</strong><br>ポイント盤をタップしてポイントを追加します。</li>
           <li><strong>ポイントを戻す</strong><br>[ Tok.DoT ] のロゴをタップすると、ひとつ前のポイントに戻せます。</li>
           <li><strong>サービスサイドの点灯</strong><br>
@@ -4337,7 +4358,7 @@ function attachServerSelection(team, id) {
     showServerBlink(team);
     const teamName = (team==='A')?teamAName:teamBName;
     const color = (team==='A')?"#ffffff":"#ffff00";
-    showInfo(`サーバー　${teamName}　${name} さん`, color);
+    showInfo(`サーバー　${teamName}　${name} 選手`, color);
     adjustAllInfoFonts();
     (team==='A')?initialServerTeam='A':initialServerTeam='B';
     updateServerByGameCount();
@@ -4351,11 +4372,11 @@ function swapPlayers(team) {
 
     if (team === 'A') {
         [playerA1, playerA2] = [playerA2, playerA1];
-        message = `${teamAName} の ${playerA2}さん デュースサイド に移動`;
+        message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
         color = "#ffffff";
     } else if (team === 'B') {
         [playerB1, playerB2] = [playerB2, playerB1];
-        message = `${teamBName} の ${playerB2}さん デュースサイド に移動`;
+        message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
         color = "#ffff00";
     }
 
@@ -4420,18 +4441,32 @@ function handleReadyButton() {
   const finalDisplay = document.getElementById('finalDisplay');
   if (!finalDisplay) return;
 
-  function formatPair(team) {
-    const base =
-      (team === 'A')
-        ? `${playerA1}・${playerA2}`
-        : `${playerB1}・${playerB2}`;
+function formatPair(team) {
+  const isEmpty = name => name.trim() === '';
 
-    const trimmed = base.trim();
-    if (trimmed === '' || trimmed === '・') {
-      return 'ペア';
-    }
-    return trimmed + 'ペア';
+  let p1, p2;
+  if (team === 'A') {
+    p1 = playerA1;
+    p2 = playerA2;
+  } else {
+    p1 = playerB1;
+    p2 = playerB2;
   }
+
+  // 片方だけ空白 → 「〇〇選手」
+  if (isEmpty(p1) ^ isEmpty(p2)) {
+    const single = !isEmpty(p1) ? p1 : p2;
+    return `${single}選手`;
+  }
+
+  // 両方空白
+  if (isEmpty(p1) && isEmpty(p2)) {
+    return 'ペア';
+  }
+
+  // 通常ペア
+  return `${p1}・${p2}ペア`;
+}
 
   // --- 演出順序は一切変更なし ---
   finalDisplay.textContent = "レディ";
@@ -4566,9 +4601,28 @@ function startMatch() {
     document.getElementById('displayTeamA').textContent = truncateName(teamAName, 5);
     document.getElementById('displayTeamB').textContent = truncateName(teamBName, 5);
 
-    // ペア名更新
-    document.getElementById('pairA').textContent = `${truncateName(playerA1,3)}・${truncateName(playerA2,3)}ペア`;
-    document.getElementById('pairB').textContent = `${truncateName(playerB1,3)}・${truncateName(playerB2,3)}ペア`;
+// ペア名更新（片方空白対応）
+const isEmpty = name => name.trim() === '';
+
+// Aチーム
+if (isEmpty(playerA1) ^ isEmpty(playerA2)) {
+  const single = !isEmpty(playerA1) ? playerA1 : playerA2;
+  document.getElementById('pairA').textContent =
+    `${truncateName(single, 3)}選手`;
+} else {
+  document.getElementById('pairA').textContent =
+    `${truncateName(playerA1,3)}・${truncateName(playerA2,3)}ペア`;
+}
+
+// Bチーム
+if (isEmpty(playerB1) ^ isEmpty(playerB2)) {
+  const single = !isEmpty(playerB1) ? playerB1 : playerB2;
+  document.getElementById('pairB').textContent =
+    `${truncateName(single, 3)}選手`;
+} else {
+  document.getElementById('pairB').textContent =
+    `${truncateName(playerB1,3)}・${truncateName(playerB2,3)}ペア`;
+}
 
     // サーバー案内表示
     const infoText = document.getElementById("infoText");
@@ -4748,7 +4802,7 @@ function saveTeam(team) {
         // ★ 重複チェック
         for (let i = 0; i < teamList.options.length; i++) {
             if (teamList.options[i].value === displayText) {
-                showSimpleAlert('そのチーム・ペアは<br>保存されています');
+                showSimpleAlert('そのチーム・ペア/選手は<br>保存されています');
                 return;
             }
         }
@@ -4762,7 +4816,7 @@ function saveTeam(team) {
         saveTeamsToLocalStorage();
 
         // ★ 保存完了メッセージ
-        showSimpleAlert('チーム・ペアを保存しました');
+        showSimpleAlert('チーム・ペア/選手を保存しました');
 
     }, 300);
 }
@@ -4800,7 +4854,7 @@ function applyToTeam(teamSide, retry = false) {
 
     // ★ 未選択時：既存のシンプルOKダイアログを使用
     if (!selected) {
-        showSimpleAlert('チーム・ペアを選択してください');
+        showSimpleAlert('チーム・ペア/選手を選択してください');
         return;
     }
 
@@ -4900,7 +4954,7 @@ function resetTeamFields(team) {
     ? ['teamA', 'playerA1', 'playerA2']
     : ['teamB', 'playerB1', 'playerB2'];
 
-  showSimpleConfirm(`チーム名・ペア名を<br>初期化しますか？`, function(result){
+  showSimpleConfirm(`チーム名・ペア/選手を<br>初期化しますか？`, function(result){
     if(!result) return; // キャンセルなら何もしない
 
     fieldIds.forEach(id => {
@@ -6026,43 +6080,50 @@ function checkGameStatus() {
         }
     }
 
-    // --------------------------------
-    // 6) マッチ終了判定
-    // --------------------------------
-    const matchResult = applyMatchEndLogic(matchType);
+// --------------------------------
+// 6) マッチ終了判定
+// --------------------------------
+const matchResult = applyMatchEndLogic(matchType);
 
-    if (matchResult.ended) {
-        finalGameActive = false;
-        clearAllTimers();
+if (matchResult.ended) {
+    finalGameActive = false;
+    clearAllTimers();
 
-        setFinalDisplay("ゲームセット");
-        disableScoreButtons(true);
+    setFinalDisplay("ゲームセット");
+    disableScoreButtons(true);
 
-        currentServerTeam = '';
-        currentReceiverTeam = '';
-        updateServerIndicator();
+    currentServerTeam = '';
+    currentReceiverTeam = '';
+    updateServerIndicator();
 
-        matchWinnerTimeoutId = setTimeout(() => {
-            if (isUndoing) return;
+    matchWinnerTimeoutId = setTimeout(() => {
+        if (isUndoing) return;
 
-            const teamAName =
-                document.getElementById('displayTeamA')?.textContent || 'Aチーム';
-            const teamBName =
-                document.getElementById('displayTeamB')?.textContent || 'Bチーム';
-            const pairAName =
-                document.getElementById('pairA')?.textContent.replace('ペア','').trim();
-            const pairBName =
-                document.getElementById('pairB')?.textContent.replace('ペア','').trim();
+        // startMatch で定義済みのグローバル変数を使用
+        // playerA1/2, playerB1/2, teamAName, teamBName
 
-            setFinalDisplay(
-                matchResult.winner === 'A'
-                    ? `${teamAName}　${pairAName}ペア　の勝ちです`
-                    : `${teamBName}　${pairBName}ペア　の勝ちです`
-            );
+        const formatWinnerPair = (p1, p2) => {
+            const trim = str => str.trim();
+            const empty1 = !trim(p1);
+            const empty2 = !trim(p2);
 
-            launchConfetti();
-        }, 5000);
-    }
+            if (empty1 && empty2) return 'ペア';
+            if (empty1 ^ empty2) return `${empty1 ? trim(p2) : trim(p1)}選手`;
+            return `${trim(p1)}・${trim(p2)}ペア`;
+        };
+
+        const pairAText = formatWinnerPair(playerA1, playerA2);
+        const pairBText = formatWinnerPair(playerB1, playerB2);
+
+        setFinalDisplay(
+            matchResult.winner === 'A'
+                ? `${teamAName}　${pairAText}　の勝ちです`
+                : `${teamBName}　${pairBText}　の勝ちです`
+        );
+
+        launchConfetti();
+    }, 5000);
+}
 }
 
 // ==================== 判定ロジック ====================
