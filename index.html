@@ -1233,6 +1233,17 @@ button:hover { opacity: 0.9; }
   border-radius: 6px;
 }
 
+/* ----------------- 自然な強調 ----------------- */
+.sub-info {
+  font-weight: 600;          /* boldより少し軽め */
+  font-size: 0.95em;         /* 周囲テキストと差をつけすぎない */
+  margin-bottom: 8px;        /* 下との間隔で読みやすく */
+  color: #1a1a1a;            /* 真っ黒より少し柔らかめ */
+  background-color: #f9f9f9; /* 薄い背景で目立たせる場合 */
+  padding: 4px 6px;          /* 少し余白を付けて読みやすく */
+  border-radius: 4px;        /* 角を丸くして柔らかい印象 */
+}
+
 /* ----------------- 閉じるボタン ----------------- */
 .help-close {
   margin-top: 16px;
@@ -3773,13 +3784,14 @@ body::after {
       <p>ゲーム開始前・開始後の操作や『 より楽しく応援するために 』をご紹介します。</p>
 
       <h4 class="accordion-toggle">ゲーム開始前にやること</h4>
-      <div class="accordion-content">
-        <ul>
-          <li><strong>応援場所とチームの位置を合わせる</strong><br>応援する場所を基準に、チームの位置（コートの回転）を合わせます。</li>
-          <li><strong>選手のポジションを合わせる</strong><br>コート内の[チーム]をタップして選手のポジションを合わせます。※ゲーム中も変更が可能です。</li>
-          <li><strong>サービスサイドを合わせる</strong><br>コート内のデュースサイドにいる[選手]（サーバー）をタップして、最初のサービスサイドを合わせます。</li>
-        </ul>
-      </div>
+<div class="accordion-content">
+  <p class="sub-info">ゲーム開始前にやることは、次の3ステップでOK!</p>
+  <ul>
+    <li><strong>応援場所とチームの位置を合わせる</strong><br>応援する場所を基準に、チームの位置（コートの回転）を合わせます。</li>
+    <li><strong>選手のポジションを合わせる</strong><br>コート内の[チーム]をタップして選手のポジションを合わせます。※ゲーム中も変更が可能です。</li>
+    <li><strong>サービスサイドを合わせる</strong><br>コート内のデュースサイドにいる[選手]（サーバー）をタップして、最初のサービスサイドを合わせます。</li>
+  </ul>
+</div>
 
       <h4 class="accordion-toggle">ゲーム開始後の操作</h4>
       <div class="accordion-content">
