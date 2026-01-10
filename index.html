@@ -3486,8 +3486,10 @@ body::after {
           </ul>
 <p class="note">
  ※ シングルスマッチの場合<br>
-  シングルスマッチの場合は、選手名を「選手1」または「選手2」のどちらか一方に入力してください。
-  入力しない欄には、スペースを入力してください。
+  選手名は「選手1」または「選手2」のどちらか一方に入力してください。
+  入力しない欄には、スペースを入力してください。<br>
+  また、チーム名を入力しない場合は、チーム名欄にスペースを入力してください。<br>
+ ※ これを応用すると、シングルス vs ダブルスなど、公式方式には無い対戦形式も実現できます。
 </p>
           <p class="note">※ 保存内容を削除する場合は、一覧から選択し削除してください。</p>
         </div>
@@ -4405,26 +4407,27 @@ function swapPlayers(team) {
     let color = "#ffffff";
     let isSingles = false; // シングルス判定フラグ
 
+    const isEmpty = name => !name || name.trim() === "";
+
     if (team === 'A') {
         [playerA1, playerA2] = [playerA2, playerA1];
 
         const hasPlayer1 = playerA1.trim() !== "";
         const hasPlayer2 = playerA2.trim() !== "";
 
-        // シングルス判定：片方しか名前がない場合はシングルス扱い
+        // シングルス判定
         isSingles = (hasPlayer1 !== hasPlayer2);
 
+        // ★ チーム名がある時だけ「〇〇 の」を付ける
+        const teamPrefix = isEmpty(teamAName) ? "" : `${teamAName} の `;
+
         if (hasPlayer1 && hasPlayer2) {
-            // 両方名前あり → 従来通り
-            message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
+            message = `${teamPrefix}${playerA2}選手 デュースサイド に移動`;
         } else if (hasPlayer2) {
-            // 右側（デュース）に名前あり → デュースサイド
-            message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
+            message = `${teamPrefix}${playerA2}選手 デュースサイド に移動`;
         } else if (hasPlayer1) {
-            // 右側が空白、左側に名前あり → アドバンテージサイド
-            message = `${teamAName} の ${playerA1}選手 アドバンテージサイド に移動`;
+            message = `${teamPrefix}${playerA1}選手 アドバンテージサイド に移動`;
         } else {
-            // 両方空白 → 表示なし
             message = "";
         }
 
@@ -4436,15 +4439,18 @@ function swapPlayers(team) {
         const hasPlayer1 = playerB1.trim() !== "";
         const hasPlayer2 = playerB2.trim() !== "";
 
-        // シングルス判定：片方しか名前がない場合はシングルス扱い
+        // シングルス判定
         isSingles = (hasPlayer1 !== hasPlayer2);
 
+        // ★ チーム名がある時だけ「〇〇 の」を付ける
+        const teamPrefix = isEmpty(teamBName) ? "" : `${teamBName} の `;
+
         if (hasPlayer1 && hasPlayer2) {
-            message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
+            message = `${teamPrefix}${playerB2}選手 デュースサイド に移動`;
         } else if (hasPlayer2) {
-            message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
+            message = `${teamPrefix}${playerB2}選手 デュースサイド に移動`;
         } else if (hasPlayer1) {
-            message = `${teamBName} の ${playerB1}選手 アドバンテージサイド に移動`;
+            message = `${teamPrefix}${playerB1}選手 アドバンテージサイド に移動`;
         } else {
             message = "";
         }
@@ -4523,29 +4529,29 @@ function handleReadyButton() {
   if (!finalDisplay) return;
 
 function formatPair(team) {
-  const isEmpty = name => name.trim() === '';
+  const normalize = name => (name || '').trim();
 
   let p1, p2;
   if (team === 'A') {
-    p1 = playerA1;
-    p2 = playerA2;
+    p1 = normalize(playerA1);
+    p2 = normalize(playerA2);
   } else {
-    p1 = playerB1;
-    p2 = playerB2;
+    p1 = normalize(playerB1);
+    p2 = normalize(playerB2);
   }
 
-  // 片方だけ空白 → 「〇〇選手」
-  if (isEmpty(p1) ^ isEmpty(p2)) {
-    const single = !isEmpty(p1) ? p1 : p2;
+  // 片方だけ存在 → シングルス
+  if ((p1 === '') ^ (p2 === '')) {
+    const single = p1 !== '' ? p1 : p2;
     return `${single}選手`;
   }
 
-  // 両方空白
-  if (isEmpty(p1) && isEmpty(p2)) {
-    return 'ペア';
+  // 両方空 → 何も表示しない（★ここで完全遮断）
+  if (p1 === '' && p2 === '') {
+    return '';
   }
 
-  // 通常ペア
+  // 両方存在 → ペア
   return `${p1}・${p2}ペア`;
 }
 
@@ -4566,14 +4572,18 @@ function formatPair(team) {
     const serverColor = (serverTeam === 'A') ? "#ffffff" : "#ffff00";
     const recvColor = (receiverTeam === 'A') ? "#ffffff" : "#ffff00";
 
-    finalDisplay.textContent = `サービスサイド　${serverTeamName}　${serverPair}`;
-    finalDisplay.style.color = serverColor;
-    adjustFinalDisplayFont();
+// サービスサイド表示（チーム名が空白なら表示しない）
+const serverDisplayName = serverTeamName.trim() ? serverTeamName.trim() : '';
+finalDisplay.textContent = `サービスサイド${serverDisplayName ? '　' + serverDisplayName : ''}　${serverPair}`;
+finalDisplay.style.color = serverColor;
+adjustFinalDisplayFont();
 
-    readyMessageTimers.push(setTimeout(() => {
-      finalDisplay.textContent = `レシーブサイド　${receiverTeamName}　${receiverPair}`;
-      finalDisplay.style.color = recvColor;
-      adjustFinalDisplayFont();
+readyMessageTimers.push(setTimeout(() => {
+  // レシーブサイド表示（チーム名が空白なら表示しない）
+  const receiverDisplayName = receiverTeamName.trim() ? receiverTeamName.trim() : '';
+  finalDisplay.textContent = `レシーブサイド${receiverDisplayName ? '　' + receiverDisplayName : ''}　${receiverPair}`;
+  finalDisplay.style.color = recvColor;
+  adjustFinalDisplayFont();
 
       readyMessageTimers.push(setTimeout(() => {
         finalDisplay.textContent = matchTypeText + "　プレーボール";
@@ -4617,104 +4627,119 @@ function startMatch() {
 
   // ★ 入力中なら試合開始しない
   if (isTextInputActive) {
-  document.activeElement?.blur();
-  if (startMatch._retrying) return;
-  startMatch._retrying = true;
-  setTimeout(() => {
-    startMatch._retrying = false;
-    startMatch();
-  }, 300);
-  return;
-}
+    document.activeElement?.blur();
+    if (startMatch._retrying) return;
+    startMatch._retrying = true;
+    setTimeout(() => {
+      startMatch._retrying = false;
+      startMatch();
+    }, 300);
+    return;
+  }
 
+  // 🔥 試合開始時に必ず false に戻す（安全）
+  matchEnded = false;
 
-    // 🔥 試合開始時に必ず false に戻す（安全）
-    matchEnded = false;
+  // 入力値取得
+  tournamentName = document.getElementById('tournamentNameInput').value || '';
+// 入力値取得
+let inputA = document.getElementById('teamA').value;
+let inputB = document.getElementById('teamB').value;
 
-    // 入力値取得
-    tournamentName = document.getElementById('tournamentNameInput').value || '';
-    teamAName = document.getElementById('teamA').value || 'Aチーム';
-    teamBName = document.getElementById('teamB').value || 'Bチーム';
-    playerA1 = document.getElementById('playerA1').value || '選手1';
-    playerA2 = document.getElementById('playerA2').value || '選手2';
-    playerB1 = document.getElementById('playerB1').value || '選手1';
-    playerB2 = document.getElementById('playerB2').value || '選手2';
-    matchType = parseInt(document.getElementById('matchTypeSelect').value);
-    
-    // ポイント盤関連の消灯
-    disableMatchDisplays();
+// 空文字ならデフォルト、スペースのみは空白のまま
+teamAName = inputA === "" ? "Aチーム" : inputA;
+teamBName = inputB === "" ? "Bチーム" : inputB;
+  playerA1 = document.getElementById('playerA1').value || '選手1';
+  playerA2 = document.getElementById('playerA2').value || '選手2';
+  playerB1 = document.getElementById('playerB1').value || '選手1';
+  playerB2 = document.getElementById('playerB2').value || '選手2';
+  matchType = parseInt(document.getElementById('matchTypeSelect').value);
 
-    // ゲーム情報リセット
-    gameA = gameB = scoreA = scoreB = 0;
-    historyStack = [];
-    matchEnded = false;
-    deuceCount = 0;
-    finalInitDone = false;
+  // ポイント盤関連の消灯
+  disableMatchDisplays();
 
-    // サーバー情報初期化
-    selectedServer = { team: '', name: '' };
-    currentServer = 'A';
-    currentReceiver = 'B';
+  // ゲーム情報リセット
+  gameA = gameB = scoreA = scoreB = 0;
+  historyStack = [];
+  matchEnded = false;
+  deuceCount = 0;
+  finalInitDone = false;
 
-    // コート回転初期化
-    courtRotation = 0;
-    independentRotation = 0;
+  // サーバー情報初期化
+  selectedServer = { team: '', name: '' };
+  currentServer = 'A';
+  currentReceiver = 'B';
 
-    // コート回転リセット（選手位置も初期化）
-    resetCourtRotation();
+  // コート回転初期化
+  courtRotation = 0;
+  independentRotation = 0;
+
+  // コート回転リセット（選手位置も初期化）
+  resetCourtRotation();
 
   // ★ 念のため全 input / textarea のフォーカス解除
   document.querySelectorAll('input, textarea').forEach(el => el.blur());
 
-    // 画面切替
-    document.getElementById('setupScreen').style.display = 'none';
-    document.getElementById('gameScreen').style.display = 'flex';
-    document.getElementById('tournamentDisplay').textContent = tournamentName;
+  // 画面切替
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'flex';
+  document.getElementById('tournamentDisplay').textContent = tournamentName;
 
-    // 描画後に位置を更新（重要: clientWidth/clientHeightが確定後）
-    setTimeout(() => {
-        updatePlayerPositions();
-        updateScore();
-    }, 300);
+  // 描画後に位置を更新
+  setTimeout(() => {
+    updatePlayerPositions();
+    updateScore();
+  }, 300);
 
-    // 上部チーム名表示に文字数制限
-    const truncateName = (name, maxLen) => name.length > maxLen ? name.slice(0, maxLen) : name;
-    document.getElementById('displayTeamA').textContent = truncateName(teamAName, 5);
-    document.getElementById('displayTeamB').textContent = truncateName(teamBName, 5);
+  // 上部チーム名表示
+  const truncateName = (name, maxLen) =>
+    name.length > maxLen ? name.slice(0, maxLen) : name;
 
-// ペア名更新（片方空白対応 + シングルスは5文字制限）
-const isEmpty = name => name.trim() === '';
+  document.getElementById('displayTeamA').textContent = truncateName(teamAName, 5);
+  document.getElementById('displayTeamB').textContent = truncateName(teamBName, 5);
 
-// Aチーム
-if (isEmpty(playerA1) ^ isEmpty(playerA2)) {
-  // シングルス → 最大5文字
-  const single = !isEmpty(playerA1) ? playerA1 : playerA2;
-  document.getElementById('pairA').textContent =
-    `${truncateName(single, 5)}選手`;
-} else {
-  // ペア → 従来通り3文字ずつ
-  document.getElementById('pairA').textContent =
-    `${truncateName(playerA1, 3)}・${truncateName(playerA2, 3)}ペア`;
-}
+  // =========================
+  // ペア名表示（★完全修正版）
+  // =========================
+  const isEmpty = name => name.trim() === '';
+  const normalize = name => name.trim();
 
-// Bチーム
-if (isEmpty(playerB1) ^ isEmpty(playerB2)) {
-  // シングルス → 最大5文字
-  const single = !isEmpty(playerB1) ? playerB1 : playerB2;
-  document.getElementById('pairB').textContent =
-    `${truncateName(single, 5)}選手`;
-} else {
-  // ペア → 従来通り3文字ずつ
-  document.getElementById('pairB').textContent =
-    `${truncateName(playerB1, 3)}・${truncateName(playerB2, 3)}ペア`;
-}
+  // ---- Aチーム ----
+  const pA1 = normalize(playerA1);
+  const pA2 = normalize(playerA2);
 
-    // サーバー案内表示
-    const infoText = document.getElementById("infoText");
-    infoText.textContent = "① サーバーをタップ → ②（ vs ）をタップ";
-    infoText.style.color = "#ffffff";
-    infoText.classList.add("blink-text");
-    setTimeout(() => { infoText.classList.remove("blink-text"); }, 1000);
+  if (isEmpty(pA1) && isEmpty(pA2)) {
+    document.getElementById('pairA').textContent = '';
+  } else if (isEmpty(pA1) ^ isEmpty(pA2)) {
+    const single = !isEmpty(pA1) ? pA1 : pA2;
+    document.getElementById('pairA').textContent =
+      `${truncateName(single, 5)}選手`;
+  } else {
+    document.getElementById('pairA').textContent =
+      `${truncateName(pA1, 3)}・${truncateName(pA2, 3)}ペア`;
+  }
+
+  // ---- Bチーム ----
+  const pB1 = normalize(playerB1);
+  const pB2 = normalize(playerB2);
+
+  if (isEmpty(pB1) && isEmpty(pB2)) {
+    document.getElementById('pairB').textContent = '';
+  } else if (isEmpty(pB1) ^ isEmpty(pB2)) {
+    const single = !isEmpty(pB1) ? pB1 : pB2;
+    document.getElementById('pairB').textContent =
+      `${truncateName(single, 5)}選手`;
+  } else {
+    document.getElementById('pairB').textContent =
+      `${truncateName(pB1, 3)}・${truncateName(pB2, 3)}ペア`;
+  }
+
+  // サーバー案内表示
+  const infoText = document.getElementById("infoText");
+  infoText.textContent = "① サーバーをタップ → ②（ vs ）をタップ";
+  infoText.style.color = "#ffffff";
+  infoText.classList.add("blink-text");
+  setTimeout(() => { infoText.classList.remove("blink-text"); }, 1000);
 }
 
 // 🎊 上から舞い落ちる紙吹雪（横揺れ暴走版）
@@ -5822,7 +5847,6 @@ function bumpDisplayVersion() {
 }
 
 // ==================== addPoint（安全版・修正版） ====================
-// ==================== addPoint（安全版・修正版） ====================
 function addPoint(team) {
 
   // 表示用チーム名を取得（チーム名が空なら選手名）
@@ -5832,23 +5856,23 @@ function addPoint(team) {
     if (team === "A") {
       if (!isEmpty(teamAName)) return teamAName;
 
-      // ダブルス
+      // ダブルス → ★「ペア」を付ける
       if (!isEmpty(playerA1) && !isEmpty(playerA2)) {
-        return `${playerA1}・${playerA2}`;
+        return `${playerA1}・${playerA2} ペア`;
       }
 
-      // シングルス（★修正ポイント）
+      // シングルス
       const single = !isEmpty(playerA1) ? playerA1 : playerA2;
       return `${single}選手`;
     } else {
       if (!isEmpty(teamBName)) return teamBName;
 
-      // ダブルス
+      // ダブルス → ★「ペア」を付ける
       if (!isEmpty(playerB1) && !isEmpty(playerB2)) {
-        return `${playerB1}・${playerB2}`;
+        return `${playerB1}・${playerB2} ペア`;
       }
 
-      // シングルス（★修正ポイント）
+      // シングルス
       const single = !isEmpty(playerB1) ? playerB1 : playerB2;
       return `${single}選手`;
     }
