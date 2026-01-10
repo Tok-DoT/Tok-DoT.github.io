@@ -4352,50 +4352,119 @@ function playTitleSequence() {
   }, 2000);
 }
 
-// ----------------------------------- サーバー選択共通関数 -----------------------------------
+// ----------------------------------- サーバー選択共通関数（シングルス対応版） -----------------------------------
 function attachServerSelection(team, id) {
   const el = document.getElementById(id);
   if (!el) return;
+
   el.addEventListener('click', () => {
     if (matchEnded) return;
 
     // ★ 追加：サーバータップ可能か
     if (!canSelectServerOnCourt()) return;
 
+    // デュースサイドにいなければ無視
     if (!isDeuceSide(team, id)) return;
+
     serverIndicatorLocked = false;
-    const name = (id.endsWith('1Display')) ? ((team==='A')?playerA1:playerB1) : ((team==='A')?playerA2:playerB2);
+
+    // 選手名取得
+    const name = (id.endsWith('1Display'))
+      ? ((team === 'A') ? playerA1 : playerB1)
+      : ((team === 'A') ? playerA2 : playerB2);
+
+    // ★ シングルス対応：空白・スペースの選手は選択不可
+    if (!name || name.trim() === '') return;
+
     selectedServer.team = team;
     selectedServer.name = name;
-    showServerBlink(team);
-    const teamName = (team==='A')?teamAName:teamBName;
-    const color = (team==='A')?"#ffffff":"#ffff00";
+
+    // シングルス判定
+    const hasPlayer1 = (team === 'A') ? playerA1.trim() !== '' : playerB1.trim() !== '';
+    const hasPlayer2 = (team === 'A') ? playerA2.trim() !== '' : playerB2.trim() !== '';
+    const isSingles = hasPlayer1 !== hasPlayer2;
+
+    // Blink表示（シングルス判定を反映）
+    showServerBlink(team, isSingles);
+
+    // メッセージ表示
+    const teamName = (team === 'A') ? teamAName : teamBName;
+    const color = (team === 'A') ? "#ffffff" : "#ffff00";
     showInfo(`サーバー　${teamName}　${name} 選手`, color);
     adjustAllInfoFonts();
-    (team==='A')?initialServerTeam='A':initialServerTeam='B';
+
+    // 初期サーバー設定
+    (team === 'A') ? initialServerTeam = 'A' : initialServerTeam = 'B';
     updateServerByGameCount();
   });
 }
 
-// ----------------------------------- コート内ポジションチェンジ -----------------------------------
+// ----------------------------------- コート内ポジションチェンジ（シングルス対応版 + Blink対応 + 空白対応） -----------------------------------
 function swapPlayers(team) {
     let message = "";
     let color = "#ffffff";
+    let isSingles = false; // シングルス判定フラグ
 
     if (team === 'A') {
         [playerA1, playerA2] = [playerA2, playerA1];
-        message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
+
+        const hasPlayer1 = playerA1.trim() !== "";
+        const hasPlayer2 = playerA2.trim() !== "";
+
+        // シングルス判定：片方しか名前がない場合はシングルス扱い
+        isSingles = (hasPlayer1 !== hasPlayer2);
+
+        if (hasPlayer1 && hasPlayer2) {
+            // 両方名前あり → 従来通り
+            message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
+        } else if (hasPlayer2) {
+            // 右側（デュース）に名前あり → デュースサイド
+            message = `${teamAName} の ${playerA2}選手 デュースサイド に移動`;
+        } else if (hasPlayer1) {
+            // 右側が空白、左側に名前あり → アドバンテージサイド
+            message = `${teamAName} の ${playerA1}選手 アドバンテージサイド に移動`;
+        } else {
+            // 両方空白 → 表示なし
+            message = "";
+        }
+
         color = "#ffffff";
+
     } else if (team === 'B') {
         [playerB1, playerB2] = [playerB2, playerB1];
-        message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
+
+        const hasPlayer1 = playerB1.trim() !== "";
+        const hasPlayer2 = playerB2.trim() !== "";
+
+        // シングルス判定：片方しか名前がない場合はシングルス扱い
+        isSingles = (hasPlayer1 !== hasPlayer2);
+
+        if (hasPlayer1 && hasPlayer2) {
+            message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
+        } else if (hasPlayer2) {
+            message = `${teamBName} の ${playerB2}選手 デュースサイド に移動`;
+        } else if (hasPlayer1) {
+            message = `${teamBName} の ${playerB1}選手 アドバンテージサイド に移動`;
+        } else {
+            message = "";
+        }
+
         color = "#ffff00";
     }
 
+    // コート表示更新
     setTimeout(updatePlayerPositions, 0);
-    showInfo(message, color);
+    if (message) showInfo(message, color);
     adjustAllInfoFonts();
-    showServerBlink(team);
+
+    // Blink判定：両方空白の場合は呼ばない
+    const allBlank = (team === 'A')
+        ? (playerA1.trim() === "" && playerA2.trim() === "")
+        : (playerB1.trim() === "" && playerB2.trim() === "");
+
+    if (!allBlank) {
+        showServerBlink(team, isSingles);
+    }
 }
 
 // ----------------------------------- コート回転（iOS対応版） -----------------------------------
@@ -4613,27 +4682,31 @@ function startMatch() {
     document.getElementById('displayTeamA').textContent = truncateName(teamAName, 5);
     document.getElementById('displayTeamB').textContent = truncateName(teamBName, 5);
 
-// ペア名更新（片方空白対応）
+// ペア名更新（片方空白対応 + シングルスは5文字制限）
 const isEmpty = name => name.trim() === '';
 
 // Aチーム
 if (isEmpty(playerA1) ^ isEmpty(playerA2)) {
+  // シングルス → 最大5文字
   const single = !isEmpty(playerA1) ? playerA1 : playerA2;
   document.getElementById('pairA').textContent =
-    `${truncateName(single, 3)}選手`;
+    `${truncateName(single, 5)}選手`;
 } else {
+  // ペア → 従来通り3文字ずつ
   document.getElementById('pairA').textContent =
-    `${truncateName(playerA1,3)}・${truncateName(playerA2,3)}ペア`;
+    `${truncateName(playerA1, 3)}・${truncateName(playerA2, 3)}ペア`;
 }
 
 // Bチーム
 if (isEmpty(playerB1) ^ isEmpty(playerB2)) {
+  // シングルス → 最大5文字
   const single = !isEmpty(playerB1) ? playerB1 : playerB2;
   document.getElementById('pairB').textContent =
-    `${truncateName(single, 3)}選手`;
+    `${truncateName(single, 5)}選手`;
 } else {
+  // ペア → 従来通り3文字ずつ
   document.getElementById('pairB').textContent =
-    `${truncateName(playerB1,3)}・${truncateName(playerB2,3)}ペア`;
+    `${truncateName(playerB1, 3)}・${truncateName(playerB2, 3)}ペア`;
 }
 
     // サーバー案内表示
@@ -4750,11 +4823,12 @@ function showInfo(message, color = "#ffffff", duration = 5000) {
   }, duration);
 }
 
-// --- サーバーの選手を点滅表示 ---
-function showServerBlink(team) {
+// --- サーバーの選手を点滅表示 (ダブルス／シングルス対応) ---
+function showServerBlink(team, isSingles = false) {
   // すべてのプレイヤーの点滅を解除
   ['playerA1Display','playerA2Display','playerB1Display','playerB2Display'].forEach(id => {
-    document.getElementById(id).classList.remove('blinking');
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('blinking');
   });
 
   if (!team || team === '') return;
@@ -4762,13 +4836,30 @@ function showServerBlink(team) {
   let targetId = null;
 
   if (team === 'A') {
-    // Aチーム: 下側, 左=A1, 右=A2
-    targetId = (currentServer === 'A1') ? 'playerA1Display' : 'playerA2Display';
+    const a1 = playerA1.trim();
+    const a2 = playerA2.trim();
+
+    if (isSingles) {
+      if (a2 !== "") targetId = 'playerA2Display';           // 右側に名前あり → デュースサイド
+      else if (a1 !== "") targetId = 'playerA1Display';      // 右側空白 → 左側アドバンテージサイド
+      else return;                                           // 両方空白 → 表示なし
+    } else {
+      // ダブルス従来通り
+      targetId = (currentServer === 'A1') ? 'playerA1Display' : 'playerA2Display';
+    }
+
   } else if (team === 'B') {
-    // Bチーム: 上側, 左=B2, 右=B1（入れ替え済み）
-    // currentServerが 'B1' の場合は右の B1Display
-    // currentServerが 'B2' の場合は左の B2Display
-    targetId = (currentServer === 'B1') ? 'playerB1Display' : 'playerB2Display';
+    const b1 = playerB1.trim();
+    const b2 = playerB2.trim();
+
+    if (isSingles) {
+      if (b2 !== "") targetId = 'playerB2Display';           // 右側に名前あり → デュースサイド
+      else if (b1 !== "") targetId = 'playerB1Display';      // 右側空白 → 左側アドバンテージサイド
+      else return;                                           // 両方空白 → 表示なし
+    } else {
+      // ダブルス従来通り
+      targetId = (currentServer === 'B1') ? 'playerB1Display' : 'playerB2Display';
+    }
   }
 
   const el = document.getElementById(targetId);
@@ -4786,6 +4877,7 @@ function showServerBlink(team) {
     }
   }, 600);
 }
+
 
 // --------------------------------- チーム名と選手名を保存関連 ---------------------------------
 function saveTeam(team) {
@@ -5730,88 +5822,120 @@ function bumpDisplayVersion() {
 }
 
 // ==================== addPoint（安全版・修正版） ====================
+// ==================== addPoint（安全版・修正版） ====================
 function addPoint(team) {
-    bumpDisplayVersion();
-    if (!matchControlsEnabled || matchEnded) return;
 
-    const finalThreshold = getFinalThreshold(matchType);
+  // 表示用チーム名を取得（チーム名が空なら選手名）
+  const isEmpty = name => !name || name.trim() === "";
 
-    // ★ ファイナル判定は必ず isFinalGameState に一本化
-    const inFinalGame = isFinalGameState(
-        gameA,
-        gameB,
-        finalThreshold,
-        matchType
-    );
+  const getDisplayTeamName = (team) => {
+    if (team === "A") {
+      if (!isEmpty(teamAName)) return teamAName;
 
-    if (inFinalGame) totalPointsInFinal++;
+      // ダブルス
+      if (!isEmpty(playerA1) && !isEmpty(playerA2)) {
+        return `${playerA1}・${playerA2}`;
+      }
 
-    // --- Undo用履歴保存 ---
-    historyStack.push({
-        scoreA, scoreB, gameA, gameB, deuceCount,
-        totalPointsInFinal, wasDeuce,
-        currentServerTeam, currentReceiverTeam,
-        currentServerFixed,
-        finalInitDone,
-        lastTotalPoints,
-        matchEnded,
-        finalGameActive,
-        courtRotation,
-        independentRotation,
-        rotation: courtRotation + independentRotation,
-        finalText: document.getElementById("finalDisplay")?.textContent || "",
-        finalGradient: document.getElementById("finalDisplay")?.classList.contains("final-gradient") || false,
-        deuceText: document.getElementById("deuceDisplay")?.textContent || "",
-    });
+      // シングルス（★修正ポイント）
+      const single = !isEmpty(playerA1) ? playerA1 : playerA2;
+      return `${single}選手`;
+    } else {
+      if (!isEmpty(teamBName)) return teamBName;
 
-    // 最大履歴数制限
-    if (historyStack.length > MAX_HISTORY) historyStack.shift();
+      // ダブルス
+      if (!isEmpty(playerB1) && !isEmpty(playerB2)) {
+        return `${playerB1}・${playerB2}`;
+      }
 
-    // --- ポイント加算 ---
-    if (team === "A") scoreA++;
-    else scoreB++;
-
-    // --- ファイナル開始時サーバー初期化 ---
-    let finalJustStarted = false;
-
-    if (
-        !finalInitDone &&
-        isFinalGameState(
-            gameA,
-            gameB,
-            finalThreshold,
-            matchType
-        ) &&
-        scoreA === 0 &&
-        scoreB === 0
-    ) {
-        const prevReceiver = currentReceiverTeam;
-        currentServerTeam = prevReceiver;
-        currentReceiverTeam = prevReceiver === "A" ? "B" : "A";
-
-        finalInitDone = true;
-        lastTotalPoints = 0;
-        updateServerIndicator();
-        finalJustStarted = true;
+      // シングルス（★修正ポイント）
+      const single = !isEmpty(playerB1) ? playerB1 : playerB2;
+      return `${single}選手`;
     }
+  };
 
-    checkGameStatus();
-    updateScore();
-    updatePointCall();
-    if (currentServerTeam) refereeCall();
+  bumpDisplayVersion();
+  if (!matchControlsEnabled || matchEnded) return;
 
-    const infoMsg =
-        (team === "A" ? teamAName : teamBName) + " に1ポイント入りました";
-    showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
-    adjustAllInfoFonts();
+  const finalThreshold = getFinalThreshold(matchType);
 
-    if (finalJustStarted) {
-        clearAllTimers();
-        finalGameTimeoutId = setTimeout(() => {
-            if (!finalGameActive || matchEnded || isUndoing) return;
-            showFinalGameEntryDisplay();
-        }, 5000);
-    }
+  // ★ ファイナル判定は必ず isFinalGameState に一本化
+  const inFinalGame = isFinalGameState(
+    gameA,
+    gameB,
+    finalThreshold,
+    matchType
+  );
+
+  if (inFinalGame) totalPointsInFinal++;
+
+  // --- Undo用履歴保存 ---
+  historyStack.push({
+    scoreA, scoreB, gameA, gameB, deuceCount,
+    totalPointsInFinal, wasDeuce,
+    currentServerTeam, currentReceiverTeam,
+    currentServerFixed,
+    finalInitDone,
+    lastTotalPoints,
+    matchEnded,
+    finalGameActive,
+    courtRotation,
+    independentRotation,
+    rotation: courtRotation + independentRotation,
+    finalText: document.getElementById("finalDisplay")?.textContent || "",
+    finalGradient: document.getElementById("finalDisplay")?.classList.contains("final-gradient") || false,
+    deuceText: document.getElementById("deuceDisplay")?.textContent || "",
+  });
+
+  // 最大履歴数制限
+  if (historyStack.length > MAX_HISTORY) historyStack.shift();
+
+  // --- ポイント加算 ---
+  if (team === "A") scoreA++;
+  else scoreB++;
+
+  // --- ファイナル開始時サーバー初期化 ---
+  let finalJustStarted = false;
+
+  if (
+    !finalInitDone &&
+    isFinalGameState(
+      gameA,
+      gameB,
+      finalThreshold,
+      matchType
+    ) &&
+    scoreA === 0 &&
+    scoreB === 0
+  ) {
+    const prevReceiver = currentReceiverTeam;
+    currentServerTeam = prevReceiver;
+    currentReceiverTeam = prevReceiver === "A" ? "B" : "A";
+
+    finalInitDone = true;
+    lastTotalPoints = 0;
+    updateServerIndicator();
+    finalJustStarted = true;
+  }
+
+  checkGameStatus();
+  updateScore();
+  updatePointCall();
+  if (currentServerTeam) refereeCall();
+
+  const infoMsg =
+    getDisplayTeamName(team) + " に1ポイント入りました";
+
+  showInfo(infoMsg, team === "A" ? "#ffffff" : "#ffff00");
+  adjustAllInfoFonts();
+
+  if (finalJustStarted) {
+    clearAllTimers();
+    finalGameTimeoutId = setTimeout(() => {
+      if (!finalGameActive || matchEnded || isUndoing) return;
+      showFinalGameEntryDisplay();
+    }, 5000);
+  }
 }
 
 // ==================== undoPoint（安全版） ====================
