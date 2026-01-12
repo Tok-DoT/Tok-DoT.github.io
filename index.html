@@ -320,7 +320,7 @@ html,body{
   100% { color: purple; }
 }
 
-/* ------------------------------------------- 設定画面全体 ------------------------------------------- */
+/* ------------------------------------------- エントリー画面全体 ------------------------------------------- */
 
 /* ------------------------------------------- 共通スタイル ------------------------------------------- */
 * {
@@ -342,7 +342,7 @@ button {
 
 button:hover { opacity: 0.9; }
 
-/* ------------------------------------------- 設定画面 ------------------------------------------- */
+/* ------------------------------------------- エントリー画面 ------------------------------------------- */
 .container {
   display: flex;
   flex-direction: column;
@@ -374,7 +374,7 @@ button:hover { opacity: 0.9; }
 }
 
 /* ===============================
-   設定画面タイトル
+   エントリー画面タイトル
    =============================== */
 .setup-header {
   display: flex;
@@ -1065,7 +1065,7 @@ button:hover { opacity: 0.9; }
 /* -- OFUSE設置 -- */
 
 /* ===============================
-   設定画面 インフォメーションボタン
+   エントリー画面 インフォメーションボタン
    （試合画面と同じ思想）
    =============================== */
 .help-footer-btn {
@@ -1136,7 +1136,7 @@ button:hover { opacity: 0.9; }
 
 /* ===============================
    共通 インフォメーションモーダル
-   （設定画面・試合画面 共通）
+   （エントリー画面・試合画面 共通）
    =============================== */
 
 /* ----------------- モーダル背景 ----------------- */
@@ -1380,7 +1380,7 @@ button:hover { opacity: 0.9; }
   transform: scale(0.95);
 }
 
-/* ------------------------------------------- 設定画面全体 ------------------------------------------- */
+/* ------------------------------------------- エントリー画面全体 ------------------------------------------- */
 
 /* 試合画面全体 */
 #gameScreen {
@@ -2926,7 +2926,7 @@ body::after {
     inset 0 -2px 4px rgba(0,0,0,0.25);
 }
 
-/* 設定画面に戻るボタン（ぷっくりオレンジ） */
+/* エントリー画面に戻るボタン（ぷっくりオレンジ） */
 .settings-btn {
   width: 161px;
   height: 36px;
@@ -3114,7 +3114,7 @@ body::after {
 
     <!-- タイトル + ヘルプボタン -->
     <div class="setup-header">
-      <span id="setupInfoText" class="setup-title">▽▲▽ 設定画面 ▽▲▽</span>
+      <span id="setupInfoText" class="setup-title">▽▲▽ エントリー画面 ▽▲▽</span>
       <button id="helpButtonFooter" class="help-footer-btn" aria-label="インフォメーション">i</button>
 
     </div>
@@ -3209,7 +3209,7 @@ body::after {
 
     <div id="setupMessageFrame"></div>
     <span id="setupHintTextBottom">
-      何ゲームマッチか選び[ 試合開始 ]をタップ
+      何ゲームマッチか選び[ エントリー ]をタップ
     </span>
 
     <div class="select-wrapper">
@@ -3222,7 +3222,7 @@ body::after {
     </div>
 
     <div class="start-wrapper">
-      <button class="start-btn" onclick="startMatch()">試合開始</button>
+      <button class="start-btn" onclick="startMatch()">エントリー</button>
     </div>
 
 <!-- iOS対策：リロードボタン（左下固定） -->
@@ -3385,7 +3385,7 @@ body::after {
 </div>
 <!-- OFUSE設置 -->
 
-<!-- 設定画面 インフォメーションモーダル -->
+<!-- エントリー画面 インフォメーションモーダル -->
 <div id="helpModal" class="help-modal" aria-hidden="true">
   <div class="help-modal-content">
 
@@ -3468,11 +3468,11 @@ body::after {
         </p>
       </div>
 
-      <!-- 設定画面について（折りたたみ） -->
-      <h3 class="accordion-toggle">設定画面について</h3>
+      <!-- エントリー画面について（折りたたみ） -->
+      <h3 class="accordion-toggle">エントリー画面について</h3>
       <div class="accordion-content">
         <p>
-          設定画面ではゲームマッチ数を選択し［試合開始］で準備完了。
+          エントリー画面ではゲームマッチ数を選択し［エントリー］で準備完了。
           大会名やチーム・ペア/選手を入力すると、応援がより楽しめます。
         </p>
 
@@ -3498,7 +3498,7 @@ body::after {
         <div class="accordion-content nested">
           <ul>
             <li>試合のゲームマッチ数を選択</li>
-            <li>［試合開始］ボタンで試合画面へ</li>
+            <li>［エントリー］ボタンで試合画面へ</li>
           </ul>
         </div>
       </div>
@@ -3758,7 +3758,7 @@ body::after {
 
 <button class="reset-btn" onclick="resetMatch()">リセット</button>
 
-<button class="settings-btn" onclick="returnToSetup()">設定</button>
+<button class="settings-btn" onclick="returnToSetup()">エントリー画面</button>
 
 </div>
 <div class="extraControls">
@@ -3835,7 +3835,7 @@ body::after {
             <strong>試合画面のリセット</strong><br>[ リセット ] ボタンでゲーム開始前の状態に戻ります。
           </li>
           <li>
-            <strong>設定画面に戻る</strong><br>[ 設定 ] ボタンで設定画面に戻ります。
+            <strong>エントリー画面に戻る</strong><br>[ エントリー画面 ] ボタンでエントリー画面に戻ります。
           </li>
         </ul>
       </div>
@@ -4631,7 +4631,7 @@ function resetVsButton() {
   readyBtn.classList.remove('inactive');
 }
 
-// --- リセットや設定画面復帰時に呼ぶ ---
+// --- リセットやエントリー画面復帰時に呼ぶ ---
 function onResetOrReturnFromSettings() {
   resetVsButton();
   // 他のリセット処理があればここに追加
@@ -5071,7 +5071,7 @@ document.addEventListener('focusout', (e) => {
 });
 // --------------------------------- 入力中フラグ制御（Android 対策） ---------------------------------
 
-// ----------------------- 設定画面：大会名 初期化（シンプルダイアログ版） -----------------------
+// ----------------------- エントリー画面：大会名 初期化（シンプルダイアログ版） -----------------------
 document.getElementById('resetTournamentButton')?.addEventListener('click', () => {
   const tournamentInput = document.getElementById('tournamentNameInput');
   if (!tournamentInput) return;
@@ -5089,9 +5089,9 @@ document.getElementById('resetTournamentButton')?.addEventListener('click', () =
     });
   }, 300);
 });
-// ----------------------- 設定画面：大会名 初期化（シンプルダイアログ版） -----------------------
+// ----------------------- エントリー画面：大会名 初期化（シンプルダイアログ版） -----------------------
 
-// ------------------ 設定画面：チーム名・選手名 初期化 共通関数（シンプルダイアログ版） ------------------
+// ------------------ エントリー画面：チーム名・選手名 初期化 共通関数（シンプルダイアログ版） ------------------
 function resetTeamFields(team) {
   const isA = team === 'A';
   const label = isA ? '左' : '右';
@@ -5116,19 +5116,19 @@ function resetTeamFields(team) {
     adjustAllInfoFonts?.();
   });
 }
-// ------------------ 設定画面：チーム名・選手名 初期化 共通関数（シンプルダイアログ版） ------------------
+// ------------------ エントリー画面：チーム名・選手名 初期化 共通関数（シンプルダイアログ版） ------------------
 
 
-// --------------------------------- 設定画面：Aチーム個別初期化ボタン ---------------------------------
+// --------------------------------- エントリー画面：Aチーム個別初期化ボタン ---------------------------------
 document.getElementById('resetTeamAButton')?.addEventListener('click', () => {
   resetTeamFields('A');
 });
-// --------------------------------- 設定画面：Bチーム個別初期化ボタン ---------------------------------
+// --------------------------------- エントリー画面：Bチーム個別初期化ボタン ---------------------------------
 document.getElementById('resetTeamBButton')?.addEventListener('click', () => {
   resetTeamFields('B');
 });
 
-// --------------------------------- 設定画面：チーム名・選手名 一括初期化（従来の resetTeamsButton 用） ---------------------------------
+// --------------------------------- エントリー画面：チーム名・選手名 一括初期化（従来の resetTeamsButton 用） ---------------------------------
 document.getElementById('resetTeamsButton')?.addEventListener('click', () => {
   ['A','B'].forEach(team => resetTeamFields(team));
 
@@ -5140,7 +5140,7 @@ document.getElementById('resetTeamsButton')?.addEventListener('click', () => {
 
   adjustAllInfoFonts?.();
 });
-// --------------------------------- 設定画面：チーム名・選手名 一括初期化 ---------------------------------
+// --------------------------------- エントリー画面：チーム名・選手名 一括初期化 ---------------------------------
 
 function blinkElement(id) {
   const el = document.getElementById(id);
@@ -6131,12 +6131,12 @@ function resetMatch() {
     }, blueGradient);
 }
 
-// -------------------- 試合画面（リセット）から設定画面に戻るボタン) --------------------
+// -------------------- 試合画面（リセット）からエントリー画面に戻るボタン) --------------------
 function returnToSetup() {
     // OKボタンをオレンジグラデーションに
     const orangeGradient = 'linear-gradient(to bottom, #ffca7a, #ff8c00)';
 
-    showConfirm('設定画面に戻りますか？<br>試合データはリセットされます', function(result){
+    showConfirm('エントリー画面に戻りますか？<br>試合はリセットされます', function(result){
         if(result) {
             resetMatchState(); // 共通処理呼び出し
 
@@ -8911,7 +8911,7 @@ function setupAccordion(modal) {
 // ===============================
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ----- 設定画面モーダル -----
+  // ----- エントリー画面モーダル -----
   const helpButton = document.getElementById("helpButtonFooter");
   const helpModal  = document.getElementById("helpModal");
   const closeHelp  = document.getElementById("closeHelp");
