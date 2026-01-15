@@ -3804,8 +3804,14 @@ body::after {
             <strong>（ vs ）ボタンをタップ</strong><br>両チーム・ペア/選手の中央にある（ vs ）をタップすると試合が開始されます。
           </li>
           <li>
-            <strong>ポイントの追加</strong><br>ポイント盤をタップしてポイントを追加します。
-          </li>
+  <strong>ポイントの追加</strong><br>
+  ポイント盤をタップしてポイントを追加します。
+  <p class="note">
+    振動フィードバック機能により、タップ時に振動でポイント追加を確認できます。<br>
+    振動の ON / OFF はポイント盤の長押しで切り替え可能です。
+  </p>
+</li>
+
           <li>
             <strong>ポイントを戻す</strong><br>[ Tok.DoT ] のロゴをタップすると、ひとつ前のポイントに戻せます。
             <p class="note">※ ポイント0-0・ゲームカウント0-0まで戻すとリセットと同じ状態まで戻ります。</p>
@@ -4212,6 +4218,9 @@ let readyMessageTimers = [];
 // ==================== iphoneカクつき問題用 ====================
 let lastThemeColor = null;
 let favScrollTimer;
+
+// -------------------- 振動 ON/OFF フラグ --------------------
+let isVibrationEnabled = true; // 初期状態は ON
 
 // ----------------------------------- アプリ基本プログラム -----------------------------------
 window.onload = function() {
@@ -5357,17 +5366,55 @@ function updatePointDisplay(team) {
   }
 }
 
-// --- ポイント盤タップでポイント追加ロジック続き ---
+// ---------------------- 長押しで振動ON/OFF切替 ----------------------
+function addVibrationToggleLongPress(button) {
+    let pressTimer;
+
+    const start = () => {
+        pressTimer = setTimeout(() => {
+            isVibrationEnabled = !isVibrationEnabled;
+
+            // デバッグ用（不要なら削除OK）
+            console.log("Vibration:", isVibrationEnabled ? "ON" : "OFF");
+
+            // ONにした瞬間だけ軽く振動（任意）
+            if (navigator.vibrate && isVibrationEnabled) {
+                navigator.vibrate(30);
+            }
+        }, 500); // 500ms 長押し
+    };
+
+    const cancel = () => clearTimeout(pressTimer);
+
+    button.addEventListener("mousedown", start);
+    button.addEventListener("touchstart", start);
+
+    button.addEventListener("mouseup", cancel);
+    button.addEventListener("mouseleave", cancel);
+    button.addEventListener("touchend", cancel);
+    button.addEventListener("touchcancel", cancel);
+}
+
+// ---------------------- ポイント盤 ----------------------
 document.addEventListener("DOMContentLoaded", () => {
     const pointAFlip = document.getElementById("pointAFlip");
-    if (pointAFlip) {
-        pointAFlip.addEventListener("click", () => addPoint("A"));
-    }
-
     const pointBFlip = document.getElementById("pointBFlip");
-    if (pointBFlip) {
-        pointBFlip.addEventListener("click", () => addPoint("B"));
-    }
+
+    if (!pointAFlip || !pointBFlip) return;
+
+    // A側
+    pointAFlip.addEventListener("click", () => {
+        addPoint("A");
+        if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+    });
+    addVibrationToggleLongPress(pointAFlip);
+
+    // B側
+    pointBFlip.addEventListener("click", () => {
+        addPoint("B");
+        if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+    });
+    addVibrationToggleLongPress(pointBFlip);
 });
 
 // --------------------- 白丸S点灯・消灯処理の為のコード（始め） ---------------------
