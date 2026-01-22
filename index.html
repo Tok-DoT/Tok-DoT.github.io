@@ -782,7 +782,7 @@ button:hover { opacity: 0.9; }
 }
 
 #appURL {
-  flex: 0 1 140px;   /* ← ここがポイント */
+  flex: 0 1 128px;   /* ← ここがポイント */
   max-width: 200px;  /* 伸びすぎ防止 */
   min-width: 110px;  /* 潰れ防止 */
   padding: 4px 6px;
@@ -6173,7 +6173,7 @@ function resetMatch() {
     // ボタンを水色グラデーションに
     const blueGradient = 'linear-gradient(to bottom, #a0dfff, #5eb8ff)';
 
-    showConfirm('試合をリセットしますか？', function(result){
+    showConfirm('試合をリセットしますか？<br>ポイントはリセットされます', function(result){
         if (result) resetMatchState();
     }, blueGradient);
 }
@@ -6183,7 +6183,7 @@ function returnToSetup() {
     // OKボタンをオレンジグラデーションに
     const orangeGradient = 'linear-gradient(to bottom, #ffca7a, #ff8c00)';
 
-    showConfirm('エントリー画面に戻りますか？<br>試合はリセットされます', function(result){
+    showConfirm('エントリー画面に戻りますか？<br>ポイントはリセットされます', function(result){
         if(result) {
             resetMatchState(); // 共通処理呼び出し
 
