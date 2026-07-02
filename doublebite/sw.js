@@ -1,5 +1,5 @@
 // sw.js (ハイブリッド方式・最終版)
-const CACHE_NAME = "doublecounter-v2";
+const CACHE_NAME = "doublecounter-v3";
 
 const ASSETS = [
   "./",
