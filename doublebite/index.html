@@ -81,7 +81,7 @@ input, textarea {
   bottom: 320px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 1;
 
   width: min(320px, 80vw);
   padding: 10px 0;
@@ -1065,6 +1065,13 @@ button.btn-part:active {
     box-shadow:
       inset 0 1px 2px rgba(255,255,255,.8),
       inset 0 -1px 2px rgba(0,0,0,.08);
+}
+
+.bait-sec {
+  font-size: 0.7em;
+  color: rgba(0,0,0,0.45);
+  font-weight: 400;
+  letter-spacing: 0.02em;
 }
 
 .bait-setting{
@@ -2087,7 +2094,7 @@ font-family: 'Alfa Slab One', cursive;
 
 /* 声かけ表示アニメーション */
 .info-placeholder-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #000;
   font-weight: 500;
   user-select: none;
@@ -2356,6 +2363,385 @@ iframe {
 
 }
 
+/* =========================
+   シンプルアラートダイアログ
+========================= */
+
+#simpleAlertDialog {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+#simpleAlertDialog .simple-alert-box {
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 180px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+#simpleAlertMessage {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+#simpleAlertDialog button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #2a5298;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* =========================
+   アプリURL共有UI
+========================= */
+
+.share-url-wrapper-compact {
+  font-size: 10px;
+}
+
+.share-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 20px;      
+  margin-bottom: 4px;
+}
+
+/* URLとボタンを横並び */
+.url-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+/* URL欄 */
+.app-url-text {
+  width: calc(100% - 52px);   /* ボタン分だけ残す */
+  box-sizing: border-box;
+
+  font-size: 9px;
+  color: #333;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 6px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* コピーボタン */
+#copyURL {
+  width: 48px;
+  height: 24px;
+  padding: 0;
+
+  font-size: 9px;
+  line-height: 24px;
+
+  background: #2a5298;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+#copyURL:hover {
+  background: #1e3c72;
+}
+
+/* =========================
+   QRコード共有
+========================= */
+
+.share-qr-trigger{
+  display:block;
+  width:fit-content;
+  margin:6px auto;
+  font-size:12px;
+  color:#555;
+  cursor:pointer;
+}
+
+.share-qr-trigger:hover{
+  color:#000;
+}
+
+/* =========================
+   著作権表示
+========================= */
+
+#settingsFooter {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-align: center;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+#settingsFooter:hover {
+  color: #000;
+}
+
+.terms-hint {
+  font-size: 10px;
+}
+
+/* ===============================
+   共通 インフォメーションモーダル　共通
+   =============================== */
+
+/* ----------------- モーダル背景 ----------------- */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+/* 表示時 */
+.help-modal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* ----------------- モーダル本体 ----------------- */
+.help-modal-content {
+  width: min(390px, calc(100vw - 32px));
+  max-width: 390px;
+  box-sizing: border-box;
+
+  max-height: 75vh;
+  padding: 18px 20px;
+
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ----------------- モーダル本文（スクロール可能） ----------------- */
+.modal-body {
+  overflow-y: auto;
+  padding-right: 8px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+/* ----------------- 見出し ----------------- */
+.help-modal-content h2 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.4em;
+}
+
+.help-modal-content h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.help-modal-content h4 {
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+/* ----------------- 段落・リスト ----------------- */
+.modal-body p {
+  margin-bottom: 14px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+.modal-body ul,
+.modal-body ol {
+  margin-bottom: 14px;
+  padding-left: 20px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+/* ----------------- QRコード共有 ----------------- */
+
+#qrCanvas {
+  display: block;
+  margin: 12px auto;
+}
+
+#qrUrlText {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* ----------------- 注意書き ----------------- */
+.help-modal-content .note {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.03);
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-left: 3px solid #6fd3f5;
+  border-radius: 6px;
+}
+
+/* ----------------- 自然な強調 ----------------- */
+.sub-info {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+  background-color: #f9f9f9;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+/* ----------------- 閉じるボタン ----------------- */
+.help-close {
+  margin-top: 16px;
+  font-size: 14px;
+  background: #e0e0e0;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  align-self: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.help-close:hover {
+  background: #d4d4d4;
+  color: #000;
+}
+
+/* ----------------- アコーディオン共通 ----------------- */
+.accordion-content {
+  display: none;
+  padding-left: 12px;
+  margin-bottom: 10px;
+}
+
+.accordion-content.open {
+  display: block;
+}
+
+.accordion-toggle {
+  cursor: pointer;
+  user-select: none;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.accordion-toggle:hover {
+  color: #ff416c;
+}
+
+.accordion-toggle.nested {
+  font-weight: 500;
+  font-size: 0.95em;
+  margin-left: 8px;
+}
+
+.accordion-content.nested {
+  padding-left: 16px;
+}
+
+.accordion-toggle::after {
+  content: " ▼";
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.accordion-toggle.open::after {
+  content: " ▲";
+}
+
+/* ----------------- アプリロゴ ----------------- */
+
+.about-logo {
+  margin: 12px 0 8px;
+  text-align: center;
+}
+
+.about-logo img {
+  width: 120px;
+  height: auto;
+  opacity: 0.95;
+}
+
+.about-concept {
+  font-size: 15px;
+  margin-left: 18px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  color: #333;
+  text-align: left;
+}
+
+/* =========================
+   OFUSE
+========================= */
+
+.support-section{
+  font-size:12px;
+  text-align:center;
+  margin-top:10px;
+  margin-bottom:6px;
+}
+
+.support-section a{
+  color:#555;
+  text-decoration:none;
+}
+
+.support-section a:hover{
+  color:#000;
+}
+
+.ofuse-wrap{
+  display:flex;
+  justify-content:center;
+  margin:14px 0;
+}
+
+.ofuse-note{
+  font-size:11px;
+  color:#666;
+  line-height:1.5;
+  margin-top:8px;
+}
+
 </style>
 </head>
 
@@ -2391,6 +2777,257 @@ iframe {
         onclick="enterSoloCounterWithConfirm()">
   Let's Go Fishing!!
 </button>
+
+<!-- =========================
+     アプリURLコピーUI
+========================= -->
+<div class="share-url-wrapper-compact">
+
+  <span class="share-label">
+    アプリURLで遠くの友達と共有：
+  </span>
+
+  <div class="url-row">
+
+    <div id="appURLText" class="app-url-text">
+      https://tok-dot.github.io/doublebite/
+    </div>
+
+    <button id="copyURL">コピー</button>
+
+  </div>
+
+</div>
+
+<!-- QRコード共有 -->
+<div class="share-qr-trigger" id="openQrModal">
+  QRコードで近くの友達と共有
+</div>
+
+<!-- QRコード共有 モーダル -->
+<div id="qrModal" class="help-modal" aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>QRコードで共有</h2>
+
+    <div class="modal-body" style="text-align:center;">
+
+      <p style="font-size:14px;margin-bottom:10px;">
+        スマホで読み取って、<br>
+        アプリをすぐに開けます
+      </p>
+
+      <canvas
+        id="qrCanvas"
+        width="200"
+        height="200">
+      </canvas>
+
+      <p id="qrUrlText"
+         style="font-size:12px;color:#666;">
+      </p>
+
+    </div>
+
+    <button
+      class="help-close"
+      id="closeQrModal">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     著作権表示
+========================= -->
+
+<div id="settingsFooter">
+  © 2026 Tok.DoT. All rights reserved.<br>
+  <span class="terms-hint">
+    利用規約・免責事項
+  </span>
+</div>
+
+<!-- =========================
+     利用規約・免責事項
+========================= -->
+
+<div id="termsDialog"
+     class="help-modal"
+     aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>Double Bite!! 利用規約</h2>
+
+    <p class="terms-intro">
+      本アプリを安心してご利用いただくための内容です。
+    </p>
+
+    <div class="modal-body">
+
+      <p>
+
+        最終更新日：2026年7月3日
+        <br><br>
+
+        本規約は、Double Bite!!（以下「本アプリ」）の利用条件を定めるものです。<br>
+        本アプリを利用することで、本規約に同意したものとみなします。
+        <br><br>
+
+        <strong>1. 利用条件</strong><br>
+
+        本アプリは、ワカサギ釣りの釣果管理を目的として、
+        無料で自由にご利用いただけます。<br>
+
+        商用利用、再配布、改変はご遠慮ください。
+        <br><br>
+
+        <em>禁止行為の例：</em><br>
+
+        ・不正アクセスや改ざん行為<br>
+        ・他の利用者へ迷惑を及ぼす行為<br>
+        ・法律・公序良俗に反する行為
+
+        <br><br>
+
+        <strong>2. 著作権</strong><br>
+
+        本アプリの著作権は、
+        Tok.DoT / Hiroki Sato に帰属します。<br>
+
+        © 2026 Tok.DoT. All Rights Reserved.
+
+        <br><br>
+
+        <strong>3. 免責事項</strong><br>
+
+        ・本アプリの利用によって生じたいかなる損害についても、
+        運営者は責任を負いません。<br>
+
+        ・本アプリの内容は、
+        予告なく変更・停止・終了する場合があります。<br>
+
+        ・本アプリの情報は参考目的で提供しており、
+        正確性を保証するものではありません。
+
+        <br><br>
+
+        <strong>4. ユーザーの責任</strong><br>
+
+        ・端末やデータの管理は利用者自身の責任で行ってください。<br>
+
+        ・本アプリ利用中のトラブルや誤操作について、
+        運営者は責任を負いません。
+
+        <br><br>
+
+        <strong>5. プライバシー</strong><br>
+
+        ・本アプリは個人情報を保存しません。<br>
+
+        ・匿名のアクセス情報を取得する場合があります。
+
+        <br><br>
+
+        <strong>6. 改訂</strong><br>
+
+        本利用規約は予告なく改訂される場合があります。<br>
+        最新版はアプリ内でご確認ください。
+
+      </p>
+
+      <p class="terms-end">
+        ここまでご確認いただきありがとうございます。
+      </p>
+
+    </div>
+
+    <button class="help-close" type="button">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ========================= -->
+
+<!-- =========================
+     OFUSE
+========================= -->
+
+<section class="support-section">
+  <a href="#" id="openSupportModal">
+    OFUSEで応援する
+  </a>
+</section>
+
+<div id="supportModal"
+     class="help-modal"
+     aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>応援ありがとうございます</h2>
+
+    <div class="modal-body" style="text-align:center;">
+
+      <p>
+        このアプリは無料でご利用いただけます。<br>
+        もし役に立ったと感じていただけたら、<br>
+        開発の励みになりますので、
+        <br><br>
+        <strong>下のボタンから応援をお願いします。</strong>
+      </p>
+
+      <div class="ofuse-wrap">
+
+        <a
+          href="https://ofuse.me/o?uid=142822"
+          data-ofuse-widget-button
+          data-ofuse-id="142822">
+
+          <img
+            src="https://ofuse.me/images/ofuse_button.png"
+            alt="OFUSEで応援する"
+            style="max-width:180px; height:auto; display:block; margin:0 auto;"
+          />
+
+        </a>
+
+      </div>
+
+      <p class="ofuse-note">
+        ※OFUSEという名前は「お布施」に似ていますが、
+        宗教とは関係なく、
+        気軽に応援やサポートの気持ちを届けられるサービスです。
+      </p>
+
+    </div>
+
+    <button
+      class="help-close"
+      id="closeSupportModal">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     シンプルアラートダイアログ
+========================= -->
+<div id="simpleAlertDialog">
+  <div class="simple-alert-box">
+    <div id="simpleAlertMessage"></div>
+    <button type="button" onclick="simpleAlertOK()">OK</button>
+  </div>
+</div>
 
 <!-- みんなでテント -->
 <div class="counter-group-main gradient" id="groupMain"></div>
@@ -2514,9 +3151,9 @@ iframe {
     エサ投入・交換
   </button>
 
-  <div id="baitTimer" class="bait-timer">
-    あと 15:00
-  </div>
+<div id="baitTimer" class="bait-timer">
+  あと <span class="bait-min">15</span>:<span class="bait-sec">00</span>
+</div>
 
   <div id="baitSetting" class="bait-setting">
     設定：15分
@@ -5517,8 +6154,12 @@ function updateBaitTimerDisplay() {
     const min = Math.floor(baitTimerSeconds / 60);
     const sec = baitTimerSeconds % 60;
 
-    document.getElementById("baitTimer").textContent =
-        `あと ${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+document.querySelector(".bait-min").textContent =
+  String(min).padStart(2,"0");
+
+document.querySelector(".bait-sec").textContent =
+  String(sec).padStart(2,"0");
+
 }
 
 // タイマー開始
@@ -5568,6 +6209,222 @@ function startBaitTimer(){
 document.getElementById("baitTimerBtn")
 .addEventListener("click",startBaitTimer);
 
+
+/* =========================
+   シンプルアラート
+========================= */
+
+function showSimpleAlert(msg){
+  const dialog = document.getElementById("simpleAlertDialog");
+  const message = document.getElementById("simpleAlertMessage");
+
+  message.textContent = msg;
+  dialog.style.display = "flex";
+}
+
+function simpleAlertOK(){
+  document.getElementById("simpleAlertDialog").style.display = "none";
+}
+
+/* =========================
+   URLコピー機能
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const copyBtn = document.getElementById("copyURL");
+
+  copyBtn.addEventListener("click", () => {
+
+    const urlText = document.getElementById("appURLText").textContent;
+
+    navigator.clipboard.writeText(urlText)
+      .then(() => {
+        showSimpleAlert("URLをコピーしました！");
+      })
+      .catch(() => {
+        showSimpleAlert("コピーに失敗しました");
+      });
+  });
+
+});
+
+
+/* =========================
+   シンプルアラート
+   背景タップでも閉じる
+========================= */
+
+document.getElementById("simpleAlertDialog").addEventListener("click", function(e) {
+
+  // 背景部分だけクリックした場合
+  if (e.target === this) {
+    simpleAlertOK();
+  }
+
+});
+
+// =========================
+// QRコード共有モーダル
+// =========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("openQrModal");
+  const modal    = document.getElementById("qrModal");
+  const closeBtn = document.getElementById("closeQrModal");
+  const canvas   = document.getElementById("qrCanvas");
+  const urlText  = document.getElementById("qrUrlText");
+
+  if (!openBtn || !modal || !closeBtn || !canvas || !urlText) return;
+
+  // ダブルカウンターのURL
+  const APP_URL = "https://tok-dot.github.io/doublebite/";
+
+  // URLを表示
+  urlText.textContent = APP_URL;
+
+  // QRコード生成
+  const qr = new QRious({
+    element: canvas,
+    size: 200,
+    value: APP_URL
+  });
+
+  // モーダルを開く
+  openBtn.addEventListener("click", () => {
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+
+    // 念のため毎回更新
+    qr.set({
+      value: APP_URL
+    });
+
+  });
+
+  // モーダルを閉じる
+  function closeQrModal() {
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+
+  }
+
+  closeBtn.addEventListener("click", closeQrModal);
+
+  // 背景クリックでも閉じる
+  modal.addEventListener("click", (e) => {
+
+    if (e.target === modal) {
+      closeQrModal();
+    }
+
+  });
+
+});
+
+/* =========================
+   利用規約モーダル
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const footer = document.getElementById("settingsFooter");
+  const dialog = document.getElementById("termsDialog");
+  const closeBtn = dialog.querySelector(".help-close");
+
+  if (!footer || !dialog || !closeBtn) return;
+
+  // 開く
+  footer.addEventListener("click", () => {
+
+    dialog.classList.add("show");
+    dialog.setAttribute("aria-hidden", "false");
+
+  });
+
+  function closeTermsDialog() {
+
+    dialog.classList.remove("show");
+    dialog.setAttribute("aria-hidden", "true");
+
+  }
+
+  // 閉じるボタン
+  closeBtn.addEventListener("click", closeTermsDialog);
+
+  // 背景クリック
+  dialog.addEventListener("click", (e) => {
+
+    if (e.target === dialog) {
+      closeTermsDialog();
+    }
+
+  });
+
+  // ESCキー
+  document.addEventListener("keydown", (e) => {
+
+    if (e.key === "Escape") {
+      closeTermsDialog();
+    }
+
+  });
+
+});
+
+// =========================
+// OFUSE モーダル
+// =========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("openSupportModal");
+  const modal    = document.getElementById("supportModal");
+  const closeBtn = document.getElementById("closeSupportModal");
+
+  if (!openBtn || !modal || !closeBtn) return;
+
+  // ------------------------
+  // 開く
+  // ------------------------
+  openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+  });
+
+  // ------------------------
+  // 閉じるボタン
+  // ------------------------
+  closeBtn.addEventListener("click", () => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  });
+
+  // ------------------------
+  // 背景クリックで閉じる
+  // ------------------------
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+  // ------------------------
+  // ESCキーで閉じる
+  // ------------------------
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+});
 
 // ----------------------------
 // スケーリング処理
@@ -5703,6 +6560,12 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+
+<!-- QRコード用QRious ライブラリ読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+
+<!-- OFUSE ウィジェット（async でOK） -->
+<script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
 
 </body>
 </html>
