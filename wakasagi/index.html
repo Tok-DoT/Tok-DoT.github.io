@@ -1,1 +1,6571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ワカサギ釣りカウンター</title>
 
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#ff9800">
+
+<!-- Google Fonts Preconnect -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Google Fonts（統合版） -->
+<link href="https://fonts.googleapis.com/css2?
+family=Kosugi+Maru&
+family=RocknRoll+One&
+family=Seymour+One&
+family=Rubik+Doodle+Shadow&
+family=Saira:ital,wght@0,100..900;1,100..900&
+family=BBH+Hegarty&
+family=Comfortaa:wght@300..700&
+family=Alfa+Slab+One&
+display=swap" rel="stylesheet">
+
+
+<style>
+html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:"Kosugi Maru", sans-serif;
+  background:#f2f2f2;
+
+  /* 全体テキスト選択不可 */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE */
+  user-select: none;         /* 標準 */
+}
+
+/* ただしフォーム内は選択可能 */
+input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 共通スマホ対応スケール */
+#appScaleWrapper{
+  width:400px;
+  height:100vh;
+  box-sizing:border-box;
+  padding:10px;
+}
+
+/* アプリ共通スクリーン（背景・フォント） */
+.screen {
+  padding: 20px;
+  max-width: 390px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  font-family: "Saira", sans-serif;
+  display: none;
+  background: #fff;       /* 初期画面や他画面は白背景 */
+  border-radius: 14px;
+  position: relative;     /* 子ボタンを絶対位置で配置するため */
+}
+
+.screen.active {
+  display: block;
+}
+
+/* 各画面の下中央に戻るボタンを配置 */
+.screenBackBtn {
+  position: fixed;
+  bottom: 320px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+
+  width: min(320px, 80vw);
+  padding: 10px 0;
+
+  background-color: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  text-align: center;
+}
+
+.screenBackBtn:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+/* アプリ共通テント名 */
+#orgName{
+  font-size:16px;
+}
+
+/* アプリ共通わいわい登録・わいわい参加　入力統一 */
+#orgScreen input,
+#partScreen #searchName{
+  font-size:16px;
+}
+
+/* アプリ共通見出し等 */
+h1,h2,h3{
+  text-align:center;
+  margin-top:10px;
+  margin-bottom:2px;
+}
+h1{font-size:21px;}
+h2{font-size:18px;}
+h3{font-size:15px;}
+
+/* 初期画面の見出し行間 */
+#entryScreen h1 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+#entryScreen h2 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+#entryScreen h3 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* アプリ共通ボタン① */
+button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  margin-bottom:8px;
+  border:none;
+  border-radius:14px;
+  background:#4CAF50;
+  color:#fff;
+  font-size:18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap:2px;
+}
+
+/* アプリ共通ボタン② */
+button.sub{
+  background:#FFD700;
+  color:#000;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+/* 危険・削除系ボタン（赤寄りピンク） */
+.sub.sub-danger {
+  background-color: #f28b8b;
+  color: #fff;
+  font-weight: bold;
+  gap:2px;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+.sub.sub-danger:hover {
+  background-color: #e57373;
+}
+
+.sub.sub-danger:active {
+  background-color: #d9534f;
+}
+
+/* サーバー登録ボタン（確実版） */
+.sub.sub-server {
+  background-color: #4a90e2;
+  color: #fff;
+  font-weight: bold;
+  gap:2px;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+.sub.sub-server:hover {
+  background-color: #357abd;
+}
+
+.sub.sub-server:active {
+  background-color: #2c5fa8;
+}
+
+/* テント参加ボタン（ワカサギオレンジ） */
+.sub.sub-join {
+  background-color: #F39C12;
+  color: #fff;
+  font-weight: bold;
+  gap:2px;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+.sub.sub-join:hover {
+  background-color: #e67e22;
+}
+
+.sub.sub-join:active {
+  background-color: #d35400;
+}
+
+/* テント検索ボタン */
+.sub.sub-search {
+  background-color: #16A085;
+  color: #fff;
+  font-weight: bold;
+  gap:2px;
+  margin-top:8px;
+  margin-bottom:8px;
+}
+
+.sub.sub-search:hover {
+  background-color: #138D75;
+}
+
+.sub.sub-search:active {
+  background-color: #117864;
+}
+
+/* アプリ共通入力フォーム */
+input{
+  width:100%;
+  padding:8px;
+  margin-top:2px;
+  margin-bottom:2px;
+  border-radius:12px;
+  border:none;
+  box-sizing:border-box;
+  font-size:16px;
+  text-align:center;
+}
+
+/* アプリ共通ラベル */
+ul{list-style:none;padding:0;margin:8px 0;}
+li{
+  padding:8px;
+  border-radius:10px;
+  background:#eee;
+  margin-top:8px;
+  margin-bottom:8px;
+  cursor:pointer;
+  font-size:14px;
+  text-align:center;
+}
+
+/* アプリ共通ミニカウンターグリッド */
+.counter-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+}
+
+/* アプリ共通ミニカウンターボックス */
+.counter-box{
+  min-height:100px; 
+  background:#2A78B4;
+  color:#fff;
+  border-radius:12px;
+  padding:4px;
+  text-align:center;
+  font-size:16px;
+  font-family:"Saira", sans-serif;
+}
+
+.counter-box.locked{background:rgba(0,0,0,0.5);}
+.counter-box.selected{border:3px solid gold;}
+
+/* ------------------------ 初期画面のボタン関連 ------------------------  */
+
+/* =====================================
+   アプリ標準ボタン：プライマリ（落ち着きブルー系・最上段）
+   ===================================== */
+button.btn-solo {
+  display: inline-block;
+  width: 100%;
+  min-width: 120px;
+  min-height: 100px;       /* 縦幅 */
+  line-height: 1.2;
+  text-align: center;
+  padding: 16px 16px;      /* 上下左右余白 */
+
+  background: linear-gradient(
+    to bottom,
+    #4f6fa8 0%,   /* 明るめブルー */
+    #2f4f8f 30%, 
+    #1f3f7a 70%, 
+    #162f5f 100%  /* 濃いブルー */
+  );
+  color: #fff;
+  font-weight: bold;
+  font-family: "RocknRoll One", sans-serif;
+  border-radius: 14px;
+
+  /* ぷっくり＋浮き感 */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 3px 0 #0f2544,
+    0 8px 14px rgba(0,0,0,0.18);
+
+  transition:
+    transform 0.12s cubic-bezier(.25,.8,.3,1),
+    box-shadow 0.12s cubic-bezier(.25,.8,.3,1),
+    filter 0.12s ease,
+    text-shadow 0.12s ease;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  outline: none;
+}
+
+/* ホバー */
+button.btn-solo:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 4px 0 #0f2544,
+    0 10px 16px rgba(0,0,0,0.18);
+}
+
+/* フォーカス */
+button.btn-solo:focus {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 4px 0 #0f2544,
+    0 12px 20px rgba(0,0,0,0.22);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* 押下 */
+button.btn-solo:active {
+  transform: translateY(2px) scale(0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 1px 0 #0f2544,
+    0 3px 5px rgba(0,0,0,0.25);
+  filter: brightness(0.95);
+  text-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* =====================================
+   リーダーエントリー専用（穏やかパープル系・中段）
+   ===================================== */
+button.btn-org {
+  display: inline-block;
+  width: 100%;
+  min-width: 120px;
+  min-height: 100px;
+  line-height: 1.2;
+  text-align: center;
+  padding: 16px 16px;
+
+  background: linear-gradient(
+    to bottom,
+    #9b5f9b 0%,    /* 明るめパープル */
+    #7d3f7d 30%, 
+    #5c2b5c 70%, 
+    #3d1a3d 100%   /* 濃色 */
+  );
+  color: #fff;
+  font-weight: bold;
+  border-radius: 14px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 3px 0 #2e1a2e,
+    0 8px 14px rgba(0,0,0,0.18);
+
+  transition:
+    transform 0.12s cubic-bezier(.25,.8,.3,1),
+    box-shadow 0.12s cubic-bezier(.25,.8,.3,1),
+    filter 0.12s ease,
+    text-shadow 0.12s ease;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  outline: none;
+}
+
+/* ホバー */
+button.btn-org:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 4px 0 #2e1a2e,
+    0 10px 16px rgba(0,0,0,0.18);
+}
+
+/* フォーカス */
+button.btn-org:focus {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 4px 0 #2e1a2e,
+    0 12px 20px rgba(0,0,0,0.22);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* 押下 */
+button.btn-org:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 1px 0 #2e1a2e,
+    0 3px 5px rgba(0,0,0,0.25);
+  filter: brightness(0.95);
+  text-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* =====================================
+   メンバーエントリー専用（やわらかオレンジ系・下段）
+   ===================================== */
+button.btn-part {
+  display: inline-block;
+  width: 100%;
+  min-width: 120px;
+  min-height: 100px;
+  line-height: 1.2;
+  text-align: center;
+  padding: 16px 16px;
+
+  background: linear-gradient(
+    to bottom,
+    #f5a55a 0%,   /* 明るめオレンジ */
+    #eb8940 30%,
+    #d86f27 70%,
+    #b35900 100%  /* 濃いオレンジ */
+  );
+  color: #fff;
+  font-weight: bold;
+  border-radius: 14px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 3px 0 #7a3f00,
+    0 8px 14px rgba(0,0,0,0.18);
+
+  transition:
+    transform 0.12s cubic-bezier(.25,.8,.3,1),
+    box-shadow 0.12s cubic-bezier(.25,.8,.3,1),
+    filter 0.12s ease,
+    text-shadow 0.12s ease;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  outline: none;
+}
+
+/* ホバー */
+button.btn-part:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 4px 0 #7a3f00,
+    0 10px 16px rgba(0,0,0,0.18);
+}
+
+/* フォーカス */
+button.btn-part:focus {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.30),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 4px 0 #7a3f00,
+    0 12px 20px rgba(0,0,0,0.22);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* 押下 */
+button.btn-part:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 1px 0 #7a3f00,
+    0 3px 5px rgba(0,0,0,0.25);
+  filter: brightness(0.95);
+  text-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* ------------------------ 初期画面のボタン関連 ------------------------ */
+
+/* -------------------------------- ひとりカウンター枠 -------------------------------- */
+/* ひとりカウンター全体枠 */
+#soloCounterScreen {
+  background-color: #F5F5F5;  /* 好きな色に変更可能 */
+  border-radius: 16px;         /* 角丸 */
+  padding: 12px;               /* 内側余白 */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* 軽い影で浮いた感じ */
+}
+
+/* ひとりカウンター画面背景専用 */
+.screen.solo-counter {
+  background-color: transparent; /* 黒はWrapperで */
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  position: relative;      /* Wrapperの絶対配置用 */
+  min-height: 100vh;       /* 画面全体を確保 */
+  box-sizing: border-box;
+}
+
+/* ひとりカウンター本体 */
+.soloCounterWrapper {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #FFF8DC;   /* 初期クリーム色 */
+  color: #000;                  /* 初期文字色 */
+
+  border-radius: 20px;          /* さらに丸くぷっくり */
+  padding: 12px;
+  max-width: 400px;
+  width: 90%;
+
+  max-height: calc(100vh - 40px);
+  overflow-x: hidden;
+  overflow-y: auto; 
+
+  /* 内側光でぷっくり感 */
+  box-shadow:
+    inset 0 6px 12px rgba(255,255,255,0.6),  /* 上面の光 */
+    inset 0 -4px 6px rgba(0,0,0,0.08);      /* 下側の微陰影 */
+
+  /* 背景や文字色の変化に対応 */
+  transition:
+    background-color 0.6s ease,
+    color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* ------------------------ カウンターレイアウト枠の基本CSS ------------------------ */
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 30px;
+
+  border: 1px solid transparent; /* ← 透明な枠にする */
+}
+
+/* ------------------------ カウンターレイアウト枠の基本CSS ------------------------ */
+
+/* ------------------------ 上から1段目 ------------------------ */
+.row-1 {
+  grid-template-columns: 1fr;
+  text-align: center;
+}
+
+/* ------------------------ 上から2段目 ------------------------ */
+.row-2 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.row-2 .cell-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+}
+
+.row-2 .cell {
+  min-height: 30px; /* 好きな高さに */
+}
+
+/* ------------------------ 上から3段目 ------------------------ */
+.row-3 {
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr; /* 中央セルを広く、左右セルを狭く */
+}
+
+.row-3 .cell:nth-child(3) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+}
+
+.row-3 .cell {
+  min-height: 30px; /* 入力欄があるので少し高め */
+}
+/* ------------------------ ひとりカウンターボタン関連 ------------------------ */
+
+/* Cボタン：ぷっくり盛り上がり（影なし・凹み強化） */
+.reset-btn {
+  width: 80px;
+  height: 34px;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 4px;
+
+  /* 通常時：盛り上がり */
+  background: linear-gradient(to bottom, #FF6F61, #E53935);
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,0.45), /* 上ハイライト */
+    inset 0 -3px 5px rgba(0,0,0,0.25);     /* 底の影 */
+
+  transition: background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* hover：ほんのり明るく */
+.reset-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* active：しっかり凹む */
+.reset-btn:active {
+  background: linear-gradient(to bottom, #C62828, #B71C1C); /* 深く沈んだ色 */
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.15), /* ハイライトほぼ消す */
+    inset 0 5px 7px rgba(0,0,0,0.45);       /* 深い凹み影 */
+  filter: brightness(0.95);
+}
+
+/* Cボタン：赤系（色だけ管理） */
+.c-btn {
+  background: linear-gradient(to bottom, #FF6F61, #E53935);
+}
+.c-btn:active {
+  background: linear-gradient(to bottom, #C62828, #B71C1C);
+}
+
+/* ▼ボタン：ぷっくり盛り上がり（影なし・凹み強化） */
+.decrease-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 34px;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 4px;
+
+  /* 通常時：盛り上がり */
+  background: linear-gradient(to bottom, #4FC3F7, #029BE5);
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,0.45), /* 上ハイライト強め */
+    inset 0 -3px 5px rgba(0,0,0,0.25);     /* 底の影 */
+
+  transition: background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* hover：ほんのり明るく */
+.decrease-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* active：しっかり凹む */
+.decrease-btn:active {
+  background: linear-gradient(to bottom, #0288D1, #0277BD); /* 沈んだ色 */
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.15), /* ハイライトほぼ消す */
+    inset 0 5px 7px rgba(0,0,0,0.45);       /* 深い凹み影 */
+  filter: brightness(0.95);
+}
+
+/* ------------------- カウンター本体色変更用 ------------------- */
+.wrapper-color-slider {
+  width: 32px;
+  height: 70px;
+  margin: 0 auto;
+  border-radius: 16px;
+  border: 2px solid #888;
+  cursor: grab;
+  background-color: #FFF8E1; /* 初期色クリーム */
+  /* ★ ここを追加 */
+  transition: background-color 0.4s ease;
+}
+/* ------------------- カウンター本体色変更用 ------------------- */
+
+/* ---------- 左右のスクロールバーで穴の色変更 ---------- */
+/* 左右色変更ボックス */
+.color-box {
+  width: 14px;
+  height: 70px; /* 2段目セルに収まる高さ */
+  margin: 0 auto;
+  border-radius: 8px;
+  border: 1px solid #888;
+  cursor: grab;
+  background-color: #1ABC9C; /* 左初期色 */
+}
+
+/* 左初期色はJSでセット */
+.left-color-box {
+  background-color: #1ABC9C;
+}
+
+/* 右初期色はJSでセット */
+.right-color-box {
+  background-color: #E67E22;
+}
+/* ---------- 左右のスクロールバーで穴の色変更 ---------- */
+
+/* ---------- カラースクロールバー固定 ---------- */
+
+/* 下ボタン（カラーパレット固定ボタン） */
+.other-btn-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #888888;
+  background: #E0E0E0; /* OFF */
+  transition: all 0.15s ease;
+}
+
+/* 固定中（ON） */
+.other-btn-placeholder.locked {
+  background: #FF8C42;     /* オレンジでONを表示 */
+  border-color: #FF6F00;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4); /* 凹み風 */
+}
+
+/* OFF時の軽い影（フラット感強調） */
+.other-btn-placeholder:not(.locked) {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* 軽く浮かせる */
+}
+
+/* ---------- カラースクロールバー固定 ---------- */
+
+/* □背景ラッパー（雪のイメージ・ぷっくり） */
+.soloCount-bg {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;  /* 少し丸めてぷっくり感 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* ぷっくり感を出すグラデーション */
+  background: linear-gradient(to bottom, #FFFFFF, #E8F1FF);
+
+  /* 内側光でぷっくり感 */
+  box-shadow: inset 0 4px 6px rgba(255,255,255,0.8),
+              inset 0 -2px 4px rgba(200,220,255,0.5);
+}
+
+/* 中央カウント数字 */
+#soloCount {
+  pointer-events: none;
+  font-size: 46px;
+  font-weight: bold;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #004B87;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;   /* 波紋の位置基準 */
+  overflow: hidden;
+
+ /* □フラッシュを消す */
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+
+  /* 凹み立体感 */
+  box-shadow: 
+    inset 4px 4px 6px rgba(0, 0, 0, 0.4),  /* 右下の影で凹み感 */
+    inset -4px -4px 6px rgba(255, 255, 255, 0.2); /* 左上の光で立体感 */
+}
+
+/* 中央カウント合計用波紋 */
+#soloCount .ripple-center {
+  position: absolute;
+  width: 8px;    /* 開始サイズ */
+  height: 8px;
+  background: rgba(255, 255, 255, 0.6); /* 白っぽい波紋 */
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: rippleBtn 0.6s ease-out forwards; /* 左右ボタンと同じアニメーション */
+  pointer-events: none;
+}
+
+/* 中央カウント合計用波紋アニメーション */
+@keyframes ripple-center {
+  0% {
+    width: 8px;
+    height: 8px;
+    opacity: 0.6;
+  }
+  100% {
+    width: 80px;   /* ボタンのサイズに合わせて拡大 */
+    height: 80px;
+    opacity: 0;
+  }
+}
+
+/* ------------------- 中央右ボタン用（グラフ用・角丸・白背景） ------------------- */
+.graph-btn-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.graph-btn-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  border: 2px solid #888888; /* ここでグレー枠追加 */
+  background: #000000; /* ボタン全体を黒に変更 */
+  position: relative;
+  transition: filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* 枠内を白背景にする */
+.graph-btn-placeholder::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 26px;
+  height: 25px;
+  background: #FFFFFF; /* 枠内を白に */
+  border: 1px solid #555555; /* 実線枠は濃いグレーのまま */
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.graph-btn-placeholder:hover {
+  filter: brightness(1.08);
+}
+
+.graph-btn-placeholder:active {
+  filter: brightness(0.95);
+}
+
+/* ミニ棒グラフ：固定幅ブロック、中央配置 */
+.graph-btn-placeholder .mini-bar-segment {
+  position: absolute;
+  width: 3px;   /* ブロック幅固定 */
+  height: 2px;  /* 縦幅狭め */
+  background: #FF8C42;
+  border-radius: 1px;
+}
+
+/* ------------------- 中央右ボタン用（グラフ用・角丸・白背景） ------------------- */
+
+/* 左右カウント数字共通 */
+.solo-sub-count {
+  font-size: 46px;
+  font-weight: bold;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;  /* 波紋の基準 */
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent; /* iOS/Safari */
+  outline: none;                            /* フォーカス枠も消す */
+
+  /* 凹み立体感 */
+  box-shadow: 
+    inset 4px 4px 6px rgba(0, 0, 0, 0.4),   /* 右下の影で凹み感 */
+    inset -4px -4px 6px rgba(255, 255, 255, 0.2); /* 左上の光で立体感 */
+}
+
+/* 左カウント用（ターコイズブルー） */
+.solo-sub-count.left {
+  background: #1ABC9C;  /* ターコイズブルー */
+  color: #fff;
+}
+
+/* 右カウント用（補色のオレンジ系） */
+.solo-sub-count.right {
+  background: #E67E22;  /* コントラストのあるオレンジ系 */
+  color: #fff;
+}
+
+/* 左右カウント数字用波紋 */
+.solo-sub-count .ripple-btn {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  animation: rippleBtn 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* 左右カウント数字用波紋アニメーション */
+@keyframes rippleBtn {
+  0% { width: 8px; height: 8px; opacity: 0.6; }
+  100% { width: 80px; height: 80px; opacity: 0; }
+}
+
+/* ニックネーム・つぶやき入力フォーム */
+.my-counter-input {
+  width: 116px;
+  height: 24px;
+  margin: 2px auto 0 auto; 
+  padding: 1px;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  box-sizing: border-box;
+}
+
+/* 送信ボタン：ぷっくり盛り上がり（影なし） */
+.screen.solo-counter .send-btn {
+  display: block;
+  width: 116px;
+  margin: 4px auto 0 auto;
+  padding: 4px 0;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+
+  /* 通常時：盛り上がり */
+  background: linear-gradient(to bottom, #66BB6A, #4CAF50);
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,0.45), /* 強めハイライト */
+    inset 0 -3px 5px rgba(0,0,0,0.25);     /* 底の影 */
+
+  transition: background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* hover：ほんのり明るく */
+.screen.solo-counter .send-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* active：しっかり凹む */
+.screen.solo-counter .send-btn:active {
+  background: linear-gradient(to bottom, #43A047, #2E7D32); /* 一段暗く */
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.15), /* ハイライトほぼ消す */
+    inset 0 5px 7px rgba(0,0,0,0.45);       /* 深い凹み影 */
+  filter: brightness(0.95);
+}
+
+/* エサ投入交換ボタン：ぷっくり盛り上がり（影なし） */
+.screen.solo-counter .bait-btn {
+  display: block;
+  width: 116px;
+  margin: 2px auto 0 auto;
+  padding: 2px 0;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+
+  /* 通常時：盛り上がり */
+  background: linear-gradient(to bottom, #FFA726, #F57C00);
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,0.45), /* 強めハイライト */
+    inset 0 -3px 5px rgba(0,0,0,0.25);     /* 底の影 */
+
+  transition: background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* hover：ほんのり明るく */
+.screen.solo-counter .bait-btn:hover {
+  filter: brightness(1.08);
+}
+
+/* active：しっかり凹む */
+.screen.solo-counter .bait-btn:active {
+  background: linear-gradient(to bottom, #F57C00, #E65100);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.15),
+    inset 0 5px 7px rgba(0,0,0,0.45);
+  filter: brightness(0.95);
+}
+
+/* 時間切れ */
+.screen.solo-counter .bait-btn.timeout{
+  background: linear-gradient(to bottom, #EF5350, #C62828);
+}
+
+/* =========================
+   エサ交換タイマー表示
+   ========================= */
+
+.bait-timer{
+    width:116px;
+
+    margin:1px auto 0;
+
+    padding:1px 0;
+
+    border-radius:16px;
+
+    background:#fff;
+    border:1px solid #ddd;
+
+    font-size:15px;
+    font-weight:bold;
+    line-height:1.2;
+    text-align:center;
+    color:#333;
+
+    box-shadow:
+      inset 0 1px 2px rgba(255,255,255,.8),
+      inset 0 -1px 2px rgba(0,0,0,.08);
+}
+
+.bait-sec {
+  font-size: 0.7em;
+  color: rgba(0,0,0,0.45);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.bait-setting{
+    width:116px;
+
+    margin:2px auto 0;      
+
+    padding:2px 0;          
+
+    border-radius:16px;
+
+    background:linear-gradient(to bottom,#E3F2FD,#BBDEFB);
+    border:1px solid #90CAF9;
+
+    font-size:12px;
+    font-weight:bold;
+    line-height:1.2;        /* 高さを抑える */
+    text-align:center;
+    color:#1565C0;
+
+    cursor:pointer;
+
+    box-shadow:
+      inset 0 1px 2px rgba(255,255,255,.8),
+      inset 0 -1px 2px rgba(0,0,0,.08);
+}
+
+/* -------------------------------- ひとりカウンター枠 -------------------------------- */
+
+/* ------------------------ ひとりカウンターボタン関連 ------------------------ */
+
+
+/* ミニカウンターカウント数字 */
+.count{
+  width:42px;
+  height:42px;
+  line-height:42px;
+  margin:auto;
+  border-radius:50%;
+  background:#004B87;
+  font-weight:bold;
+}
+
+/* ミニカウンターボックス内インプット */
+.counter-box input{
+  padding:4px 6px;
+  margin-top:2px;
+  font-size:12px;
+  border-radius:8px;
+}
+
+.counter-box input:first-of-type{
+  font-weight:bold;
+}
+
+.counter-box input:last-of-type{
+  color:#d0e6f7;   /* ← 少し薄い水色 */
+  font-size:11px;
+}
+
+/* マイカウンター */
+.my-counter{
+  display:grid;
+  grid-template-columns:1fr 80px 1fr;
+  align-items:center;
+  gap:12px;
+  background:#2A78B4;
+  border-radius:14px;
+  padding:10px;
+  margin-top:10px;
+  user-select:none;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+}
+.modal.active{display:flex;}
+
+.modal-box{
+  background:#fff;
+  padding:15px;
+  border-radius:14px;
+  width:85%;
+  text-align:center;
+}
+
+.modal-buttons{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+.modal-buttons button{flex:1;}
+
+/* パスワード表示切り替えボタン */
+.eye-btn{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  padding:4px 8px;
+  font-size:12px;
+  background:#e0e0e0;
+  color:#333;
+  border-radius:8px;
+  cursor:pointer;
+  user-select:none;
+  line-height:1;
+}
+
+.eye-btn:active{
+  background:#ccc;
+}
+
+/* コピーできそうにするCSS */
+#selectedTentDisplay {
+  background: #2A78B4;   /* カウンターボックスと同系統 */
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* アプリ共通のリスト1行分 */
+#orgList li,
+#partList li {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+
+/* アプリ共通リストボックス */
+.list-box{
+  max-height: calc(40px * 3); /* ← 3行分 */
+  overflow-y: auto;
+}
+
+/* アプリ共通のリストアクティブ時の背景 */
+#selectedTentDisplay:active {
+  background: #004B87;
+  color: #fff;
+}
+
+/* アプリ共通のリスト表示背景 */
+.tent-select.selected,
+#orgList li.selected {
+  background-color: #f88;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* わいわいテント登録画面_新しいテント名を入力 */
+.org-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* わいわいテント入力フォーム */
+.input-common {
+  width: 100%;
+  height: 38px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input-flex {
+  flex: 1;
+}
+
+/* わいわいテント所有↑ボタン（機能） */
+.btn-create {
+  /* 既存のスタイルがあればそのまま */
+}
+
+/*  わいわいテント所有↑丸ボタン（見た目） */
+.btn-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1ABC9C;      /* 好きな色に変更OK */
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;           /* 入力欄に押し潰されない */
+}
+
+.btn-circle:active {
+  transform: scale(0.95);
+}
+
+.btn-circle:hover {
+  opacity: 0.85;
+}
+/* ------------------------- 初期画面（エントリー画面） ------------------------- */
+/* サブタイトル全体 */
+.subtitle {
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+/* 1行目 */
+.subtitle-line1 {
+  display: block;
+  font-family: 'Saira', sans-serif;
+  font-size: 1.0rem;     /* ← ベスト */
+  color: #34495e;
+  line-height: 1.3;
+}
+
+/* 2行目 */
+.subtitle-line2 {
+  display: block;
+  font-family: 'Kosugi Maru', monospace;
+  font-size: 0.9rem;     /* ← 少し小さく */
+  color: #5d6d7e;
+  line-height: 1.3;
+}
+
+/* 全体 */
+.title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  max-width: 390px;
+  margin: 1.8rem auto;
+  white-space: nowrap;
+font-family: 'Alfa Slab One', cursive;
+}
+
+/* Bite!! */
+.title-text {
+  font-family: 'Alfa Slab One', cursive;
+  font-size: 1.35rem;
+  color: #f39c12;
+  margin-left: 0.25rem;
+}
+
+/* ------------------------- 初期画面（エントリー画面） ------------------------- */
+
+/* ひとりでテント用メイン文字 */
+.counter-solo-main {
+  font-family: 'Kosugi Maru', monospace;
+  font-size: 1.1rem;
+  color: #1abc9c;            /* ターコイズ系 */
+  text-align: center;
+  margin: 2.5rem auto 0.2rem auto;
+  max-width: 390px;
+}
+
+/* ひとりでテント用キャッチフレーズ */
+.counter-solo-sub {
+  font-family: 'Saira', sans-serif;
+  font-size: 1rem;
+  color: #16a085;            /* 落ち着いたグリーン系 */
+  text-align: center;
+  margin: 0 auto 0.1rem auto;
+  max-width: 390px;
+  display: block;
+}
+
+/* みんなでテント用メイン文字 */
+.counter-group-main {
+  font-family: 'Kosugi Maru', monospace;
+  font-size: 1.1rem;
+  color: #3498db;            /* ブルー系 */
+  text-align: center;
+  margin: 2.5rem auto 0.2rem auto;  /* 上マージンを2remに増やしてボタンとの距離確保 */
+  max-width: 390px;
+}
+
+
+/* みんなでテント用キャッチフレーズ */
+.counter-group-sub {
+  font-family: 'Saira', sans-serif;
+  font-size: 1rem;
+  color: #2980b9;            /* 落ち着いたブルー系 */
+  text-align: center;
+  margin: 0 auto 0.1rem auto;
+  max-width: 390px;
+  display: block;
+}
+
+/* ------------------ グラデーションアニメーション ------------------ */
+
+/* メイン文字用のグラデーション */
+.counter-solo-main.gradient,
+.counter-group-main.gradient {
+  background: linear-gradient(
+    120deg,
+    #f39c12,
+    #1abc9c,
+    #3498db,
+    #9b59b6,
+    #e74c3c,
+    #f39c12
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sparkleMove 6s ease-in-out infinite;
+}
+
+/* グラデーションアニメーション */
+@keyframes sparkleMove {
+  0%   { background-position:   0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position:   0% 50%; }
+}
+
+/* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
+#dateWeatherContainer {
+    width: 380;
+    max-width: 390px; /* 
+    margin: 1px auto;
+    display: flex;
+    flex-direction: column;   /* ※2段表示を維持 */
+    gap: 2px;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+
+/* 日時（少し大きく） */
+#safeDateTimeBox {
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0px; /* 天気との間隔 */
+}
+
+/* 曜日カラー */
+.week-sun { color: #ff6b6b; }   /* 日曜 */
+.week-sat { color: #4dabf7; }   /* 土曜 */
+.week-weekday { color: #ffffff; } /* 平日 */
+
+/* 天気全体枠 */
+#weatherBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;   /* 中央寄せは維持 */
+
+    font-size: 12px;
+    font-weight: 400;
+
+    gap: 4px;                  /* ★ 8px → 4px に調整（詰めすぎない最適値） */
+
+    width: 100%;
+    max-width: 100%;
+    white-space: nowrap;       /* 1段表示維持 */
+
+    overflow: visible;         /* ← 切らない */
+}
+
+/* 天気アイコン */
+#weatherBox i {
+    font-size: 15px;
+    padding: 1px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* hover */
+#weatherBox i:hover {
+    transform: translateY(-1px) scale(1.1);
+    background: rgba(255,255,255,0.3);
+}
+
+/* 天気別カラー */
+.wi-day-sunny { color: #FFD93D; background: #FFD93D33; }
+.wi-day-cloudy { color: #FFB347; background: #FFB34733; }
+.wi-cloud { color: #90E0EF; background: #90E0EF33; }
+.wi-showers { color: #48CAE4; background: #48CAE433; }
+.wi-rain, .wi-rain-wind { color: #0077B6; background: #0077B633; }
+.wi-snow, .wi-snowflake-cold { color: #CAF0F8; background: #CAF0F833; }
+.wi-na { color: #FF6B6B; background: #FF6B6B33; }
+
+#weatherBox span.region {
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+    font-size: 12px; /* 任意 */
+}
+
+
+#weatherBox span.region.prefecture {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
+#weatherBox .weather-name {
+    opacity: 0.85;      /* 少し控えめ */
+    margin-right: 2px; /* 数値との間隔 */
+}
+
+/* 天気表示の横間隔を完全に均一化 */
+#weatherBox span,
+#weatherBox i {
+    margin-right: 4px;
+}
+
+/* 最後だけ余白なし */
+#weatherBox span:last-child,
+#weatherBox i:last-child {
+    margin-right: 0;
+}
+
+/* 風 */
+.strong-wind {
+    color: #4fa3ff;
+}
+
+/* 雨 */
+.heavy-rain {
+    color: #2b7cff;
+    font-weight: 600;
+}
+
+/* 雷 */
+.thunder-alert {
+    color: #ffcc00;
+    font-weight: 600;
+}
+
+/* モーダル位置調整（画面トップに近く表示） */
+#addressModal {
+    display: none;              /* ← 初期は非表示 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+
+    justify-content: center;    /* JSで表示された時に有効 */
+    align-items: flex-start;    /* 上寄せ */
+    padding-top: 60px;
+
+    z-index: 9999;
+}
+
+
+#addressModalContent {
+    background:#fff;
+    padding:20px;
+    border-radius:8px;
+    width:300px;
+    color:#333;
+}
+
+#addressModalContent input {
+    width: 95%;
+    padding: 6px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+#addressModalContent button {
+    padding: 2px 4px;       /* 小さく調整 */
+    margin: 3px;            /* ボタン間の余白も少し減らす */
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #48CAE4;
+    color: #fff;
+    font-weight: 500;
+    font-size: 12px;        /* 小さめフォント */
+}
+
+#addressModalContent button:hover {
+    background-color: #0096C7;
+}
+
+/* ------------------- お天気と日時（2段表示＋調整版） ------------------- */
+
+/* ============================== グラフモーダル ============================== */
+
+/* ============================== グラフモーダル（縦スクロール版） ============================== */
+
+.graph-modal.hidden {
+  display: none;
+}
+
+.graph-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
+
+/* 背景 */
+.graph-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* 本体 */
+.graph-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ヘッダー */
+.graph-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  position: relative;
+}
+
+.graph-modal-header .header-left {
+  width: 40px; /* バランス用（空） */
+}
+
+.graph-modal-header .header-center {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+}
+
+.graph-modal-header .header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;   /* ← これ超重要 */
+  gap: 8px;
+}
+
+
+.graph-modal-header span {
+  flex: 1;
+  text-align: left; /* タイトルは左寄せ */
+}
+
+#closeGraphModal {
+  font-size: 22px;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #444;
+  padding: 4px 8px;
+}
+
+#saveSoloResult {
+  color: #2e7d32;
+}
+
+#deleteSoloResult {
+  color: #d32f2f;
+}
+
+#closeGraphModal {
+  color: #444;
+}
+
+#saveSoloResult,
+#deleteSoloResult,
+#closeGraphModal {
+  background: none;
+  border: none;
+  font-size: 18px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* タブボタン */
+.graph-tab-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin: 8px 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 6px 0;
+  margin: 0 4px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #f0f0f0;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, border-color 0.2s;
+  color: #777;
+}
+
+.tab-btn[data-target="left"] {
+  color: #1ABC9C;  /* ターコイズブルー */
+}
+
+.tab-btn[data-target="right"] {
+  color: #E67E22;  /* コントラストのあるオレンジ系 */
+}
+
+.tab-btn[data-target="total"] {
+  color: #004B87;
+}
+
+.tab-btn.active {
+  background: #90caf9;
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+/* 本文 / グラフ表示エリア */
+.graph-modal-body {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* プレースホルダーはスクロール禁止 */
+.graph-placeholder {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  color: #777;
+  font-size: 14px;
+  max-height: none;
+  overflow: visible;
+}
+
+/* 1時間ごとの行 */
+.hour-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+/* 時間ラベル */
+.hour-label {
+  width: 40px;              /* 少し余裕を持たせる */
+  font-size: 12px;
+  text-align: right;        /* 右揃え */
+  font-family: monospace;   /* 等幅フォント */
+  letter-spacing: 0;
+}
+
+/* 棒グラフエリア */
+.bar-area {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  flex-wrap: nowrap; /* 横スクロール防止 */
+  overflow-x: hidden; /* はみ出してもスクロールしない */
+}
+
+/* 100匹単位ブロック */
+.fish-block {
+  height: 16px;
+  width: 24px; /* 半分に縮小 */
+  background: #90caf9;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 10px;
+  line-height: 16px;
+  margin-right: 2px;
+}
+
+/* 余りブロック */
+.remainder-bar {
+  height: 12px;
+  background: #1976d2;
+  border-radius: 4px;
+  margin-right: 2px;
+}
+
+.fish-block.ten {
+  background-color: #FFE082; /* 10単位は色を変えると分かりやすい */
+}
+
+.fish-block.hundred {
+  background-color: #FFCC80;
+}
+
+.ones-label {
+  margin-left: 6px;
+  font-size: 12px;
+  color: #555;
+  align-self: center;
+}
+
+/* ===== 削除確認モーダルを最前面に ===== */
+#confirmDeleteModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10040;
+  display: none;
+}
+
+#confirmDeleteModal.active {
+  display: flex;
+}
+
+/* ===== 保存確認モーダルを最前面に ===== */
+#confirmSaveModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10040;
+  display: none;
+}
+
+#confirmSaveModal.active {
+  display: flex;
+}
+
+/* ===== 情報モーダル（保存完了など） ===== */
+#infoModal {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: none;
+}
+
+#infoModal.active {
+  display: flex;
+}
+
+/* ===== 保存リスト（セレクトボックス） ===== */
+.saved-records {
+  text-align: center;
+  margin: 8px 0 4px 0;
+}
+
+#savedRecordSelect {
+  width: 70%;           /* 横幅70%で中央寄せ */
+  max-width: 360px;     /* PCでも大きくなりすぎない */
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* ============================== グラフモーダル ============================== */
+
+/* モーダル共通ボタン */
+.modal-buttons button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* OK / 確定 */
+.btn-ok {
+  background: #4caf50;
+  color: #fff;
+}
+
+/* キャンセル */
+.btn-cancel {
+  background: #e0e0e0;
+  color: #333;
+}
+
+/* 危険操作（削除など） */
+.btn-danger {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* ホバー演出（共通） */
+.modal-buttons button:hover {
+  opacity: 0.85;
+}
+
+.modal-box {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* 保存確認（青） */
+.modal-ok-primary {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-ok-primary:hover {
+  background: #1976d2;
+}
+
+/* 削除・警告用 OK ボタン */
+.modal-ok-danger {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-ok-danger:hover {
+  background: #d32f2f;
+}
+
+/* --------------------------------- タイトル画面の表示アニメーション --------------------------------- */
+/* ---------------------------------
+   タイトル画面 共通ラッパー
+--------------------------------- */
+#titleWrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* ---------------------------------
+   会社名フェーズ背景
+--------------------------------- */
+#titleScreen {
+  width: 100%;
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  background: linear-gradient(
+    135deg,
+    #0f2a44,
+    #123c5c,
+    #0b1f33
+  );
+}
+
+/* ---------------------------------
+   タイトル文字（汎用）
+--------------------------------- */
+#titleText {
+  font-family: "RocknRoll One", sans-serif;
+  color: #ffffff;
+  transform: translateY(-30px);  
+  letter-spacing: 0.12em;
+  text-shadow:
+    0 2px 6px rgba(0,0,0,0.4),
+    0 0 12px rgba(255,255,255,0.15);
+}
+
+.title-main {
+  display: block;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 600;
+  margin-bottom: 0.4em;
+}
+
+.line {
+  display: block;
+  font-size: clamp(1rem, 3.5vw, 1.4rem);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  opacity: 0;
+  animation: fadeUpSoft 0.9s ease forwards;
+  animation-delay: 0.7s;
+}
+
+/* ---------------------------------
+   Bite!! フェーズ
+--------------------------------- */
+.bite-symbols {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bite-mark {
+  opacity: 0;
+  font-size: 1.4rem;   /* ← ★ 目と口の大きさ */
+}
+
+.bite-dot {
+  font-size: 1.5rem;
+  opacity: 0;
+  margin: 0 2px;
+  transform-origin: center;
+}
+
+.app-name-main {
+  margin-top: 10px;
+  font-family: "Alfa Slab One", cursive;
+  font-size: 3.0rem;
+  opacity: 0;
+}
+
+.app-name-sub {
+  margin-top: 6px;
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: .95rem;
+  opacity: 0;
+}
+
+/* ---------------------------------
+   アニメーション
+--------------------------------- */
+@keyframes dotDropTease {
+  0% { opacity:0; transform: translateY(-260px) scale(0.6); }
+  35% { opacity:1; transform: translateY(0) scale(1); }
+  55% { transform: translateY(-12px); }
+  65% { transform: translateY(0); }
+  80% { transform: translateY(-6px); }
+  100% { opacity:1; transform: translateY(0); }
+}
+
+@keyframes fishEnterRightStop {
+  0%   { opacity:0; transform: translateX(140px); }
+  50%  { opacity:1; transform: translateX(0px); }
+  92%  { transform: translateX(3px); }
+  100% { transform: translateX(0); }     /* 餌の手前 */
+}
+
+
+@keyframes pokeRightDouble {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(0); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes fishEnterLeft {
+  0% { opacity:0; transform: translateX(-140px); }
+  100% { opacity:1; transform: translateX(0); }
+}
+
+@keyframes pokeLeftSingle {
+  0% { transform: translateX(0); }
+  60% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes frameInRight {
+  0% { opacity:0; transform: translateX(60px); }
+  100% { opacity:1; transform: translateX(0); }
+}
+
+@keyframes floatUp {
+  0% { opacity:0; transform: translateY(14px); }
+  100% { opacity:1; transform: translateY(0); }
+}
+
+@keyframes fadeUpSoft {
+  from { opacity:0; transform: translateY(12px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.title-main,
+.app-name-main,
+.app-name-sub {
+  animation: fadeUpSoft 1.5s ease forwards;
+}
+
+/* --------------------------------- タイトル画面の表示アニメーション --------------------------------- */
+
+/* ---------------- 声かけ表示用プレースホルダー ---------------- */
+.info-placeholder {
+  width: 100%;
+  height: 28px;                 /* 元ニュースバーと同じ高さ */
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  box-sizing: border-box;
+  padding: 0 8px;
+  margin-bottom: 2px; 
+
+  display: flex;
+  align-items: center;
+
+  /* ほんのり立体感 */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(0,0,0,0.05);
+}
+
+/* 声かけ表示アニメーション */
+.info-placeholder-text {
+  font-size: 14px;
+  color: #000;
+  font-weight: 500;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out; /* 通常人格 */
+}
+
+/* 表示状態 */
+.info-placeholder-text.show {
+  opacity: 1;
+}
+
+/* ★ legend人格だけ超ゆっくりフェード */
+.info-placeholder-text.legend-slow {
+  transition: opacity 2.5s ease-in-out;
+}
+
+
+/* ---------------- 声かけ表示用プレースホルダー ---------------- */
+
+/* ---------------- AC（オールクリア）モーダル用 ---------------- */
+/* ACモーダル背景 */
+.ac-solo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none; /* 初期非表示 */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* 前面表示 */
+}
+
+/* 表示状態 */
+.ac-solo-modal.active {
+  display: flex;
+}
+
+/* モーダル中身 */
+.ac-solo-modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 300px;
+  width: 85%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  font-family: sans-serif;
+  font-size: 0.95rem;
+}
+
+/* ボタングループ */
+.ac-solo-modal-buttons {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+/* OKボタン */
+.ac-solo-btn-ok {
+  background-color: #FF8C00;
+  color: #fff;
+  border: none;
+  padding: 6px 14px; /* 小さく */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* キャンセルボタン */
+.ac-solo-btn-cancel {
+  background-color: #aaa;
+  color: #fff;
+  border: none;
+  padding: 6px 14px; /* 小さく */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+/* ---------------- AC（オールクリア）モーダル用 ---------------- */
+
+<!------------------------ SoloCounter.htmlのひとりカウンターiframe表示 ------------------------>
+
+iframe {
+  display: block;       /* ブラウザ間で余白をなくす */
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.sub {
+  position: sticky;
+  bottom: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+
+<!------------------------ SoloCounter.htmlのひとりカウンターiframe表示 ------------------------>
+
+<!------------------------ SoloCounter.htmlのひとりカウンターiframe表示埋め込み用 ------------------------>
+
+/* counterScreenだけ幅制限完全解除 */
+#counterScreen {
+  max-width: none !important;
+  width: 100% !important;
+  padding: 0 !important;     /* ← 見切れ最大原因 */
+  margin: 0 !important;
+}
+
+/* iframe枠 */
+.solo-embed {
+  width: 100%;
+  height: 280px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden; /* ← 横スクロール完全禁止 */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* ← 中央寄せ */
+  padding: 0;
+}
+
+.solo-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* 念のため solo-embed にも幅制限解除 */
+#counterScreen .solo-embed {
+  max-width: none !important;
+}
+
+<!------------------------ SoloCounter.htmlのひとりカウンターiframe表示埋め込み用 ------------------------>
+
+/* ==========================
+   わいわい機能を非表示
+   ========================== */
+
+#orgBtn,
+#partBtn,
+.counter-group-main,
+.counter-group-sub {
+  display: none;
+}
+
+/* =====================================
+   エサ投入・交換時間設定モーダル
+   ===================================== */
+
+/* 背景 */
+.bait-modal{
+  display:none;
+  position:fixed;
+  z-index:9999;
+  inset:0;
+  background:rgba(0,0,0,.45);
+
+  justify-content:center;
+  align-items:center;
+}
+
+/* 本体 */
+.bait-modal-content{
+
+  width:300px;
+  max-width:90vw;
+
+  background:#fff;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+
+  text-align:center;
+
+}
+
+/* タイトル */
+.bait-modal-content h3{
+
+  margin:0 0 16px;
+
+  font-size:20px;
+
+}
+
+/* ボタン一覧 */
+#baitTimeList{
+
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:10px;
+
+  margin-bottom:20px;
+
+}
+
+/* 時間ボタン */
+.bait-time-option{
+
+  padding:10px 0;
+
+  border:none;
+
+  border-radius:10px;
+
+  background:#ff9800;
+
+  color:#fff;
+
+  font-size:16px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:.15s;
+
+}
+
+.bait-time-option:hover{
+
+  filter:brightness(1.08);
+
+}
+
+.bait-time-option:active{
+
+  transform:scale(.95);
+
+}
+
+/* キャンセル */
+
+#closeBaitModal{
+
+  width:100%;
+
+  padding:10px;
+
+  border:none;
+
+  border-radius:12px;
+
+  background:#888;
+
+  color:#fff;
+
+  font-size:15px;
+
+  cursor:pointer;
+
+}
+
+/* =========================
+   シンプルアラートダイアログ
+========================= */
+
+#simpleAlertDialog {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+#simpleAlertDialog .simple-alert-box {
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 180px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+#simpleAlertMessage {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+#simpleAlertDialog button {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 4px;
+  background: #2a5298;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* =========================
+   アプリURL共有UI
+========================= */
+
+.share-url-wrapper-compact {
+  font-size: 10px;
+}
+
+.share-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 20px;      
+  margin-bottom: 4px;
+}
+
+/* URLとボタンを横並び */
+.url-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+/* URL欄 */
+.app-url-text {
+  width: calc(100% - 52px);   /* ボタン分だけ残す */
+  box-sizing: border-box;
+
+  font-size: 9px;
+  color: #333;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 6px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* コピーボタン */
+#copyURL {
+  width: 48px;
+  height: 24px;
+  padding: 0;
+
+  font-size: 9px;
+  line-height: 24px;
+
+  background: #2a5298;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  flex-shrink: 0;
+}
+
+#copyURL:hover {
+  background: #1e3c72;
+}
+
+/* =========================
+   QRコード共有
+========================= */
+
+.share-qr-trigger{
+  display:block;
+  width:fit-content;
+  margin:6px auto;
+  font-size:12px;
+  color:#555;
+  cursor:pointer;
+}
+
+.share-qr-trigger:hover{
+  color:#000;
+}
+
+/* =========================
+   著作権表示
+========================= */
+
+#settingsFooter {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  text-align: center;
+  color: #555;
+  cursor: pointer;
+  user-select: none;
+}
+
+#settingsFooter:hover {
+  color: #000;
+}
+
+.terms-hint {
+  font-size: 10px;
+}
+
+/* ===============================
+   共通 インフォメーションモーダル　共通
+   =============================== */
+
+/* ----------------- モーダル背景 ----------------- */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 2000;
+}
+
+/* 表示時 */
+.help-modal.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* ----------------- モーダル本体 ----------------- */
+.help-modal-content {
+  width: min(390px, calc(100vw - 32px));
+  max-width: 390px;
+  box-sizing: border-box;
+
+  max-height: 75vh;
+  padding: 18px 20px;
+
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ----------------- モーダル本文（スクロール可能） ----------------- */
+.modal-body {
+  overflow-y: auto;
+  padding-right: 8px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+/* ----------------- 見出し ----------------- */
+.help-modal-content h2 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-size: 1.4em;
+}
+
+.help-modal-content h3 {
+  margin-top: 18px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+
+.help-modal-content h4 {
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-size: 1em;
+  font-weight: 500;
+}
+
+/* ----------------- 段落・リスト ----------------- */
+.modal-body p {
+  margin-bottom: 14px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+.modal-body ul,
+.modal-body ol {
+  margin-bottom: 14px;
+  padding-left: 20px;
+  font-size: 1em;
+  line-height: 1.6;
+}
+
+/* ----------------- QRコード共有 ----------------- */
+
+#qrCanvas {
+  display: block;
+  margin: 12px auto;
+}
+
+#qrUrlText {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* ----------------- 注意書き ----------------- */
+.help-modal-content .note {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  background: rgba(0,0,0,0.03);
+  padding: 8px 12px;
+  margin: 10px 0;
+  border-left: 3px solid #6fd3f5;
+  border-radius: 6px;
+}
+
+/* ----------------- 自然な強調 ----------------- */
+.sub-info {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-bottom: 8px;
+  color: #1a1a1a;
+  background-color: #f9f9f9;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+/* ----------------- 閉じるボタン ----------------- */
+.help-close {
+  margin-top: 16px;
+  font-size: 14px;
+  background: #e0e0e0;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  align-self: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.help-close:hover {
+  background: #d4d4d4;
+  color: #000;
+}
+
+/* ----------------- アコーディオン共通 ----------------- */
+.accordion-content {
+  display: none;
+  padding-left: 12px;
+  margin-bottom: 10px;
+}
+
+.accordion-content.open {
+  display: block;
+}
+
+.accordion-toggle {
+  cursor: pointer;
+  user-select: none;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.accordion-toggle:hover {
+  color: #ff416c;
+}
+
+.accordion-toggle.nested {
+  font-weight: 500;
+  font-size: 0.95em;
+  margin-left: 8px;
+}
+
+.accordion-content.nested {
+  padding-left: 16px;
+}
+
+.accordion-toggle::after {
+  content: " ▼";
+  font-size: 0.9em;
+  display: inline-block;
+  margin-left: 4px;
+}
+
+.accordion-toggle.open::after {
+  content: " ▲";
+}
+
+/* ----------------- アプリロゴ ----------------- */
+
+.about-logo {
+  margin: 12px 0 8px;
+  text-align: center;
+}
+
+.about-logo img {
+  width: 120px;
+  height: auto;
+  opacity: 0.95;
+}
+
+.about-concept {
+  font-size: 15px;
+  margin-left: 18px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  color: #333;
+  text-align: left;
+}
+
+/* =========================
+   OFUSE
+========================= */
+
+.support-section{
+  font-size:12px;
+  text-align:center;
+  margin-top:10px;
+  margin-bottom:6px;
+}
+
+.support-section a{
+  color:#555;
+  text-decoration:none;
+}
+
+.support-section a:hover{
+  color:#000;
+}
+
+.ofuse-wrap{
+  display:flex;
+  justify-content:center;
+  margin:14px 0;
+}
+
+.ofuse-note{
+  font-size:11px;
+  color:#666;
+  line-height:1.5;
+  margin-top:8px;
+}
+
+</style>
+</head>
+
+<!--------------------------------------------- HTML始め --------------------------------------------->
+
+<body>
+
+<!-- ★ 起動時タイトル演出（スプラッシュ） -->
+<div id="titleWrapper" style="display:flex;">
+  <div id="titleScreen">
+    <!-- 初期は空。JSで差し込む -->
+  </div>
+</div>
+
+
+<!------------------------------ アプリスケール ------------------------------>
+<div id="appScaleWrapper">
+<!------------------------------ アプリスケール ------------------------------>
+
+<!------------------------------ 初期画面 ------------------------------>
+<!-- エントリー -->
+<div id="entryScreen" class="screen active">
+
+<div class="title-container">
+<span class="title-main">Double Bite!!</span>
+</div>
+
+<!-- ダブルカウンター -->
+<div class="counter-solo-main gradient" id="soloMain"></div>
+<div class="counter-solo-sub">--- あなたの釣果を、もっと楽しく。---</div>
+
+<button id="soloBtn" class="btn-solo"
+        onclick="enterSoloCounterWithConfirm()">
+  Let's Go Fishing!!
+</button>
+
+<!-- =========================
+     アプリURLコピーUI
+========================= -->
+<div class="share-url-wrapper-compact">
+
+  <span class="share-label">
+    アプリURLで遠くの友達と共有：
+  </span>
+
+  <div class="url-row">
+
+    <div id="appURLText" class="app-url-text">
+      https://tok-dot.github.io/doublebite/
+    </div>
+
+    <button id="copyURL">コピー</button>
+
+  </div>
+
+</div>
+
+<!-- QRコード共有 -->
+<div class="share-qr-trigger" id="openQrModal">
+  QRコードで近くの友達と共有
+</div>
+
+<!-- QRコード共有 モーダル -->
+<div id="qrModal" class="help-modal" aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>QRコードで共有</h2>
+
+    <div class="modal-body" style="text-align:center;">
+
+      <p style="font-size:14px;margin-bottom:10px;">
+        スマホで読み取って、<br>
+        アプリをすぐに開けます
+      </p>
+
+      <canvas
+        id="qrCanvas"
+        width="200"
+        height="200">
+      </canvas>
+
+      <p id="qrUrlText"
+         style="font-size:12px;color:#666;">
+      </p>
+
+    </div>
+
+    <button
+      class="help-close"
+      id="closeQrModal">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     著作権表示
+========================= -->
+
+<div id="settingsFooter">
+  © 2026 Tok.DoT. All rights reserved.<br>
+  <span class="terms-hint">
+    利用規約・免責事項
+  </span>
+</div>
+
+<!-- =========================
+     利用規約・免責事項
+========================= -->
+
+<div id="termsDialog"
+     class="help-modal"
+     aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>Double Bite!! 利用規約</h2>
+
+    <p class="terms-intro">
+      本アプリを安心してご利用いただくための内容です。
+    </p>
+
+    <div class="modal-body">
+
+      <p>
+
+        最終更新日：2026年7月3日
+        <br><br>
+
+        本規約は、Double Bite!!（以下「本アプリ」）の利用条件を定めるものです。<br>
+        本アプリを利用することで、本規約に同意したものとみなします。
+        <br><br>
+
+        <strong>1. 利用条件</strong><br>
+
+        本アプリは、ワカサギ釣りの釣果管理を目的として、
+        無料で自由にご利用いただけます。<br>
+
+        商用利用、再配布、改変はご遠慮ください。
+        <br><br>
+
+        <em>禁止行為の例：</em><br>
+
+        ・不正アクセスや改ざん行為<br>
+        ・他の利用者へ迷惑を及ぼす行為<br>
+        ・法律・公序良俗に反する行為
+
+        <br><br>
+
+        <strong>2. 著作権</strong><br>
+
+        本アプリの著作権は、
+        Tok.DoT / Hiroki Sato に帰属します。<br>
+
+        © 2026 Tok.DoT. All Rights Reserved.
+
+        <br><br>
+
+        <strong>3. 免責事項</strong><br>
+
+        ・本アプリの利用によって生じたいかなる損害についても、
+        運営者は責任を負いません。<br>
+
+        ・本アプリの内容は、
+        予告なく変更・停止・終了する場合があります。<br>
+
+        ・本アプリの情報は参考目的で提供しており、
+        正確性を保証するものではありません。
+
+        <br><br>
+
+        <strong>4. ユーザーの責任</strong><br>
+
+        ・端末やデータの管理は利用者自身の責任で行ってください。<br>
+
+        ・本アプリ利用中のトラブルや誤操作について、
+        運営者は責任を負いません。
+
+        <br><br>
+
+        <strong>5. プライバシー</strong><br>
+
+        ・本アプリは個人情報を保存しません。<br>
+
+        ・匿名のアクセス情報を取得する場合があります。
+
+        <br><br>
+
+        <strong>6. 改訂</strong><br>
+
+        本利用規約は予告なく改訂される場合があります。<br>
+        最新版はアプリ内でご確認ください。
+
+      </p>
+
+      <p class="terms-end">
+        ここまでご確認いただきありがとうございます。
+      </p>
+
+    </div>
+
+    <button class="help-close" type="button">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- ========================= -->
+
+<!-- =========================
+     OFUSE
+========================= -->
+
+<section class="support-section">
+  <a href="#" id="openSupportModal">
+    OFUSEで応援する
+  </a>
+</section>
+
+<div id="supportModal"
+     class="help-modal"
+     aria-hidden="true">
+
+  <div class="help-modal-content">
+
+    <h2>応援ありがとうございます</h2>
+
+    <div class="modal-body" style="text-align:center;">
+
+      <p>
+        このアプリは無料でご利用いただけます。<br>
+        もし役に立ったと感じていただけたら、<br>
+        開発の励みになりますので、
+        <br><br>
+        <strong>下のボタンから応援をお願いします。</strong>
+      </p>
+
+      <div class="ofuse-wrap">
+
+        <a
+          href="https://ofuse.me/o?uid=142822"
+          data-ofuse-widget-button
+          data-ofuse-id="142822">
+
+          <img
+            src="https://ofuse.me/images/ofuse_button.png"
+            alt="OFUSEで応援する"
+            style="max-width:180px; height:auto; display:block; margin:0 auto;"
+          />
+
+        </a>
+
+      </div>
+
+      <p class="ofuse-note">
+        ※OFUSEという名前は「お布施」に似ていますが、
+        宗教とは関係なく、
+        気軽に応援やサポートの気持ちを届けられるサービスです。
+      </p>
+
+    </div>
+
+    <button
+      class="help-close"
+      id="closeSupportModal">
+      閉じる
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     シンプルアラートダイアログ
+========================= -->
+<div id="simpleAlertDialog">
+  <div class="simple-alert-box">
+    <div id="simpleAlertMessage"></div>
+    <button type="button" onclick="simpleAlertOK()">OK</button>
+  </div>
+</div>
+
+<!-- みんなでテント -->
+<div class="counter-group-main gradient" id="groupMain"></div>
+<div class="counter-group-sub">--- わいわい カウンター でつながる ---</div>
+
+
+<button id="orgBtn"
+        class="btn-org"
+        style="display:none;"
+        onclick="showScreen('orgScreen')">
+  わいわい テント 登録
+</button>
+
+<button id="partBtn"
+        class="btn-part"
+        style="display:none;"
+        onclick="showScreen('partScreen')">
+  わいわい テント 参加
+</button>
+
+
+</div>
+<!------------------------------ 初期画面 ------------------------------>
+
+<!---------------------- ひとりカウンター（新デザイン・中央セル拡張版） ---------------------->
+<div id="soloCounterScreen" class="screen solo-counter">
+
+  <!-- カウンター本体だけラップ -->
+  <div class="soloCounterWrapper">
+    <!-- 1段目：お天気・日時 -->
+    <div class="row row-1">
+      <div class="cell">
+        <div id="dateWeatherContainer">
+          <div id="safeDateTimeBox"></div>
+          <div id="weatherBox" style="cursor:pointer;"></div>
+        </div>
+      </div>
+    </div>
+
+<!-- 情報表示用枠 -->
+<div class="info-placeholder">
+  <span class="info-placeholder-text">今日も一緒に頑張っぺ</span>
+</div>
+
+    <!-- 2段目：左▼C + 合計表示 + 右▼C -->
+    <div class="row row-2">
+      <div class="cell cell-buttons">
+        <div class="reset-btn c-btn solo-btn" id="soloLeftClear">C</div>
+        <div class="decrease-btn solo-btn" id="soloLeftDecrease">▼</div>
+      </div>
+
+      <!-- 中央左のスペースにラッパー色用スライダー -->
+      <div class="cell">
+        <div class="wrapper-color-slider" id="wrapperColorSlider"></div>
+      </div>
+
+      <div class="cell">
+        <!-- □背景ラッパー -->
+        <div class="soloCount-bg">
+          <!-- 丸＋数字 -->
+          <div id="soloCount">0</div>
+        </div>
+      </div>
+
+<!-- 中央右のスペースに角丸ボタン＋3段横棒グラフ＋下ボタン -->
+<div class="cell graph-btn-cell">
+  <!-- グラフボタン -->
+  <div class="graph-btn-placeholder" id="graphBtnPlaceholder">
+    <!-- 上段：3ブロック -->
+    <div class="mini-bar-segment" style="top:7px; left:6px;"></div>
+    <div class="mini-bar-segment" style="top:7px; left:10px;"></div>
+    <div class="mini-bar-segment" style="top:7px; left:14px;"></div>
+
+    <!-- 中段：5ブロック -->
+    <div class="mini-bar-segment" style="top:14px; left:6px;"></div>
+    <div class="mini-bar-segment" style="top:14px; left:10px;"></div>
+    <div class="mini-bar-segment" style="top:14px; left:14px;"></div>
+    <div class="mini-bar-segment" style="top:14px; left:18px;"></div>
+    <div class="mini-bar-segment" style="top:14px; left:22px;"></div>
+
+    <!-- 下段：4ブロック -->
+    <div class="mini-bar-segment" style="top:21px; left:6px;"></div>
+    <div class="mini-bar-segment" style="top:21px; left:10px;"></div>
+    <div class="mini-bar-segment" style="top:21px; left:14px;"></div>
+    <div class="mini-bar-segment" style="top:21px; left:18px;"></div>
+  </div>
+
+<!-- 下ボタン：色固定トグル -->
+  <div class="other-btn-placeholder" id="lockColorBtn"></div>
+</div>
+
+      <div class="cell cell-buttons">
+        <div class="reset-btn c-btn solo-btn" id="soloRightClear">C</div>
+        <div class="decrease-btn solo-btn" id="soloRightDecrease">▼</div>
+      </div>
+    </div>
+
+    <!-- 3段目：入力フォーム -->
+    <div class="row row-3">
+      <div class="cell">
+        <div class="soloCount-bg">
+          <div class="solo-sub-count left" id="soloLeftCount">0</div>
+        </div>
+      </div>
+
+      <div class="cell">
+        <div class="color-box left-color-box"></div>
+      </div>
+
+<div class="cell cell-merged">
+
+  <!-- 元の機能（非表示） -->
+  <div style="display:none;">
+    <input id="soloName" class="my-counter-input" placeholder="ニックネーム" maxlength="7">
+    <input id="soloMsg" class="my-counter-input" placeholder="つぶやき" maxlength="7">
+    <button id="soloSendBtn" class="send-btn">送信</button>
+  </div>
+
+  <!-- 新しい表示 -->
+  <button id="baitTimerBtn" class="bait-btn">
+    エサ投入・交換
+  </button>
+
+<div id="baitTimer" class="bait-timer">
+  あと <span class="bait-min">15</span>:<span class="bait-sec">00</span>
+</div>
+
+  <div id="baitSetting" class="bait-setting">
+    設定：15分
+  </div>
+
+</div>
+
+      <div class="cell">
+        <div class="color-box right-color-box"></div>
+      </div>
+
+      <div class="cell">
+        <div class="soloCount-bg">
+          <div class="solo-sub-count right" id="soloRightCount">0</div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /soloCounterWrapper -->
+
+  <!-- 戻るボタンは wrapper の外 -->
+  <button class="screenBackBtn" onclick="showScreen('entryScreen')">戻る</button>
+</div>
+
+<!---------------------- ひとりカウンター（新デザイン・中央セル拡張版） ---------------------->
+
+<!------------------------------ わいわいテント登録画面 ------------------------------>
+<!-- わいわいテント登録 -->
+<div id="orgScreen" class="screen">
+  <h1>＜ わいわい テント 登録 ＞</h1>
+  <h2>どの『 テント 』を登録しますか？</h2>
+  <h3 id="tentListTitle">--- 所有するテントから選ぶ ---</h3>
+
+  <div class="list-box">
+    <ul id="orgList"></ul>
+  </div>
+
+<div class="org-input-row">
+  <input id="orgName"
+         class="input-common"
+         placeholder="新しいテント名を入力"
+         maxlength="20">
+
+  <button id="createBtn" class="btn-create btn-circle">↑</button>
+</div>
+
+<button id="deleteTentBtn" class="sub sub-danger">
+  テントを処分する
+</button>
+
+<button id="serverEntryBtn" class="sub sub-server">
+  テントをサーバーに登録
+</button>
+
+<h2>登録『 テント 』を参加者にお知らせ</h2>
+
+<h3>--- タップ又は長押しでコピー ---</h3>
+
+<div id="selectedTentDisplay"
+     style="margin-top:6px; padding:6px; border-radius:10px;
+            text-align:center; font-weight:bold;">
+</div>
+<button class="screenBackBtn">戻る</button>
+</div>
+
+<!------------------------------ わいわいテント登録画面 ------------------------------>
+
+<!------------------------------ わいわいテント参加画面 ------------------------------>
+<!-- わいわいテント参加 -->
+<div id="partScreen" class="screen">
+  <h1>＜ わいわい テント 参加 ＞</h1>
+  <h2>どのテントに参加しますか？</h2>
+  <input id="searchName" placeholder="テント名を入力・検索">
+
+  <div style="position:relative">
+    <input id="joinPass" type="password" placeholder="パスワードを入力">
+    <span id="eye" class="eye-btn">表示</span>
+  </div>
+
+ <button id="joinBtn" class="sub sub-join">
+  このテントに参加する
+ </button>
+
+ <button id="searchBtn" class="sub sub-search">
+  テントを探す
+ </button>
+
+
+  <h3>--- タップするとテント名が反映されます ---</h3>
+  <div class="list-box">
+    <ul id="partList"></ul>
+  </div>
+<button class="screenBackBtn">戻る</button>
+</div>
+
+<!------------------------------ わいわいテント参加画面 ------------------------------>
+
+<!------------------------------ わいわいテント画面 ------------------------------>
+
+<!-- 設定 -->
+<div id="settingsScreen" class="screen">
+  <h1 id="tournamentLabel"></h1>
+  <h2>自分のカウンターを選んでください</h2>
+  <div class="counter-grid" id="settingsGrid"></div>
+  <button id="startBtn">テントに入る</button>
+  <button class="sub" onclick="confirmLeave()">エントリー画面に戻る</button>
+</div>
+
+<!------------------------------ わいわいテント画面 ------------------------------>
+
+<!------------------------------ わいわいカウンター画面 ------------------------------>
+<!-- みんなでカウンター -->
+<div id="counterScreen" class="screen wide-screen">
+
+  <h1 id="tournamentTitle"></h1>
+  <div class="counter-grid" id="counterGrid"></div>
+
+  <!-- SoloCounter iframe -->
+  <div class="solo-embed">
+    <iframe src="SoloCounter.html?iframe=1#solo"></iframe>
+  </div>
+
+  <div style="margin-top:8px; text-align:center;">
+    <button class="sub" onclick="showScreen('settingsScreen')">ちょっと休憩</button>
+  </div>
+
+</div>
+<!------------------------------ わいわいカウンター画面 ------------------------------>
+
+<!-- 離脱モーダル -->
+<div id="leaveModal" class="modal">
+  <div class="modal-box">
+    <p><strong>ここから退出しますか？</strong></p>
+    <p style="font-size:13px">カウンター情報はリセットされます</p>
+    <div class="modal-buttons">
+      <button onclick="closeLeave()">キャンセル</button>
+      <button onclick="leaveRoom()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- テント処分モーダル -->
+<div id="deleteTentModal" class="modal">
+  <div class="modal-box">
+    <!-- 上部見出し -->
+    <p><strong>処分するテントを選んでください</strong></p>
+
+    <!-- 確認文言 -->
+    <p id="confirmTentName" style="font-size:15px; color:red; margin-top:8px;">
+      ※テントを選択すると赤く表示されます
+    </p>
+
+    <!-- 選択リスト -->
+    <div id="deleteTentList" style="max-height:150px; overflow-y:auto; margin:8px 0;"></div>
+
+    <!-- ボタン -->
+    <div class="modal-buttons">
+      <button onclick="closeDeleteTent()">キャンセル</button>
+      <button onclick="confirmDeleteTent()">処分する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ソロカウンターリセット確認モーダル -->
+<div id="resetSoloModal" class="modal">
+  <div class="modal-box">
+    <p><strong>カウンターをリセットしますか？</strong></p>
+    <p style="font-size:13px">カウンターが0になります</p>
+    <div class="modal-buttons">
+      <button onclick="closeResetSoloModal()">キャンセル</button>
+      <button onclick="confirmResetSolo()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================== お天気と日時 ================== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons.min.css">
+
+    <!-- 日時 -->
+    <div id="safeDateTimeBox"></div>
+
+    <!-- 天気（クリックで住所入力） -->
+    <div id="weatherBox" style="cursor:pointer;"></div>
+</div>
+
+<!-- 住所入力モーダル -->
+<div id="addressModal">
+    <div id="addressModalContent">
+        <p>住所を入力し検索してください</p>
+        <input type="text" id="addressInput" placeholder="例：福島県 / 福島県福島市">
+        <div id="modalButtons" style="display:flex; gap:10px; justify-content:flex-end; margin-bottom:10px;">
+            <button id="addressSearchBtn" style="background-color:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:10px;">検索</button>
+            <button id="addressConfirmBtn" disabled style="background-color:#008CBA; color:white; border:none; padding:6px 12px; border-radius:10px;">決定</button>
+            <button id="addressCancelBtn" style="background-color:#f44336; color:white; border:none; padding:6px 12px; border-radius:10px;">キャンセル</button>
+        </div>
+        <div id="resolvedAddress" style="
+            margin-top:10px;
+            padding-top:6px;
+            font-size:12px;
+            color:#000080;
+            line-height:1.4;
+            border-top:1px solid rgba(0,0,0,0.15);
+        "></div>
+    </div>
+</div>
+<!-- ================== お天気と日時 ================== -->
+
+<!-- ===== グラフモーダル ===== -->
+<div id="soloGraphModal" class="graph-modal hidden">
+  <div class="graph-modal-backdrop"></div>
+
+  <div class="graph-modal-content">
+    <!-- ヘッダー -->
+    <div class="graph-modal-header">
+      <div class="header-left"></div>
+
+      <div class="header-center">
+        時間別 -- 釣果カウント --
+      </div>
+
+      <div class="header-right">
+        <button id="saveSoloResult">💾</button>
+        <button id="deleteSoloResult">🗑️</button>
+        <button id="closeGraphModal">×</button>
+      </div>
+    </div>
+
+    <!-- 保存リスト（ヘッダー下、中央寄せ） -->
+    <div class="saved-records">
+      <select id="savedRecordSelect">
+        <option value="current">現在の釣果（リアルタイム）</option>
+      </select>
+    </div>
+
+    <!-- タブボタン -->
+    <div class="graph-tab-buttons">
+      <button class="tab-btn" data-target="left">左</button>
+      <button class="tab-btn active" data-target="total">合計</button>
+      <button class="tab-btn" data-target="right">右</button>
+    </div>
+
+    <!-- 本文 / グラフ表示エリア -->
+    <div class="graph-modal-body">
+      <div class="graph-placeholder">
+        現在表示中: 合計
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 保存データ削除 確認モーダル -->
+<div id="confirmDeleteModal" class="modal">
+  <div class="modal-box">
+    <p id="confirmDeleteMessage"></p>
+    <div class="modal-buttons">
+<button id="confirmDeleteCancel" class="btn-cancel">キャンセル</button>
+<button id="confirmDeleteOk" class="btn-danger">削除</button>
+    </div>
+  </div>
+</div>
+
+<!-- 保存確認モーダル -->
+<div id="confirmSaveModal" class="modal">
+  <div class="modal-box">
+    <p id="confirmSaveMessage">釣果を保存しますか？</p>
+    <div class="modal-buttons">
+      <button id="confirmSaveCancel" class="btn-cancel">キャンセル</button>
+      <button id="confirmSaveOk" class="btn-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- 情報モーダル（保存完了など） -->
+<div id="infoModal" class="modal">
+  <div class="modal-box">
+    <p id="infoText"></p>
+    <div class="modal-buttons">
+      <button class="btn-ok" onclick="closeInfo()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- AC確認カスタムモーダル -->
+<div id="acConfirmModal" class="ac-solo-modal">
+  <div class="ac-solo-modal-content">
+    <p>前回のカウント情報が残っています。<br>オールクリアしますか？</p>
+    <div class="ac-solo-modal-buttons">
+      <button id="acConfirmOk" class="ac-solo-btn-ok">はい</button>
+      <button id="acConfirmCancel" class="ac-solo-btn-cancel">いいえ</button>
+    </div>
+  </div>
+</div>
+
+<!-- 全スマホ対応スケーリング終り -->
+</div>
+
+<script>
+
+// ------------------------------------------
+
+const MAX = 9;
+let counts = Array(MAX).fill(0);
+let names = Array(MAX).fill("");
+let messages = Array(MAX).fill("");
+let selfIndex = null;
+let selectedTentIndex = null;
+
+// ★ 追加（これが超重要）
+let currentCopyName = "";
+let currentCopyPass = "";
+
+// ============================
+// ソロカウンター状態（グローバル）
+// ============================
+let soloCounter = { count:0, name:"", msg:"" };
+let soloLeftCounter  = { count: 0 };
+let soloRightCounter = { count: 0 };
+
+let isVibrationEnabled = true; // 振動ON/OFF
+
+let currentRecordId = null; //現在選択中の保存データ
+
+let rapidZoneAnnounced = false; //超連掛けゾーン演出用変数
+let lastRapidTime = 0; //超連掛けゾーン演出解除用
+
+// ----------------------------------- タイトル演出関数 -----------------------------------
+function playTitleSequence() {
+
+  const titleWrapper = document.getElementById('titleWrapper');
+  const titleScreen  = document.getElementById('titleScreen');
+  const app          = document.getElementById('appScaleWrapper');
+
+  if (app) app.style.display = 'none';
+  titleWrapper.style.display = 'flex';
+
+  // ① 会社名表示（フェードイン + ズーム）
+  titleScreen.innerHTML = `
+  <style>
+    /* サブタイトル専用フォント */
+    #companySub {
+      font-family: 'Comfortaa', sans-serif;
+      margin-top: 6px;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.55);
+      transform: translateX(-30px);
+      opacity: 0;
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+  </style>
+
+  <h1 id="companyName" style="
+    position: fixed;
+    top: 42%;
+    left: 40%;
+    transform: translate(-50%, -50%) scale(0.8);
+    font-family: 'BBH Hegarty', sans-serif;
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    opacity: 0;
+    z-index: 999;
+    transition: opacity 1s ease, transform 1s ease;
+    text-align: center;
+    letter-spacing: 0.05em;
+  ">
+    <div>Tok<span style="color:#FF8C00;">.</span>DoT</div>
+    <div id="companySub">Take Your Step</div>
+  </h1>
+  `;
+
+  const company = document.getElementById('companyName');
+  const sub = document.getElementById('companySub');
+
+  setTimeout(() => {
+    // 会社名フェードイン + ズーム
+    company.style.opacity = 1;
+    company.style.transform = 'scale(1.1)';
+
+    // サブタイトルを左からスッと出す
+    setTimeout(() => {
+      sub.style.opacity = 1;
+      sub.style.transform = 'translateX(0)';
+    }, 300);
+
+  }, 100);
+
+  // 会社名表示後、フェードアウト + 縮小
+  setTimeout(() => {
+    company.style.opacity = 0;
+    company.style.transform = 'scale(1.3)';
+  }, 2000);
+
+  // ============================
+  // ② タイトル表示
+  // ============================
+  setTimeout(() => {
+    titleScreen.innerHTML = `
+      <h1 id="titleText">
+        <span class="title-main">ダブルカウンターアプリ</span>
+        <span class="line">for ワカサギ釣り</span>
+      </h1>
+    `;
+  }, 3000);
+
+  // ============================
+  // ③ Bite!! 演出
+  // ============================
+  setTimeout(() => {
+
+    titleScreen.innerHTML = `
+      <div id="biteStage" style="
+        width:100%;
+        height:100dvh;
+        background:#0b3c5d;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+        transition:background 1.2s ease;
+        color:#fff;
+      ">
+
+        <div class="bite-symbols">
+  <span id="bLeft"  class="bite-mark">⦿＞</span>
+  <span id="bDot"   class="bite-dot">・</span>
+  <span id="bRight" class="bite-mark">＜⦿</span>
+</div>
+
+
+        <div id="biteTitle" style="
+          margin-top:10px;
+          font-family: 'Alfa Slab One', cursive;
+          font-size:3.0rem;
+          opacity:0;
+        ">Bite!!</div>
+
+        <div id="biteSub" style="
+          margin-top:6px;
+          font-family:'Kosugi Maru',sans-serif;
+          font-size:.95rem;
+          opacity:0;
+        ">ダブル バイト!!</div>
+      </div>
+    `;
+
+    const L = document.getElementById('bLeft');
+    const D = document.getElementById('bDot');
+    const R = document.getElementById('bRight');
+    const T = document.getElementById('biteTitle');
+    const S = document.getElementById('biteSub');
+    const stage = document.getElementById('biteStage');
+
+// ① 餌だけ落ちる
+setTimeout(() => {
+  D.style.animation = 'dotDropTease 2.4s ease forwards';
+}, 800);
+
+// ② 右魚 登場 → 止まる → 餌へ
+setTimeout(() => {
+  R.style.opacity = 1;
+  R.style.animation = 'fishEnterRightStop 1.8s ease forwards';
+}, 3300);
+
+// ③ 右魚 つんつん
+setTimeout(() => {
+  R.style.animation = 'pokeRightDouble .9s ease forwards';
+}, 4800);
+
+// ④ 左魚 登場
+setTimeout(() => {
+  L.style.opacity = 1;
+  L.style.animation = 'fishEnterLeft 1.4s ease forwards';
+}, 5600);
+
+// ⑤ 左魚 つん
+setTimeout(() => {
+  L.style.animation = 'pokeLeftSingle .7s ease forwards';
+}, 6700);
+
+// ⑥ Bite!!
+setTimeout(() => {
+  T.style.animation = 'frameInRight 1s ease forwards';
+}, 8100); // 6700 + 1.4sくらい
+
+// ⑦ ダブルバイト!!（必ず表示）
+setTimeout(() => {
+  S.style.animation = 'floatUp 1.4s ease forwards';
+}, 9100); // Bite!! の後 1s程度で表示
+
+// ⑧ 十分見せてから白フェード
+setTimeout(() => {
+  stage.style.transition = 'background 2.4s ease, color 2.4s ease';
+  stage.style.background = '#ffffff';
+  stage.style.color = '#000000';
+}, 10800); // 全体の表示時間を少し短く
+
+  }, 5500);
+
+// ============================
+// 終了 → 初期画面
+// ============================
+setTimeout(() => {
+  titleWrapper.style.display = 'none';
+
+  if (app) {
+    app.style.display = 'block';
+    applyAutoScale();
+  }
+
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+
+  const entry = document.getElementById('entryScreen');
+  entry.style.display = 'block';
+  entry.classList.add('active');
+}, 20500);
+
+}
+// ----------------------------------- タイトル演出関数 -----------------------------------
+
+// ------------------------------------------------------------------------------------
+// 画面表示切り替え
+// ------------------------------------------------------------------------------------
+  // 初期画面（エントリー画面）
+  document.addEventListener('DOMContentLoaded', () => {
+  showScreen('entryScreen');
+  loadLiveHourlyHistory();
+
+  // 初期画面（エントリー画面）→ ひとりカウンター画面
+  document.getElementById('soloBtn')?.addEventListener('click', () => {
+  enterSoloCounterWithConfirm(); // ここでAC確認＋画面切替をまとめて呼ぶ
+  restoreSoloNameMsg();          // ここでニックネーム＆つぶやき復元
+  });
+
+  // 初期画面（エントリー画面）→ わいわいテント登録画面
+  document.getElementById('orgBtn')?.addEventListener('click', () => {
+    showScreen('orgScreen');
+  });
+
+  // 初期画面（エントリー画面）→ わいわいテント参加画面
+  document.getElementById('partBtn')?.addEventListener('click', () => {
+    showScreen('partScreen');
+  });
+
+  // わいわいテント内 → わいわいテント内（カウンター画面）
+  document.getElementById('startBtn')?.addEventListener('click', () => {
+    showScreen('counterScreen');
+  });
+
+  // 各画面から初期画面（エントリー画面）に戻る
+  document.querySelectorAll('.screenBackBtn').forEach(btn => {
+    btn.addEventListener('click', () => showScreen('entryScreen'));
+  });
+});
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+// ============================
+// 画面切替（わいわいカウンター設定画面用）
+// ============================
+function showScreen(id){
+  // 全画面を完全に非表示
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+
+  // 対象画面を取得
+  const target = document.getElementById(id);
+  if (!target) {
+    console.warn('画面が見つかりません:', id);
+    return;
+  }
+
+  // 対象画面だけ表示
+  target.style.display = 'block';
+  target.classList.add('active');
+
+  // 設定画面だけの追加処理
+  if (id === "settingsScreen" && typeof renderSettings === "function") {
+    renderSettings();
+  }
+}
+
+// ------------------------------------------------------------------------------------
+
+// ----------------------------
+// tournaments（テント）
+// ----------------------------
+// localStorage から復元
+let tournaments = [];
+const saved = localStorage.getItem("myTents");
+if (saved) tournaments = JSON.parse(saved);
+
+const selectedTentDisplay = document.getElementById("selectedTentDisplay");
+
+// ★ setupCopy はここで1回だけ
+setupCopy(
+  selectedTentDisplay,
+  () => currentCopyPass,
+  () => currentCopyName
+);
+
+// ----------------------------
+// モーダル制御（安全版）
+// ----------------------------
+let infoModal;
+let infoText;
+let leaveModal;
+
+document.addEventListener("DOMContentLoaded", () => {
+  infoModal  = document.getElementById("infoModal");
+  infoText   = document.getElementById("infoText");
+  leaveModal = document.getElementById("leaveModal");
+});
+
+function showInfo(msg, mode = "default") {
+  if (!infoModal || !infoText) return;
+
+  infoText.innerHTML = msg.replace(/\n/g, "<br>");
+
+  const okBtn = infoModal.querySelector(".modal-buttons button");
+  if (!okBtn) return;
+
+  // 一旦すべて外す
+  okBtn.classList.remove("modal-ok-danger", "modal-ok-primary");
+
+  // モード別に付与
+  if (mode === "danger") {
+    okBtn.classList.add("modal-ok-danger");
+  } else if (mode === "primary") {
+    okBtn.classList.add("modal-ok-primary");
+  }
+
+  infoModal.classList.add("active");
+}
+
+
+function closeInfo(){ 
+  if (!infoModal) return;
+  infoModal.classList.remove('active');
+}
+
+function confirmLeave(){ 
+  if (!leaveModal) return;
+  leaveModal.classList.add('active');
+}
+
+function closeLeave(){ 
+  if (!leaveModal) return;
+  leaveModal.classList.remove('active');
+}
+
+// ----------------------------
+// コピー関数
+// ----------------------------
+// 短押し：パスワードのみ
+function copyText(password){
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  const message = `パスワード：${password}\nをコピーしました\n\nメンバーにお知らせください`;
+
+  if (navigator.clipboard && !isAndroid) {
+    navigator.clipboard.writeText(password).then(()=>showInfo(message)).catch(()=>legacyCopyPasswordOnly(password));
+  } else {
+    legacyCopyPasswordOnly(password);
+  }
+}
+function legacyCopyPasswordOnly(password){
+  const textarea = document.createElement("textarea");
+  textarea.value = password;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    showInfo(`パスワード：${password}\nをコピーしました\n\nメンバーにお知らせください`);
+  } catch(e){
+    showInfo("コピーに失敗しました");
+  }
+  document.body.removeChild(textarea);
+}
+
+// 長押し：テント名＋パスワード
+function legacyCopy(tentName, password){
+  const txt = `テント名：${tentName}\nパスワード：${password}`;
+  const textarea = document.createElement("textarea");
+  textarea.value = txt;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    document.execCommand("copy");
+    const message = `${txt}\nをコピーしました\n\nメンバーにお知らせください`;
+    showInfo(message);
+  } catch(e){
+    showInfo("コピーに失敗しました");
+  }
+  document.body.removeChild(textarea);
+}
+
+// setupCopy：短押し／長押し判定
+function setupCopy(element, password, tentName){
+  let pressTimer = null;
+  element.isLongPress = false;
+
+  // ★ ここで実体を取得
+  const getPass = () => typeof password === "function" ? password() : password;
+  const getName = () => typeof tentName === "function" ? tentName() : tentName;
+
+  const startPress = e => { 
+    e.preventDefault();
+    element.isLongPress = false; 
+    pressTimer = setTimeout(()=>{
+      legacyCopy(getName(), getPass());
+      element.isLongPress = true; 
+    }, 500); 
+  };
+
+  const endPress = () => { 
+    if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } 
+    if(!element.isLongPress){ copyText(getPass()); } 
+    element.isLongPress=false; 
+  };
+
+  const cancelPress = () => { 
+    if(pressTimer){ clearTimeout(pressTimer); pressTimer=null; } 
+    element.isLongPress=false; 
+  };
+
+  element.addEventListener("mousedown", startPress);
+  element.addEventListener("touchstart", startPress);
+  element.addEventListener("mouseup", endPress);
+  element.addEventListener("touchend", endPress);
+  element.addEventListener("mouseleave", cancelPress);
+  element.addEventListener("touchcancel", cancelPress);
+}
+
+// ----------------------------
+// ボタンイベント
+// ----------------------------
+orgBtn.onclick = () => {
+  renderLists(tournaments); 
+selectedTentIndex = null;
+selectedTentDisplay.textContent = "";
+  showScreen('orgScreen');
+};
+partBtn.onclick = ()=>showScreen('partScreen');
+soloBtn.onclick = ()=>{ resetSoloCounter(); showScreen('soloCounterScreen'); };
+
+// リーダー：テント設営
+createBtn.onclick = () => {
+  const name = orgName.value.trim();
+  if (!name) return showInfo("テント名を入力してください");
+
+  // 重複チェック
+  const exists = tournaments.some(t => t.name === name);
+  if (exists) return showInfo("同じ名前のテントがすでに存在します");
+
+  const pass = Math.random().toString(36).slice(-6);
+  tournaments.push({ name, pass });
+  localStorage.setItem("myTents", JSON.stringify(tournaments));
+  orgName.value = "";
+  renderLists(tournaments);
+selectedTentIndex = null;
+selectedTentDisplay.textContent = "";
+};
+
+// サーバーにエントリー用JS（将来的に実装）
+const serverEntryBtn = document.getElementById("serverEntryBtn");
+
+serverEntryBtn.onclick = () => {
+  showInfo("※ この機能は今後実装予定です");
+};
+
+// ----------------------------
+// テント検索
+// ----------------------------
+let searchTimer=null;
+searchName.addEventListener("input", ()=>{
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{
+    const key = searchName.value.trim();
+    if(key===""){
+      renderLists(tournaments);
+selectedTentIndex = null;
+selectedTentDisplay.textContent = "";
+    } else {
+      renderLists(tournaments.filter(t=>t.name.includes(key)));
+    }
+  },200);
+});
+
+searchBtn.onclick = () => {
+  const key = searchName.value.trim();
+  if(key===""){
+    renderLists(tournaments);
+selectedTentIndex = null;
+selectedTentDisplay.textContent = "";
+  } else {
+    renderLists(tournaments.filter(t=>t.name.includes(key)));
+  }
+};
+
+// メンバー入室
+joinBtn.onclick = () => {
+  const t = tournaments.find(t=>t.name===searchName.value && t.pass===joinPass.value);
+  if(!t) return showInfo("テント名またはパスワードが違います");
+  currentTournament = t;
+  tournamentLabel.textContent = t.name;
+  tournamentTitle.textContent = t.name;
+  showScreen('settingsScreen');
+};
+
+// パスワード表示切替
+eye.onclick = () => {
+  if(joinPass.type==="password"){ joinPass.type="text"; eye.textContent="非表示"; } 
+  else { joinPass.type="password"; eye.textContent="表示"; }
+};
+
+// リーダーエントリーに所有テントの有り無し
+function updateTentListTitle() {
+  const title = document.getElementById("tentListTitle");
+  if (!title) return;
+
+  if (tournaments.length === 0) {
+    title.textContent = "--- 所有するテントはありません ---";
+  } else {
+    title.textContent = "--- 所有するテントから選ぶ ---";
+  }
+}
+
+// ----------------------------
+// テントリスト描画
+// ----------------------------
+function renderLists(list){
+  // ★ タイトルを更新
+  updateTentListTitle();
+
+  orgList.innerHTML = "";
+  partList.innerHTML = "";
+
+  list.forEach((t, i) => {
+
+    /* ===== リーダー側：選択専用リスト ===== */
+    const li1 = document.createElement("li");
+    li1.textContent = t.name;
+
+    li1.onclick = () => {
+  // すべての選択を解除
+  document.querySelectorAll("#orgList li")
+    .forEach(el => el.classList.remove("selected"));
+
+  // 自分だけ選択
+  li1.classList.add("selected");
+
+  // 選択状態を保存
+  selectedTentIndex = i;
+
+  // ★ コピー対象を更新するだけ
+  currentCopyName = t.name;
+  currentCopyPass = t.pass;
+
+  // 下の表示に反映
+  selectedTentDisplay.textContent = t.name;
+};
+
+    orgList.appendChild(li1);
+
+    /* ===== メンバー側：検索用 ===== */
+    const li2 = document.createElement("li");
+    li2.textContent = t.name;
+    li2.onclick = () => {
+      searchName.value = t.name;
+    };
+    partList.appendChild(li2);
+  });
+}
+
+
+// ------------------ テント削除関連 ------------------
+const deleteTentBtn = document.getElementById("deleteTentBtn");
+const deleteTentList = document.getElementById("deleteTentList");
+const confirmTentName = document.getElementById("confirmTentName");
+let tentToDeleteIndex = null;
+
+// 1. モーダルを開く
+deleteTentBtn.onclick = () => {
+  if(tournaments.length === 0) return showInfo("削除するテントがありません");
+  renderDeleteTentList();
+  deleteTentModal.classList.add('active');
+};
+
+// 2. リスト描画・選択
+function renderDeleteTentList(){
+  deleteTentList.innerHTML = tournaments.map((t,i)=>
+    `<div class="tent-select" data-index="${i}" style="padding:6px; border:1px solid #ccc; margin:4px; border-radius:8px; cursor:pointer;">
+      ${t.name}
+    </div>`).join('');
+
+  document.querySelectorAll("#deleteTentList .tent-select").forEach(el=>{
+    el.onclick = ()=>{
+      document.querySelectorAll("#deleteTentList .tent-select").forEach(e=>e.classList.remove('selected'));
+      el.classList.add('selected');
+      tentToDeleteIndex = Number(el.dataset.index);
+      confirmTentName.textContent = `このテントをたたんでよろしいですか？ → ${tournaments[tentToDeleteIndex].name}`;
+    };
+  });
+}
+
+// 3. 削除
+function confirmDeleteTent(){
+  if(tentToDeleteIndex===null) return;
+  tournaments.splice(tentToDeleteIndex,1);
+  localStorage.setItem("myTents",JSON.stringify(tournaments));
+  renderLists(tournaments);
+selectedTentIndex = null;
+selectedTentDisplay.textContent = "";
+  closeDeleteTent();
+}
+
+// モーダル閉じる
+function closeDeleteTent(){
+  deleteTentModal.classList.remove('active');
+  tentToDeleteIndex = null;
+  confirmTentName.textContent = '※テントを選択すると赤く表示されます';
+}
+
+// ------------------ テント削除関連コード ------------------
+
+// ----------------------------
+// 設定・カウンター描画
+// ----------------------------
+function renderSettings(){
+  settingsGrid.innerHTML="";
+  for(let i=0;i<MAX;i++){
+    const d=document.createElement('div');
+    d.className='counter-box';
+    if(i===selfIndex) d.classList.add('selected');
+    if(names[i] && i!==selfIndex) d.classList.add('locked');
+    d.innerHTML=`<div class="count">${counts[i]}</div>
+      <input value="${names[i]||'ニックネーム'}" maxlength="7">
+      <input value="${messages[i]||'つぶやき'}" maxlength="7">`;
+    d.onclick = () => {
+      if(names[i] && i!==selfIndex) return;
+      if(selfIndex!==null && selfIndex!==i){
+        counts[i] = counts[selfIndex]; 
+        names[i] = names[selfIndex]; 
+        messages[i] = messages[selfIndex];
+        counts[selfIndex] = 0; 
+        names[selfIndex] = ""; 
+        messages[selfIndex] = "";
+      }
+      selfIndex=i; syncUI();
+    };
+    settingsGrid.appendChild(d);
+  }
+}
+
+function renderCounters(){
+  counterGrid.innerHTML="";
+  for(let i=0;i<MAX;i++){
+    const d=document.createElement('div');
+    d.className='counter-box';
+    d.innerHTML=`<div class="count">${counts[i]}</div>
+      <input value="${names[i]||''}" readonly maxlength="7">
+      <input value="${messages[i]||''}" readonly maxlength="7">`;
+    counterGrid.appendChild(d);
+  }
+}
+
+function syncUI(){
+  renderSettings();
+  renderCounters();
+  if(selfIndex!==null){
+    //selfCount.textContent=selfCounter.count;
+    //selfName.value=selfCounter.name;
+    //selfMsg.value=selfCounter.msg;
+  }
+}
+
+// ----------------------------
+// マイカウンター共通セットアップ
+// ----------------------------
+function setupMyCounter(countElem,nameElem,msgElem,counterObj,decreaseBtn,gridSync){
+  const updateUI = ()=>{
+    countElem.textContent = counterObj.count;
+    nameElem.value = counterObj.name;
+    msgElem.value = counterObj.msg;
+    if(gridSync && selfIndex!==null){
+      counts[selfIndex] = counterObj.count;
+      names[selfIndex] = counterObj.name;
+      messages[selfIndex] = counterObj.msg;
+      renderCounters();
+    }
+  };
+  countElem.onclick = ()=>{ counterObj.count++; updateUI(); };
+  decreaseBtn.onclick = ()=>{ counterObj.count=Math.max(0,counterObj.count-1); updateUI(); };
+  nameElem.oninput = e=>{ counterObj.name=e.target.value; updateUI(); };
+  msgElem.oninput = e=>{ counterObj.msg=e.target.value; updateUI(); };
+  updateUI();
+}
+
+// ソロカウンター
+// setupMyCounter(soloCount,soloName,soloMsg,soloCounter,soloDecrease,false);
+
+
+// ソロ：名前・つぶやき専用
+soloName.oninput = e => {
+  soloCounter.name = e.target.value;
+};
+
+soloMsg.oninput = e => {
+  soloCounter.msg = e.target.value;
+};
+
+// みんなでカウンター
+//let selfCounter = { count:0,name:"",msg:"" };
+//setupMyCounter(selfCount,selfName,selfMsg,selfCounter,document.querySelector("#counterScreen .decrease-btn"),true);
+
+// カウンター開始
+startBtn.onclick = ()=>{ 
+  if(selfIndex===null) return showInfo("カウンターを選んでください"); 
+  showScreen('counterScreen'); 
+  syncUI(); 
+};
+
+// ソロリセット
+function resetSoloCounter(){
+  soloLeftCounter.count = 0;
+  soloRightCounter.count = 0;
+  soloCounter.count = 0;
+  soloCounter.name = "";
+  soloCounter.msg = "";
+
+  soloLeftCountElem.textContent = 0;
+  soloRightCountElem.textContent = 0;
+  soloCount.textContent = 0;
+
+  soloName.value = "";
+  soloMsg.value = "";
+}
+
+
+// 離脱
+function leaveRoom(){
+  counts.fill(0); names.fill(""); messages.fill(""); selfIndex=null;
+  //selfCounter.count=0; selfCounter.name=""; selfCounter.msg="";
+  closeLeave(); showScreen('entryScreen');
+}
+
+// ------------------------------ 初期画面タイトル記号のランダム表示 ------------------------------
+// 記号候補（全角は除外、雪だるまは必ず1体）
+const symbols = ["▲","△","◭","❄"]; // ☃は必ず入れるので外す
+
+function randomSymbolsWithSnow(n){
+  if(n === 0) return "";
+
+  // まずランダムに記号列を生成（_も挟む）
+  let s = symbols[Math.floor(Math.random() * symbols.length)];
+
+  for(let i=1; i<n; i++){
+    let underscores = "_".repeat(Math.floor(Math.random()*2) + 1); // _を1～2個
+    s += underscores + symbols[Math.floor(Math.random() * symbols.length)];
+  }
+
+  // ランダムな位置に必ず1体雪だるまを挿入
+  const pos = Math.floor(Math.random() * (s.length + 1));
+  s = s.slice(0, pos) + "☃" + s.slice(pos);
+
+  return s;
+}
+
+// ページ読み込み時にタイトルをセット
+function setRandomTitles(){
+  const soloText = " ダブルカウンター ";
+  const groupText = " みんなでテント ";
+
+  document.getElementById("soloMain").innerText = 
+    " " + randomSymbolsWithSnow(2) + soloText + randomSymbolsWithSnow(2) + " ";
+  
+  document.getElementById("groupMain").innerText = 
+    " " + randomSymbolsWithSnow(2) + groupText + randomSymbolsWithSnow(2) + " ";
+}
+
+// 実行
+window.addEventListener("DOMContentLoaded", setRandomTitles);
+
+// ★ ここからタイトル演出を追加
+window.addEventListener('load', () => {
+  playTitleSequence();
+});
+
+// ------------------------------ 初期画面タイトル記号のランダム表示 ------------------------------
+
+
+
+// ======================================== ひとりカウンター関連関数まとめ ========================================
+
+// ------------------------------ カウント左右合計関数 ------------------------------
+
+function updateSoloTotal() {
+  soloCounter.count = soloLeftCounter.count + soloRightCounter.count;
+  soloCount.textContent = soloCounter.count;
+}
+
+// ----- カウント左右クリック処理 -----
+const soloLeftCountElem  = document.getElementById("soloLeftCount");
+const soloRightCountElem = document.getElementById("soloRightCount");
+
+soloLeftCountElem.onclick = () => {
+  soloLeftCounter.count++;
+  soloLeftCountElem.textContent = soloLeftCounter.count;
+  updateSoloTotal();
+  addSoloHourlyCount("left");
+
+  createRipple(soloLeftCountElem, 'ripple-btn');
+  createRipple(centralCount, 'ripple-center');
+  if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+
+// --- ここから声かけ表示 ---
+  updateInfoBar(soloCounter.count);
+  // --- ここまで ---
+
+};
+
+soloRightCountElem.onclick = () => {
+  soloRightCounter.count++;
+  soloRightCountElem.textContent = soloRightCounter.count;
+  updateSoloTotal();
+  addSoloHourlyCount("right");
+
+  createRipple(soloRightCountElem, 'ripple-btn');
+  createRipple(centralCount, 'ripple-center');
+  if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+
+// --- ここから声かけ表示 ---
+  updateInfoBar(soloCounter.count);
+  // --- ここまで ---
+
+};
+
+// ------------------------------ カウント左右合計関数 ------------------------------
+
+// ------------------------------ カウント左右減算・クリア関数 ------------------------------
+
+const soloLeftClear    = document.getElementById("soloLeftClear");
+const soloLeftDecrease = document.getElementById("soloLeftDecrease");
+const soloRightClear    = document.getElementById("soloRightClear");
+const soloRightDecrease = document.getElementById("soloRightDecrease");
+
+// 左▼ボタンクリック
+soloLeftDecrease.onclick = () => {
+  if(soloLeftCounter.count === 0) return;
+
+  soloLeftCounter.count--;
+  soloLeftCountElem.textContent = soloLeftCounter.count;
+  updateSoloTotal();
+
+  subtractSoloHourlyCount("left");  // ★ 追加
+};
+
+// 右▼ボタンクリック
+soloRightDecrease.onclick = () => {
+  if(soloRightCounter.count === 0) return;
+
+  soloRightCounter.count--;
+  soloRightCountElem.textContent = soloRightCounter.count;
+  updateSoloTotal();
+
+  subtractSoloHourlyCount("right"); // ★ 追加
+};
+
+// ------------------------------ カウント左右減算・クリア関数 ------------------------------
+
+// 左右Cボタンを押したときにモーダルを出す
+soloLeftClear.onclick = () => {
+  // スマホ振動 20ms
+  if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+
+  showResetSoloModal('left');
+};
+
+soloRightClear.onclick = () => {
+  // スマホ振動 20ms
+  if (navigator.vibrate && isVibrationEnabled) navigator.vibrate(20);
+
+  showResetSoloModal('right');
+};
+
+// 現在どちらをリセットするか保持
+let soloResetTarget = null;
+
+// モーダル表示用関数
+function showResetSoloModal(side){
+  soloResetTarget = side; // 'left' or 'right'
+  resetSoloModal.classList.add('active');
+}
+
+// CリセットのOKボタン
+function confirmResetSolo() {
+
+  // LEFT
+  if (soloResetTarget === "left") {
+    for (let h = 0; h < 24; h++) {
+      liveHourlyHistory.left[h] = 0;
+    }
+  }
+
+  // RIGHT
+  if (soloResetTarget === "right") {
+    for (let h = 0; h < 24; h++) {
+      liveHourlyHistory.right[h] = 0;
+    }
+  }
+
+  // TOTAL 再計算
+  for (let h = 0; h < 24; h++) {
+    liveHourlyHistory.total[h] =
+      liveHourlyHistory.left[h] + liveHourlyHistory.right[h];
+  }
+
+  // 保存
+  saveLiveHourlyHistory();
+
+  // 画面再同期（超重要）
+  enterSoloCounterScreen();
+
+  closeResetSoloModal();
+  showInfo("カウントをリセットしました");
+}
+
+
+// モーダル閉じる
+function closeResetSoloModal(){
+  resetSoloModal.classList.remove('active');
+}
+
+// ------------------------------ カウント数字増加水紋アニメーション ------------------------------
+
+function createRipple(target, type) {
+  const ripple = document.createElement('span');
+  ripple.className = type;
+  target.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+// ---------- 全部 0（増加用） ----------
+function isAllZero() {
+  const left   = Number(document.getElementById('soloLeftCount').textContent);
+  const right  = Number(document.getElementById('soloRightCount').textContent);
+  const center = Number(document.getElementById('soloCount').textContent);
+  return left === 0 && right === 0 && center === 0;
+}
+
+// ---------- 中央がまだ残っているか ----------
+function canRippleCenter() {
+  const center = Number(document.getElementById('soloCount').textContent);
+  return center > 0;
+}
+
+const centralCount = document.getElementById('soloCount');
+
+// -------------------- ひとりカウンター画面復帰でカウント数復元 --------------------
+function enterSoloCounterScreen() {
+  loadLiveHourlyHistory();
+
+  const totalLeft  = liveHourlyHistory.left.reduce((a,b)=>a+b,0);
+  const totalRight = liveHourlyHistory.right.reduce((a,b)=>a+b,0);
+
+  soloLeftCounter.count  = totalLeft;
+  soloRightCounter.count = totalRight;
+  updateSoloTotal();
+
+  soloLeftCountElem.textContent  = totalLeft;
+  soloRightCountElem.textContent = totalRight;
+  soloCount.textContent          = soloCounter.count;
+
+  soloHourlyHistory.left  = [...liveHourlyHistory.left];
+  soloHourlyHistory.right = [...liveHourlyHistory.right];
+  soloHourlyHistory.total = [...liveHourlyHistory.total];
+  updateGraphDisplay();
+}
+
+// ======================================== グラフモーダル用JS ========================================
+
+// ------------------- ダミーデータ作成 -------------------
+const soloHourlyHistory = {
+  left: Array(24).fill(0),
+  right: Array(24).fill(0),
+  total: Array(24).fill(0)
+};
+
+// リアルタイム用バックアップ
+let liveHourlyHistory = JSON.parse(JSON.stringify(soloHourlyHistory));
+
+// ランダムでテスト用に値を設定（0〜500まで）
+// for (let h = 0; h < 24; h++) {
+//   soloHourlyHistory.left[h]  = Math.floor(Math.random() * 500); 
+//   soloHourlyHistory.right[h] = Math.floor(Math.random() * 500);
+//   soloHourlyHistory.total[h] = soloHourlyHistory.left[h] + soloHourlyHistory.right[h];
+// }
+
+
+// ------------------- モーダル開閉 -------------------
+const graphBtn = document.getElementById("graphBtnPlaceholder");
+const graphModal = document.getElementById("soloGraphModal");
+const closeGraphModalBtn = document.getElementById("closeGraphModal");
+
+closeGraphModalBtn.addEventListener("click", () => {
+  graphModal.classList.add("hidden");
+});
+
+graphModal.querySelector(".graph-modal-backdrop")
+  .addEventListener("click", () => {
+    graphModal.classList.add("hidden");
+  });
+
+// ------------------- タブ切替 -------------------
+const tabButtons = document.querySelectorAll(".tab-btn");
+let currentTab = "total"; // ← 左から合計に変更
+
+tabButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentTab = btn.dataset.target;
+    updateGraphDisplay();
+  });
+});
+
+// ------------------- グラフ描画 -------------------
+function updateGraphDisplay() {
+  const placeholder = document.querySelector(".graph-placeholder");
+  placeholder.innerHTML = "";
+
+  const data = soloHourlyHistory[currentTab];
+
+  data.forEach((count, hour) => {
+    const row = document.createElement("div");
+    row.className = "hour-row";
+
+    const hourLabel = document.createElement("div");
+    hourLabel.className = "hour-label";
+    hourLabel.textContent = `${hour}時`;
+
+    const barArea = createHourBar(count);
+
+    row.appendChild(hourLabel);
+    row.appendChild(barArea);
+
+    placeholder.appendChild(row);
+  });
+}
+
+// ------------------- 保存 -------------------
+function saveLiveHourlyHistory() {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+  const data = {
+    date: today,
+    history: liveHourlyHistory
+  };
+
+  localStorage.setItem("liveHourlyHistory", JSON.stringify(data));
+}
+
+function loadLiveHourlyHistory() {
+  const saved = JSON.parse(localStorage.getItem("liveHourlyHistory") || "null");
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (saved && saved.date === today) {
+    liveHourlyHistory = saved.history;
+  } else {
+    // 今日でなければリセット
+    liveHourlyHistory = {
+      left: Array(24).fill(0),
+      right: Array(24).fill(0),
+      total: Array(24).fill(0)
+    };
+  }
+
+  // 表示用にも同期
+  soloHourlyHistory.left  = [...liveHourlyHistory.left];
+  soloHourlyHistory.right = [...liveHourlyHistory.right];
+  soloHourlyHistory.total = [...liveHourlyHistory.total];
+}
+
+// ------------------- カウント加算・減算で保存 -------------------
+function addSoloHourlyCount(type, count = 1) {
+  const hour = new Date().getHours();
+
+  soloHourlyHistory[type][hour] += count;
+  soloHourlyHistory.total[hour] += count;
+
+  liveHourlyHistory[type][hour] += count;
+  liveHourlyHistory.total[hour] += count;
+
+  saveLiveHourlyHistory(); // ★ ここで永続化
+
+  if (!graphModal.classList.contains("hidden")) {
+    updateGraphDisplay();
+  }
+}
+
+// ------------------- ブロック生成 -------------------
+function createHourBar(count) {
+  const barArea = document.createElement("div");
+  barArea.className = "bar-area";
+
+  const blockWidth = 24;
+
+  // ---- 単位分解 ----
+  const hundreds = Math.floor(count / 100);
+  const tens = Math.floor((count % 100) / 10);
+  const ones = count % 10;
+
+  // ---- 100単位ブロック ----
+  for (let i = 0; i < hundreds; i++) {
+    const block = document.createElement("div");
+    block.className = "fish-block hundred";
+    block.style.width = `${blockWidth}px`;
+    block.textContent = "100";
+    barArea.appendChild(block);
+  }
+
+  // ---- 10単位ブロック ----
+  for (let i = 0; i < tens; i++) {
+    const block = document.createElement("div");
+    block.className = "fish-block ten";
+    block.style.width = `${blockWidth}px`;
+    block.textContent = "10";
+    barArea.appendChild(block);
+  }
+
+  // ---- 10未満（数字表示） ----
+  if (ones > 0) {
+    const onesLabel = document.createElement("div");
+    onesLabel.className = "ones-label";
+    onesLabel.textContent = ones;
+    barArea.appendChild(onesLabel);
+  }
+
+  return barArea;
+}
+
+// ==================== 時間別カウント減算対応 ====================
+function subtractSoloHourlyCount(type, count = 1) {
+  const hour = new Date().getHours();
+
+  soloHourlyHistory[type][hour] = Math.max(0, soloHourlyHistory[type][hour] - count);
+  soloHourlyHistory.total[hour] = Math.max(0, soloHourlyHistory.total[hour] - count);
+
+  liveHourlyHistory[type][hour] = Math.max(0, liveHourlyHistory[type][hour] - count);
+  liveHourlyHistory.total[hour] = Math.max(0, liveHourlyHistory.total[hour] - count);
+
+  saveLiveHourlyHistory(); // ★ 永続化
+
+  if (!graphModal.classList.contains("hidden")) {
+    updateGraphDisplay();
+  }
+}
+
+function adjustHourlyTotal(type, newValue) {
+  const hour = new Date().getHours();
+  
+  // 合計との差を計算
+  const diff = newValue - soloHourlyHistory[type][hour];
+
+  if (diff > 0) addSoloHourlyCount(type, diff);
+  else if (diff < 0) subtractSoloHourlyCount(type, -diff);
+}
+
+
+// ==================== 釣果保存（★グローバルに置く） ====================
+function saveSoloResult() {
+  const now = new Date();
+  const record = {
+    id: now.toISOString(),
+    date: new Date().toISOString().slice(0,10), // ← ISO推奨
+    time: now.toLocaleTimeString(),
+    total: Number(document.getElementById("soloCount").textContent),
+    left: Number(document.getElementById("soloLeftCount").textContent),
+    right: Number(document.getElementById("soloRightCount").textContent),
+    hourly: JSON.parse(JSON.stringify(liveHourlyHistory))
+  };
+
+  const saved = JSON.parse(localStorage.getItem("soloRecords") || "[]");
+
+  // ★ 追加
+  saved.push(record);
+  if (saved.length > 200) {
+    saved.shift(); // 古いデータを削除
+  }
+
+  localStorage.setItem("soloRecords", JSON.stringify(saved));
+
+  renderSavedRecordList();
+  currentRecordId = null;
+  showInfo("釣果を保存しました");
+}
+
+// ==================== 釣果保存と削除 ====================
+
+let confirmSaveModal;
+let confirmSaveOk;
+let confirmSaveCancel;
+
+document.addEventListener("DOMContentLoaded", () => {
+updateInfoBar(soloCounter.count); // これでHTMLの文言がJS管理の文章に置き換わる
+
+  // ==================== 釣果保存ボタン ====================
+  const saveBtn = document.getElementById("saveSoloResult");
+  if (saveBtn) {
+    saveBtn.addEventListener("click", openSaveConfirm);
+  }
+
+  // ==================== 保存確認モーダル ====================
+  confirmSaveModal  = document.getElementById("confirmSaveModal");
+  confirmSaveOk     = document.getElementById("confirmSaveOk");
+  confirmSaveCancel = document.getElementById("confirmSaveCancel");
+
+  if (confirmSaveCancel) {
+    confirmSaveCancel.onclick = closeSaveConfirm;
+  }
+
+  if (confirmSaveOk) {
+    confirmSaveOk.onclick = () => {
+      saveSoloResult();
+      closeSaveConfirm();
+    };
+  }
+
+  // ==================== 削除確認モーダル ====================
+  const confirmDeleteModal = document.getElementById("confirmDeleteModal");
+  const confirmDeleteMessage = document.getElementById("confirmDeleteMessage");
+  const confirmDeleteOk = document.getElementById("confirmDeleteOk");
+  const confirmDeleteCancel = document.getElementById("confirmDeleteCancel");
+
+  let onDeleteConfirm = null;
+
+function openDeleteConfirm(message, onOk) {
+  confirmDeleteMessage.textContent = message;
+  onDeleteConfirm = onOk;
+  confirmDeleteModal.classList.add("active");
+}
+
+function closeDeleteConfirm() {
+  confirmDeleteModal.classList.remove("active");
+  onDeleteConfirm = null;
+}
+
+  if (confirmDeleteCancel) {
+    confirmDeleteCancel.onclick = closeDeleteConfirm;
+  }
+
+  if (confirmDeleteOk) {
+    confirmDeleteOk.onclick = () => {
+      if (typeof onDeleteConfirm === "function") {
+        onDeleteConfirm();
+      }
+      closeDeleteConfirm();
+    };
+  }
+
+  // ==================== 保存データ削除ボタン ====================
+  const deleteBtn = document.getElementById("deleteSoloResult");
+
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", () => {
+      openDeleteConfirm(
+      "この釣果を削除しますか？",
+      deleteSelectedSoloRecord
+      );
+    });
+  }
+
+});
+
+ // ==================== 削除ボタンを「選択中データ削除」に変更 ====================
+function deleteSelectedSoloRecord() {
+  if (!currentRecordId) {
+    showInfo("削除する釣果を\nリストから選択してください", "danger");
+    return;
+  }
+
+  let records = getSoloRecords();
+  records = records.filter(r => r.id !== currentRecordId);
+  localStorage.setItem("soloRecords", JSON.stringify(records));
+
+  // ★ 選択解除
+  currentRecordId = null;
+
+  // ★ 今の釣果に戻す
+  soloHourlyHistory.left  = [...liveHourlyHistory.left];
+  soloHourlyHistory.right = [...liveHourlyHistory.right];
+  soloHourlyHistory.total = [...liveHourlyHistory.total];
+
+  // ★ セレクト更新
+  renderSavedRecordList();
+
+  // ★ グラフ再描画
+  updateGraphDisplay();
+
+  showInfo("選択した釣果を削除しました", "danger");
+}
+
+// ==================== 保存データ一覧を取得する関数 ====================
+function getSoloRecords() {
+  return JSON.parse(localStorage.getItem("soloRecords") || "[]");
+}
+
+// ==================== 保存一覧をセレクトに反映 ====================
+
+function renderSavedRecordList() {
+  const select = document.getElementById("savedRecordSelect");
+  const records = getSoloRecords();
+
+  select.innerHTML = "";
+
+  // ★ まず現在の釣果を追加
+  const currentOpt = document.createElement("option");
+  currentOpt.value = "current";
+  currentOpt.textContent = `現在の釣果（合計 ${document.getElementById("soloCount").textContent}）`;
+  select.appendChild(currentOpt);
+
+  // 保存済みデータを追加
+  records.forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = r.id;
+    opt.textContent = `${r.date} ${r.time}（合計 ${r.total}）`;
+    select.appendChild(opt);
+  });
+
+  // ★ 現在データを選択状態にする
+  select.value = "current";
+}
+
+// ==================== 保存一覧をセレクト＿グラフモーダルを開いた時に呼ぶ ====================
+graphBtn.addEventListener("click", () => {
+  graphModal.classList.remove("hidden");
+  renderSavedRecordList();
+  updateGraphDisplay();
+});
+
+// ==================== 選択した釣果でグラフを更新 ====================
+document.getElementById("savedRecordSelect")
+  .addEventListener("change", e => {
+    const id = e.target.value;
+
+    if (id === "current") {
+      // 現在の釣果に戻す
+      soloHourlyHistory.left  = [...liveHourlyHistory.left];
+      soloHourlyHistory.right = [...liveHourlyHistory.right];
+      soloHourlyHistory.total = [...liveHourlyHistory.total];
+    } else {
+      const record = getSoloRecords().find(r => r.id === id);
+      if (!record) return;
+
+      currentRecordId = id;
+      soloHourlyHistory.left  = [...record.hourly.left];
+      soloHourlyHistory.right = [...record.hourly.right];
+      soloHourlyHistory.total = [...record.hourly.total];
+    }
+
+    updateGraphDisplay();
+});
+
+function openSaveConfirm() {
+  if (!confirmSaveModal) return;
+  confirmSaveModal.classList.add("active");
+}
+
+function closeSaveConfirm() {
+  if (!confirmSaveModal) return;
+  confirmSaveModal.classList.remove("active");
+}
+
+
+// ======================================== グラフモーダル用JS ========================================
+
+// ======================================== ひとりカウンター関連関数まとめ ========================================
+
+
+// ------------------------------ 長押し振動機能OFF/ON ------------------------------
+function addVibrationToggleLongPress(button) {
+  let pressTimer;
+
+  const start = () => {
+    pressTimer = setTimeout(() => {
+  // 振動フラグ切替
+  isVibrationEnabled = !isVibrationEnabled;
+
+  // モーダルを一旦閉じてから開く
+  infoModal.classList.remove('active');
+  showInfo('振動 ' + (isVibrationEnabled ? 'ON' : 'OFF'));
+
+  // 自動閉じ
+  setTimeout(() => infoModal.classList.remove('active'), 1000);
+}, 500); // 長押し500msで切替
+  };
+
+  const cancel = () => clearTimeout(pressTimer);
+
+  // スマホ・PC共通
+  button.addEventListener('mousedown', start);
+  button.addEventListener('touchstart', start);
+
+  button.addEventListener('mouseup', cancel);
+  button.addEventListener('mouseleave', cancel);
+  button.addEventListener('touchend', cancel);
+  button.addEventListener('touchcancel', cancel);
+}
+
+// 対象ボタンに長押し設定
+[
+  'soloLeftCount',
+  'soloRightCount',
+  'soloLeftDecrease',
+  'soloRightDecrease',
+  'soloLeftClear',
+  'soloRightClear'
+].forEach(id => addVibrationToggleLongPress(document.getElementById(id)));
+
+// ------------------------------ 長押し振動機能OFF/ON ------------------------------
+
+// -------------------- 中央カウンター左色パレット --------------------
+
+function generateWrapperColors() {
+  const colors = [];
+
+  // --- 黒系（必須） ---
+  colors.push(
+    "#000000",
+    "#121212",
+    "#1C1C1C",
+    "#263238",
+    "#37474F"
+  );
+
+  // --- クリーム系（必須） ---
+  colors.push(
+    "#FFF8E1",
+    "#FFF3CC",
+    "#FFECB3",
+    "#F5E6B3",
+    "#EADFB4"
+  );
+
+  // --- はっきりした有彩色（90色） ---
+  const total = 90;
+  for (let i = 0; i < total; i++) {
+    const hue = Math.round((360 / total) * i);
+    const saturation = 85; // 高彩度
+    const lightness = 55;  // くっきり
+
+    colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+  }
+
+  return colors;
+}
+
+const fullWrapperColors = generateWrapperColors();
+
+let wrapperIndex = 0;
+
+const wrapperSlider = document.getElementById("wrapperColorSlider");
+const soloWrapper = document.querySelector(".soloCounterWrapper");
+
+// 初期色（黒）
+wrapperSlider.style.backgroundColor = fullWrapperColors[wrapperIndex];
+soloWrapper.style.backgroundColor = fullWrapperColors[wrapperIndex];
+
+// 色変更関数
+function changeWrapperColor(delta) {
+  if (delta < 0) {
+    wrapperIndex = (wrapperIndex + 1) % fullWrapperColors.length;
+  } else {
+    wrapperIndex =
+      (wrapperIndex - 1 + fullWrapperColors.length) %
+      fullWrapperColors.length;
+  }
+
+  wrapperSlider.style.backgroundColor = fullWrapperColors[wrapperIndex];
+  soloWrapper.style.backgroundColor = fullWrapperColors[wrapperIndex];
+}
+
+// マウスホイール対応
+wrapperSlider.addEventListener("wheel", e => {
+  if (e.deltaY !== 0) {
+    changeWrapperColor(e.deltaY);
+    e.preventDefault();
+  }
+});
+
+// タッチ / スワイプ対応
+let startYWrapper = null;
+wrapperSlider.addEventListener("touchstart", e => {
+  startYWrapper = e.touches[0].clientY;
+});
+wrapperSlider.addEventListener("touchmove", e => {
+  if (startYWrapper === null) return;
+
+  const delta = startYWrapper - e.touches[0].clientY;
+  if (Math.abs(delta) > 10) {
+    changeWrapperColor(delta);
+    startYWrapper = e.touches[0].clientY;
+  }
+  e.preventDefault();
+});
+
+// -------------------- 中央カウンター左色パレット --------------------
+
+// ------------------------------ 左右スクロールバーで穴の色変更 ------------------------------
+
+// ---------- 左右ボックスの色パレット ----------
+// デフォルト1色（初期表示）だけ指定
+const leftColors = ["#1ABC9C"];
+const rightColors = ["#E67E22"];
+
+// デフォルト色1色を基準にランダムな濃淡で拡張（合計100色）
+// 自然にループするように HSL を生成
+function generateExtraColors(baseColors, total = 100) {
+  const colors = [];
+  const step = 360 / total; // Hue のステップ
+  for (let i = 0; i < total; i++) {
+    const hue = (i * step) % 360;                 // Hue 0-360°でループ
+    const saturation = 65 + Math.random() * 10;   // 65～75%
+    const lightness  = 45 + Math.random() * 10;   // 45～55%
+    colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+  }
+  // 初期色を先頭に追加
+  return baseColors.concat(colors);
+}
+
+const fullLeftColors = generateExtraColors(leftColors);
+const fullRightColors = generateExtraColors(rightColors);
+
+// -------------------- 初期インデックス --------------------
+let leftIndex = 0;
+let rightIndex = 0;
+
+// 左右ボックス取得
+const leftBox = document.querySelector(".left-color-box");
+const rightBox = document.querySelector(".right-color-box");
+
+// -------------------- 色変更関数 --------------------
+function changeLeftColor(delta) {
+  if (delta < 0) leftIndex = (leftIndex + 1) % fullLeftColors.length;
+  else leftIndex = (leftIndex - 1 + fullLeftColors.length) % fullLeftColors.length;
+
+  leftBox.style.backgroundColor = fullLeftColors[leftIndex];
+  document.getElementById("soloLeftCount").style.backgroundColor = fullLeftColors[leftIndex];
+}
+
+function changeRightColor(delta) {
+  if (delta < 0) rightIndex = (rightIndex + 1) % fullRightColors.length;
+  else rightIndex = (rightIndex - 1 + fullRightColors.length) % fullRightColors.length;
+
+  rightBox.style.backgroundColor = fullRightColors[rightIndex];
+  document.getElementById("soloRightCount").style.backgroundColor = fullRightColors[rightIndex];
+}
+
+// -------------------- マウスホイール対応 --------------------
+leftBox.addEventListener("wheel", e => {
+  if (e.deltaY !== 0) {
+    changeLeftColor(e.deltaY);
+    e.preventDefault();
+  }
+});
+rightBox.addEventListener("wheel", e => {
+  if (e.deltaY !== 0) {
+    changeRightColor(e.deltaY);
+    e.preventDefault();
+  }
+});
+
+// -------------------- タッチ / スワイプ対応 --------------------
+let startYLeft = null;
+let startYRight = null;
+
+leftBox.addEventListener("touchstart", e => startYLeft = e.touches[0].clientY);
+leftBox.addEventListener("touchmove", e => {
+  if (startYLeft === null) return;
+  const delta = startYLeft - e.touches[0].clientY;
+  if (Math.abs(delta) > 10) {
+    changeLeftColor(delta);
+    startYLeft = e.touches[0].clientY;
+  }
+  e.preventDefault();
+});
+
+rightBox.addEventListener("touchstart", e => startYRight = e.touches[0].clientY);
+rightBox.addEventListener("touchmove", e => {
+  if (startYRight === null) return;
+  const delta = startYRight - e.touches[0].clientY;
+  if (Math.abs(delta) > 10) {
+    changeRightColor(delta);
+    startYRight = e.touches[0].clientY;
+  }
+  e.preventDefault();
+});
+
+// ------------------------------ 左右スクロールバーで穴の色変更 ------------------------------
+
+// ------------------------------ カラースクロールバーの色固定 ------------------------------
+const lockButton = document.getElementById("lockColorBtn");
+let isLocked = false;
+
+// 保存用キー
+const STORAGE_KEY = "hitoriCounterColors";
+
+// 初期ロード時に保存データがあれば適用
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if (saved) {
+    // 本体
+    soloWrapper.style.backgroundColor = saved.wrapperColor;
+    wrapperSlider.style.backgroundColor = saved.wrapperColor;
+
+    // 左右ボックス本体
+    leftBox.style.backgroundColor = saved.leftColor;
+    rightBox.style.backgroundColor = saved.rightColor;
+
+    // 左右ボタン（パレット）にも反映
+    document.getElementById("soloLeftCount").style.backgroundColor = saved.leftColor;
+    document.getElementById("soloRightCount").style.backgroundColor = saved.rightColor;
+
+    isLocked = true;
+    lockButton.classList.add("locked");
+  }
+});
+
+// ボタンクリックでトグル
+lockButton.addEventListener("click", () => {
+  if (!isLocked) {
+    // ロック：現在の色を保存
+    const data = {
+      wrapperColor: soloWrapper.style.backgroundColor,
+      leftColor: leftBox.style.backgroundColor,
+      rightColor: rightBox.style.backgroundColor
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    isLocked = true;
+    lockButton.classList.add("locked");
+  } else {
+    // アンロック：保存を削除
+    localStorage.removeItem(STORAGE_KEY);
+
+    isLocked = false;
+    lockButton.classList.remove("locked");
+  }
+});
+
+// 色変更関数を無効化する
+function changeWrapperColor(delta) {
+  if (isLocked) return;
+  if (delta < 0) wrapperIndex = (wrapperIndex + 1) % fullWrapperColors.length;
+  else wrapperIndex = (wrapperIndex - 1 + fullWrapperColors.length) % fullWrapperColors.length;
+
+  wrapperSlider.style.backgroundColor = fullWrapperColors[wrapperIndex];
+  soloWrapper.style.backgroundColor = fullWrapperColors[wrapperIndex];
+}
+
+function changeLeftColor(delta) {
+  if (isLocked) return;
+  if (delta < 0) leftIndex = (leftIndex + 1) % fullLeftColors.length;
+  else leftIndex = (leftIndex - 1 + fullLeftColors.length) % fullLeftColors.length;
+
+  leftBox.style.backgroundColor = fullLeftColors[leftIndex];
+  document.getElementById("soloLeftCount").style.backgroundColor = fullLeftColors[leftIndex];
+}
+
+function changeRightColor(delta) {
+  if (isLocked) return;
+  if (delta < 0) rightIndex = (rightIndex + 1) % fullRightColors.length;
+  else rightIndex = (rightIndex - 1 + fullRightColors.length) % fullRightColors.length;
+
+  rightBox.style.backgroundColor = fullRightColors[rightIndex];
+  document.getElementById("soloRightCount").style.backgroundColor = fullRightColors[rightIndex];
+}
+// ------------------------------ カラースクロールバーの色固定 ------------------------------
+
+/* ------------------- お天気 高速安全版（最終・アラート付き） ------------------- */
+
+const locationCache = {};
+let isSearching = false;
+let safeDateInterval = null;
+let lastRegion = "地域";
+let lastSearchedRegion = localStorage.getItem("lastSearchedRegion") || "";
+let lastLat = 37.75;
+let lastLon = 140.47;
+let weatherInterval = null;
+
+// 日時表示（午前／午後＋⏰＋秒控えめ＋曜日色分け）
+function getSafeJapaneseDateTime() {
+    const d = new Date();
+    const y = d.getFullYear() - 2018;
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+
+    const weekIndex = d.getDay();
+    const weekChar = ['日','月','火','水','木','金','土'][weekIndex];
+
+    let weekClass = 'week-weekday';
+    if (weekIndex === 0) weekClass = 'week-sun';
+    if (weekIndex === 6) weekClass = 'week-sat';
+
+    // 午前・午後
+    const hour24 = d.getHours();
+    const ampm = hour24 < 12 ? '午前' : '午後';
+
+    // 12時間制
+    let hour12 = hour24 % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    const h = String(hour12).padStart(2,'0');
+    const min = String(d.getMinutes()).padStart(2,'0');
+    const sec = String(d.getSeconds()).padStart(2,'0');
+
+ return `令和${y}年${m}月${day}日（<span class="${weekClass}">${weekChar}</span>）
+ <span style="margin-left:4px;">${ampm}</span>
+ ${h}:${min}<span style="opacity:0.7;font-size:0.9em">:${sec}</span>`;
+
+}
+
+function startSafeDateTime() {
+    const box = document.getElementById("safeDateTimeBox");
+    if (!box) return;
+    if (safeDateInterval) clearInterval(safeDateInterval);
+
+    // 初回表示
+    box.innerHTML = getSafeJapaneseDateTime();
+
+    // 1秒ごと更新
+    safeDateInterval = setInterval(() => {
+        box.innerHTML = getSafeJapaneseDateTime();
+    }, 1000);
+}
+
+window.addEventListener("DOMContentLoaded", startSafeDateTime);
+
+// 天気コード変換
+function codeToWeather(code) {
+    const map = {
+        0: {name:'快晴', icon:'<i class="wi wi-day-sunny"></i>'},
+        1: {name:'晴れ', icon:'<i class="wi wi-day-sunny"></i>'},
+        2: {name:'薄曇', icon:'<i class="wi wi-day-cloudy"></i>'},
+        3: {name:'曇り', icon:'<i class="wi wi-cloud"></i>'},
+        45:{name:'霧', icon:'<i class="wi wi-fog"></i>'},
+        48:{name:'濃霧', icon:'<i class="wi wi-fog"></i>'},
+        51:{name:'霧雨（弱）', icon:'<i class="wi wi-sprinkle"></i>'},
+        53:{name:'霧雨', icon:'<i class="wi wi-sprinkle"></i>'},
+        55:{name:'霧雨（強）', icon:'<i class="wi wi-sprinkle"></i>'},
+        61:{name:'弱い雨', icon:'<i class="wi wi-showers"></i>'},
+        63:{name:'雨', icon:'<i class="wi wi-rain"></i>'},
+        65:{name:'強い雨', icon:'<i class="wi wi-rain-wind"></i>'},
+        66:{name:'みぞれ（弱）', icon:'<i class="wi wi-sleet"></i>'},
+        67:{name:'みぞれ（強）', icon:'<i class="wi wi-sleet"></i>'},
+        71:{name:'弱い雪', icon:'<i class="wi wi-snow"></i>'},
+        73:{name:'雪', icon:'<i class="wi wi-snow"></i>'},
+        75:{name:'大雪', icon:'<i class="wi wi-snowflake-cold"></i>'},
+        77:{name:'雪粒', icon:'<i class="wi wi-snowflake-cold"></i>'},
+        85:{name:'にわか雪（弱）', icon:'<i class="wi wi-snow"></i>'},
+        86:{name:'にわか雪（強）', icon:'<i class="wi wi-snow-wind"></i>'},
+        95:{name:'雷雨', icon:'<i class="wi wi-thunderstorm"></i>'},
+        96:{name:'雷雨（雹）', icon:'<i class="wi wi-hail"></i>'},
+        97:{name:'激しい雷雨', icon:'<i class="wi wi-storm-showers"></i>'},
+        default:{name:"不明", icon:''}
+    };
+    return map[code] || map.default;
+}
+
+// 天気ボックス用: 市まで
+function formatCityAddress(address) {
+    if (!address) return "不明";
+
+    // 市区町村を最優先
+    if (address.city) return address.city;
+    if (address.county) return address.county;
+    if (address.municipality) return address.municipality;
+
+    // 市が無い場合は県を表示
+    if (address.province) return address.province;
+
+    return "不明";
+}
+
+// ダイアログ用: 町までフル
+function formatFullAddress(address) {
+    if (!address) return "";
+    const parts = [
+        address.province,
+        address.city || address.county,
+        address.ward,
+        address.town || address.suburb || address.hamlet || address.quarter
+    ];
+    return parts.filter(Boolean).join("");
+}
+
+// フォント調整
+function adjustFontSize(el, max=13, min=8) {
+    el.style.fontSize = max+"px";
+    if(el.scrollWidth > el.clientWidth) el.style.fontSize = min+"px";
+}
+
+// 天気取得
+function loadWeather(lat, lon, displayRegion) {
+    lastLat = lat;
+    lastLon = lon;
+
+    const url = `https://api.open-meteo.com/v1/forecast
+?latitude=${lat}
+&longitude=${lon}
+&current_weather=true
+&hourly=precipitation_probability,apparent_temperature
+&timezone=Asia/Tokyo`;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            const w = data.current_weather;
+            const hour = new Date().getHours();
+            const precipProb = data.hourly.precipitation_probability[hour];
+            const info = codeToWeather(w.weathercode);
+            const isThunder = w.weathercode >= 95;
+
+            lastRegion = displayRegion;
+
+            const weatherBox = document.getElementById("weatherBox");
+
+            // ★ 県（都道府県）かどうか判定
+            const isPrefecture = /[都道府県]$/.test(displayRegion);
+
+            // 数値整理
+            const temp  = Math.round(w.temperature);
+            const feels = Math.round(data.hourly.apparent_temperature[hour]);
+            const wind  = Math.round(w.windspeed);
+            const rain  = Math.round(precipProb);
+            const isHeavyRain  = precipProb >= 70;
+            const isStrongWind = wind >= 8;
+
+            // ★ 全角スペース・テキスト直書きを完全排除
+            weatherBox.innerHTML = `
+                <span class="region ${isPrefecture ? 'prefecture' : ''}">
+                    ${displayRegion}
+                </span>
+
+                ${info.icon}
+
+                <span class="weather-name">${info.name}</span>
+
+                <span class="temp">気温${temp}℃</span>
+                <span class="feels">体感${feels}℃</span>
+
+                <span class="wind ${isStrongWind ? 'strong-wind' : ''}">
+                    風${wind}m/s
+                </span>
+
+                <span class="rain ${isHeavyRain ? 'heavy-rain' : ''}">
+                    雨${rain}%
+                </span>
+
+                ${isThunder ? '<span class="thunder-alert">雷</span>' : ''}
+            `;
+
+            // フォント調整（既存ロジック維持）
+            adjustFontSize(weatherBox, 13, 10);
+
+            // アイコンサイズ微調整
+            const icon = weatherBox.querySelector("i");
+            if (icon) {
+                icon.style.fontSize =
+                    Math.min(16, weatherBox.clientHeight - 4) + "px";
+            }
+        })
+        .catch(() => {
+            document.getElementById("weatherBox").textContent = "取得失敗";
+        });
+}
+
+// 住所 → 緯度経度
+function addressToLatLon(address) {
+    if(locationCache[address]) return Promise.resolve(locationCache[address]);
+    if(isSearching) return Promise.reject("検索中");
+    isSearching = true;
+    const q = "日本 " + address;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=1&q=${encodeURIComponent(q)}`;
+    return fetch(url)
+        .then(res=>res.json())
+        .then(data=>{
+            isSearching=false;
+            if(data.length===0) throw new Error("住所が見つかりません");
+            const pos = {lat:data[0].lat, lon:data[0].lon, address:data[0].address};
+            locationCache[address]=pos;
+            return pos;
+        })
+        .catch(err=>{isSearching=false; throw err;});
+}
+
+// 自動更新
+function startWeatherAutoUpdate() {
+    if(weatherInterval) clearInterval(weatherInterval);
+    weatherInterval = setInterval(()=>loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion})), 10*60*1000);
+}
+
+// 初期読み込み
+if(lastSearchedRegion){
+    addressToLatLon(lastSearchedRegion)
+        .then(pos=>{
+            const fullAddr = formatFullAddress(pos.address);
+            const cityAddr = formatCityAddress(pos.address);
+            loadWeather(pos.lat,pos.lon,cityAddr);
+            startWeatherAutoUpdate();
+        })
+        .catch(()=>{ loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion})); startWeatherAutoUpdate(); });
+} else {
+    loadWeather(lastLat,lastLon,formatCityAddress({city:lastRegion}));
+    startWeatherAutoUpdate();
+}
+
+// モーダル操作
+document.getElementById("weatherBox").onclick = ()=>{
+    const modal = document.getElementById("addressModal");
+    const addressInput = document.getElementById("addressInput");
+    addressInput.value = localStorage.getItem("lastSearchedRegion") || "";
+
+    const resolved = document.getElementById("resolvedAddress");
+    if(resolved) resolved.textContent = "";
+
+    const confirmBtn = document.getElementById("addressConfirmBtn");
+    if(confirmBtn) confirmBtn.disabled = true;
+
+    // 検索済みフル住所をリセット
+    window._pendingAddress = null;
+
+    modal.style.display = "flex";
+};
+
+// 検索ボタン
+document.getElementById("addressSearchBtn").onclick = ()=>{
+    const addr = document.getElementById("addressInput").value.trim();
+    if(!addr) return;
+
+addressToLatLon(addr)
+    .then(pos=>{
+        const fullAddr = formatFullAddress(pos.address);
+        const cityAddr = formatCityAddress(pos.address);
+        loadWeather(pos.lat,pos.lon,cityAddr);
+
+        const resolved = document.getElementById("resolvedAddress");
+        if(resolved){
+            resolved.textContent = "※ 表示地点（自動判定）：" + fullAddr;
+            resolved.style.color = "#000080"; // 紺色に設定
+        }
+
+        const confirmBtn = document.getElementById("addressConfirmBtn");
+        if(confirmBtn) confirmBtn.disabled = false;
+
+        // 検索済みフル住所を保存
+        window._pendingAddress = fullAddr;
+    })
+
+// 住所検索に失敗したとき
+.catch(()=>{
+    const resolved = document.getElementById("resolvedAddress");
+    if(resolved){
+        resolved.textContent = "住所が見つかりません";
+        resolved.style.color = "#000080"; // 紺色に設定
+    }
+});
+
+};
+
+// Enterキー
+document.getElementById("addressInput").addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); document.getElementById("addressSearchBtn").click(); }
+});
+
+// キャンセル
+document.getElementById("addressCancelBtn").onclick = ()=>{
+    document.getElementById("addressModal").style.display="none";
+};
+
+// 確定
+// 確定
+document.getElementById("addressConfirmBtn").onclick = ()=>{
+    // 入力フォームに検索済みフル住所を反映（_pendingAddress は null でも大丈夫）
+    if(window._pendingAddress){
+        document.getElementById("addressInput").value = window._pendingAddress;
+        localStorage.setItem("lastSearchedRegion", window._pendingAddress);
+    }
+    // モーダルを閉じる
+    document.getElementById("addressModal").style.display="none";
+};
+
+/* ------------------- お天気 高速安全版 最終・アラート付き 完了 ------------------- */
+
+/* ---------------------------------- 声かけ表示機能 ---------------------------------- */
+/* ---------------------------------
+   声かけ表示用関数（人格成長AI相棒・究極完成版＋自然言語拡張・姉系調整＋非重複制御）
+--------------------------------- */
+
+let infoTimeout = null;
+let lastCountTime = Date.now();
+let lastTapTime = 0;
+let rapidTapCount = 0;
+let totalCounts = 0;
+
+/* ---------------- 重複防止履歴 ---------------- */
+let recentMessages = [];
+const MESSAGE_HISTORY_LIMIT = 15;
+
+/* ---------------- ランダム（非重複） ---------------- */
+function randNoRepeat(arr){
+  let tries = 0;
+  let msg;
+  do {
+    msg = arr[Math.floor(Math.random()*arr.length)];
+    tries++;
+  } while (recentMessages.includes(msg) && tries < 50);
+
+  recentMessages.push(msg);
+  if(recentMessages.length > MESSAGE_HISTORY_LIMIT){
+    recentMessages.shift();
+  }
+  return msg;
+}
+
+/* ---------------- 初回専用メッセージ ---------------- */
+const initMessages = [
+  "今日も良い一日になりそうですね",
+  "落ち着いて積み上げていきましょう",
+  "今日の流れ、楽しみですね",
+  "静かなスタートも悪くないですね",
+  "良い釣り日和になりそうです",
+  "今日の展開、期待できそうですね",
+  "無理せず、いいペースでいきましょう",
+  "ここからどんな展開になるか楽しみです",
+  "静かな朝の釣り、好きです",
+  "今日も見守っていますね",
+  "流れを作っていきましょう",
+  "気持ちの良い一日になりそうです",
+
+  // 追加
+  "今日は静かな立ち上がりですね",
+  "今日の湖、雰囲気がいいですね",
+  "集中しやすい空気感ですね",
+  "穏やかな一日になりそうです",
+  "今日も淡々と積み上げましょう",
+  "良い流れを作れそうですね",
+  "楽しみな一日になりそうです",
+  "落ち着いたスタートですね"
+];
+
+/* ---------------- 初回表示 ---------------- */
+function initPartnerMessage() {
+  showPartnerMessage(randNoRepeat(initMessages), 0);
+}
+
+/* ---------------- 表示 ---------------- */
+function showPartnerMessage(msg, duration=3000){
+  const bar = document.querySelector(".info-placeholder-text");
+  if(!bar) return;
+  if(infoTimeout) clearTimeout(infoTimeout);
+
+  const level = getPersonalityLevel(totalCounts);
+
+  // legend人格だけ特別フェード
+  bar.classList.remove("legend-slow");
+  if(level === "legend"){
+    bar.classList.add("legend-slow");
+  }
+
+  // フェードリセット
+  bar.classList.remove("show");
+  void bar.offsetWidth; // reflow強制（重要）
+
+  bar.textContent = msg;
+  bar.classList.add("show");
+
+  if(duration > 0){
+    infoTimeout = setTimeout(()=>bar.classList.remove("show"), duration);
+  }
+}
+
+/* ---------------- 人格レベル判定 ---------------- */
+function getPersonalityLevel(total){
+  if(total < 50) return "lv1";
+  if(total < 200) return "lv2";
+  if(total < 500) return "lv3";
+  if(total < 1000) return "lv4";
+  return "legend";
+}
+
+/* ---------------- 人格成長セリフ ---------------- */
+const personalityLevels = {
+  lv1: [
+    "少しずつ感覚が整ってきていますね",
+    "基礎が自然に馴染んでいます",
+    "落ち着いた釣りができていますね",
+    "良いスタートの流れです",
+    "丁寧な所作が印象的です",
+    "安心感のあるペースですね",
+    "綺麗な釣りの組み立てです"
+  ],
+  lv2: [
+    "誘いの精度が上がっていますね",
+    "魚の反応を上手く捉えています",
+    "無駄のない動きになっています",
+    "テンポが洗練されてきました",
+    "手返しがとても安定しています",
+    "釣りのリズムが完成しつつあります"
+  ],
+  lv3: [
+    "魚の癖をしっかり把握しています",
+    "誘いが名人級ですね",
+    "釣り運びがとても美しいです",
+    "熟練者の釣り方そのものです",
+    "完成形に近い釣りですね"
+  ],
+  lv4: [
+    "王者の雰囲気が出ていますね",
+    "勝負圏内の釣りになっています",
+    "記録更新が現実的なラインです",
+    "芸術的な釣り運びですね",
+    "伝説級が射程圏に入っています"
+  ],
+  legend: [
+    "もう伝説クラスの釣りですね",
+    "語り継がれる釣果になりそうです",
+    "歴史的な一日になりましたね",
+    "釣りの神に祝福されています",
+    "後世の基準記録になりそうです"
+  ]
+};
+
+/* ---------------- シチュエーション文言 ---------------- */
+const sequenceMsgs = {
+  early: [
+    "穏やかな入り方ですね",
+    "静かなスタートです",
+    "その一匹、大記録の予感",
+    "一匹一匹が価値ある展開です",
+    "落ち着いて進めていますね",
+    "無理のない滑り出しです",
+    "丁寧なスタートですね",
+    "ここからペースを作れそうですね",
+    "今日の展開が見えてきます",
+    "静かな立ち上がりも悪くないですね",
+    "ここから流れが生まれそうです",
+
+    // 追加
+    "いい入り方ですね",
+    "穏やかなリズムです",
+    "静かながら良い兆しです",
+    "無理のない流れですね",
+    "今日は伸びそうな空気です"
+  ],
+
+  mid: [
+    "良い流れに乗っていますね",
+    "釣れる時間帯に入っています",
+    "魚の活性が上がっています",
+    "集中力が冴えていますね",
+    "安定したペースです",
+    "その誘い効いています",
+    "良いリズムを刻んでいます",
+    "見ていてワクワクします", 
+    "手返しが効いていますね",
+    "素敵なペースですよ",
+    "釣りのテンポが心地いいです",
+
+    // 追加
+    "良いペース感です",
+    "流れができています",
+    "仕掛けの相性が良さそうです",
+    "魚の反応が素直ですね",
+    "釣りが噛み合っています"
+  ],
+
+  funMid: [
+    "釣りの醍醐味ですね",
+    "釣れるとやはり楽しいですね",
+    "魚群が寄っています",
+    "テンポがとても良いです",
+    "今日は良い日ですね",
+    "見ていて気持ちいい釣りです",
+    "今日は絶好調ですね",
+    "釣りが波に乗っています",
+    "良いペース配分です",
+    "ここから伸ばせますね",
+    "楽しい時間帯に入っています",
+    "どんどん増えて嬉しいですね",
+    "釣果が気持ちよく伸びています",
+
+    // 追加
+    "群れにしっかり当たっています",
+    "釣りの波に乗れています",
+    "集中力が継続しています",
+    "良い展開になっています",
+    "楽しい展開ですね"
+  ],
+
+  late: [
+    "完成された釣り運びですね",
+    "記録更新ゾーンに入っています",
+    "堂々たる釣果です",
+    "周囲が驚く釣果になりそうですね",
+    "落ち着いた王者の釣りです",
+    "プロ級の安定感ですね",
+    "別次元の展開になっています",
+    "勝負を決める流れです",
+
+    // 追加
+    "完成度の高い釣りですね",
+    "見事な積み上げです",
+    "記録的な流れです",
+    "隙のない釣り運びです",
+    "圧巻の釣果です"
+  ],
+
+  specialTime: [
+    "その一匹、価値がありますね",
+    "粘りの一匹ですね",
+    "流れを変える一匹です",
+    "待った甲斐がありますね",
+    "最高の一匹です",
+    "久しぶりの一匹、価値がありますね",
+    "長い待ちの一匹、素晴らしいです",
+    "じっくり待った甲斐があります",
+    "この一匹は意味がありますね",
+    "沈黙を破るヒットです",
+    "粘り勝ちの一匹ですね"
+  ],
+
+  rapidTap: [
+    "連掛けモードですね",
+    "全てが噛み合っています",
+    "タナがドンピシャですね",
+    "群れの中心にいます",
+    "仕掛けが完全に合っています",
+    "完全に群れを掴んでいます",
+    "良いタナを捉えています",
+    "流れに乗っていますね",
+    "合わせが鋭いです",
+    "入れ食いの気配ですね",
+    "魚群に当たっています",
+    "連続ヒットの波です",
+    "爆釣ゾーンに入っています"
+  ],
+
+  over1000: [
+    "1000匹突破、お見事です。今日は仕上がっていますね",
+    "4桁到達ですね。安定感が素晴らしいです",
+    "記録級の釣果です。淡々と積み上げていますね",
+    "伝説ラインに入りました。さすがの釣りです",
+    "4桁は別格ですね。完成された釣り運びです"
+  ]
+};
+
+/* ---------------- 節目設定 ---------------- */
+const bigMilestones = [
+  10,20,30,40,50,60,70,80,90,
+  100,150,200,250,300,400,500,
+  700,800,900,1000
+];
+
+/* ---------------- メッセージ判定 ---------------- */
+function getPartnerMessage(count){
+  const now = Date.now();
+  totalCounts = Math.max(totalCounts, count);
+
+  // 連続タップ判定（完全リビルド）
+  if(now - lastTapTime < 2000){
+  rapidTapCount = Math.min(rapidTapCount + 1, 10);
+  } else {
+  rapidTapCount = 0; // ← 超重要
+  }
+  lastTapTime = now;
+
+  // 連掛け確率調整
+  let rapidChance = 0.6;
+  if(totalCounts > 200) rapidChance = 0.3;
+  if(totalCounts > 500) rapidChance = 0.15;
+
+  /* ===== 連掛け時間記録 ===== */
+  if(rapidTapCount >= 2){
+    lastRapidTime = now;
+  }
+
+  /* ===== 沈黙15秒で完全リセット ===== */
+  if(now - lastTapTime > 15000){
+    rapidTapCount = 0;
+    rapidZoneAnnounced = false;
+    lastRapidTime = 0;
+  }
+
+  /* ===== 連掛け有効時間（8秒） ===== */
+  const rapidActive = (now - lastRapidTime < 8000);
+
+  /* ===== 超連掛けゾーン突入演出（1回だけ） ===== */
+  if(rapidActive && rapidTapCount >= 4 && !rapidZoneAnnounced){
+    rapidZoneAnnounced = true;
+    return "完全に連掛けゾーンに入りました";
+  }
+
+  /* ===== 通常連掛け演出 ===== */
+  if (rapidActive && rapidTapCount >= 2 && Math.random() < rapidChance) {
+    return randNoRepeat(sequenceMsgs.rapidTap);
+  }
+
+  // 長時間沈黙後の一匹
+  if(now - lastCountTime > 10*60*1000){
+    lastCountTime = now;
+    return randNoRepeat(sequenceMsgs.specialTime);
+  }
+
+  // 節目前演出
+  for(let m of bigMilestones){
+    if(count >= m-3 && count < m){
+      return `あと${m-count}匹で${m}匹達成`;
+    }
+  }
+
+  // 10匹刻み
+  if(count % 10 === 0 && count > 0){
+    return `${count}匹達成。${count+10}匹が見えてきました`;
+  }
+
+  // 1000超え特別
+  if(count >= 1000 && Math.random() < 0.35){
+    return randNoRepeat(sequenceMsgs.over1000);
+  }
+
+  // 人格レベルセリフ
+  const level = getPersonalityLevel(totalCounts);
+  if(Math.random() < 0.3){
+    return randNoRepeat(personalityLevels[level]);
+  }
+
+  // 通常メッセージ
+  let msg;
+  if(count <=30) msg = randNoRepeat(sequenceMsgs.early);
+  else if(count <=50) msg = randNoRepeat(sequenceMsgs.mid);
+  else if(count <=100) msg = randNoRepeat(sequenceMsgs.funMid);
+  else msg = randNoRepeat(sequenceMsgs.late);
+
+  /* ===== 人格進化による口調変換 ===== */
+  if(level === "legend" && !personalityLevels.legend.includes(msg)){
+    msg = msg
+      .replace(/ですね/g, "です")
+      .replace(/ですよ/g, "です");
+  }
+
+  return msg;
+}
+
+/* ---------------- 更新 ---------------- */
+function updateInfoBar(count){
+  const msg = getPartnerMessage(count);
+  if(!msg) return;
+
+  const fixed =
+    count===0 ||
+    bigMilestones.some(m=>count>=m-3 && count<m) ||
+    (count%10===0 && count>0);
+
+  const level = getPersonalityLevel(totalCounts);
+  showPartnerMessage(msg, fixed ? 0 : (level==="legend" ? 5000 : 3000));
+  lastCountTime = Date.now();
+}
+
+/* ---------------- 初期化 ---------------- */
+document.addEventListener("DOMContentLoaded", initPartnerMessage);
+
+/* ---------------------------------- 声かけ表示機能 ---------------------------------- */
+
+/* ---------------------------------- カウントオールクリア機能 ---------------------------------- */
+
+// AC判定：左右どちらかが0以外なら全消去可能
+function canAllClearSolo() {
+  return soloLeftCounter.count > 0 || soloRightCounter.count > 0;
+}
+
+// カウンター画面に入る時の確認付き処理（他コードに影響なし）
+function enterSoloCounterWithConfirm() {
+  // まず今日のデータをロードしてカウンターを復元
+  loadLiveHourlyHistory();
+  const totalLeft  = liveHourlyHistory.left.reduce((a,b)=>a+b,0);
+  const totalRight = liveHourlyHistory.right.reduce((a,b)=>a+b,0);
+
+  soloLeftCounter.count  = totalLeft;
+  soloRightCounter.count = totalRight;
+  updateSoloTotal();
+  soloLeftCountElem.textContent  = totalLeft;
+  soloRightCountElem.textContent = totalRight;
+  soloCount.textContent          = soloCounter.count;
+
+  // AC判定
+  if (!canAllClearSolo()) {
+    showScreen("soloCounterScreen");
+    return;
+  }
+
+  // カスタムモーダル表示
+  openAcConfirmModal();
+
+  // OKボタン
+  acConfirmOk.onclick = () => {
+    confirmAllClearSolo();
+    closeAcConfirmModal();
+    showScreen("soloCounterScreen");
+  };
+
+  // キャンセルボタン
+  acConfirmCancel.onclick = () => {
+    closeAcConfirmModal();
+    showScreen("soloCounterScreen");
+  };
+}
+
+// 完全オールクリア処理（他コードに依存せず単独動作可能）
+function confirmAllClearSolo() {
+
+  // --- カウンター ---
+  soloLeftCounter.count  = 0;
+  soloRightCounter.count = 0;
+  soloCounter.count      = 0;
+
+  soloLeftCountElem.textContent  = 0;
+  soloRightCountElem.textContent = 0;
+  soloCount.textContent          = 0;
+
+  // --- グラフ履歴 ---
+  soloHourlyHistory.left  = Array(24).fill(0);
+  soloHourlyHistory.right = Array(24).fill(0);
+  soloHourlyHistory.total = Array(24).fill(0);
+
+  liveHourlyHistory = JSON.parse(JSON.stringify(soloHourlyHistory));
+
+  // --- localStorage削除（存在すれば） ---
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem("liveHourlyHistory");
+  }
+
+  // --- グラフ再描画（存在すれば） ---
+  if (typeof updateGraphDisplay === "function") {
+    updateGraphDisplay();
+  }
+
+  // --- 情報表示（存在すれば） ---
+  if (typeof showInfo === "function") {
+    showInfo("すべてのカウントとグラフを初期化しました", "danger");
+  }
+}
+
+// ==================== カスタムモーダル ====================
+const acConfirmModal  = document.getElementById("acConfirmModal");
+const acConfirmOk     = document.getElementById("acConfirmOk");
+const acConfirmCancel = document.getElementById("acConfirmCancel");
+
+// モーダルを開く
+function openAcConfirmModal() {
+  acConfirmModal.classList.add("active");
+}
+
+// モーダルを閉じる
+function closeAcConfirmModal() {
+  acConfirmModal.classList.remove("active");
+}
+
+/* ---------------------------------- カウントオールクリア機能 ---------------------------------- */
+
+/* ------------------------ カウンターフォントサイズオート調整（自動監視・数字値版） ------------------------ */
+
+/**
+ * 数字カウンターのフォントサイズを数字の値に応じて調整
+ * @param {HTMLElement} elem - 数字を表示している要素
+ */
+function adjustCounterByValue(elem) {
+  if (!elem) return;
+
+  const value = parseInt(elem.textContent, 10) || 0;
+  let newSize;
+
+  // 1桁〜2桁
+  if (value < 100) {
+    newSize = 46;
+  }
+  // 3桁
+  else if (value < 1000) {
+    if (value < 200) {       // 100〜199
+      newSize = 34;
+    } else {                 // 200〜999
+      newSize = 32;
+    }
+  }
+  // 4桁
+  else if (value < 10000) {
+    if (value < 2000) {      // 1000〜1999
+      newSize = 26;
+    } else {                 // 2000〜9999
+      newSize = 25;
+    }
+  }
+  // それ以上
+  else {
+    newSize = 18;
+  }
+
+  elem.style.fontSize = newSize + "px";
+}
+
+// 監視対象の要素
+const counters = [
+  document.getElementById('soloLeftCount'),
+  document.getElementById('soloRightCount'),
+  document.getElementById('soloCount')
+];
+
+// 各要素に対して MutationObserver を設定
+counters.forEach(elem => {
+  if (!elem) return;
+
+  // 初期サイズ調整
+  adjustCounterByValue(elem);
+
+  const observer = new MutationObserver(() => {
+    adjustCounterByValue(elem);
+  });
+
+  observer.observe(elem, {
+    characterData: true,
+    childList: true,
+    subtree: true
+  });
+});
+/* ------------------------ カウンターフォントサイズオート調整（自動監視・数字値版） ------------------------ */
+
+/* ------------------------ ひとりカウンター送信ボタン ------------------------ */
+// ==================== ひとりカウンター送信・ニックネーム・つぶやき復元 ====================
+function setupSoloSendButton() {
+  const sendBtn = document.getElementById("soloSendBtn");
+  const nameInput = document.getElementById("soloName");
+  const msgInput  = document.getElementById("soloMsg");
+
+  // ------------------- カスタムモーダル（ニックネーム未入力用） -------------------
+  const nicknameModal = document.createElement("div");
+  nicknameModal.id = "nicknameModal";
+  nicknameModal.style.cssText = `
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center;
+    z-index:9999; display:none;
+  `;
+  nicknameModal.innerHTML = `
+    <div style="background:#fff; padding:20px; border-radius:12px; text-align:center;">
+      <p>ニックネームを入力してください</p>
+      <button id="closeNicknameModal">OK</button>
+    </div>
+  `;
+  document.body.appendChild(nicknameModal);
+
+  document.getElementById("closeNicknameModal").onclick = () => {
+    nicknameModal.style.display = "none";
+    nameInput.focus();
+  };
+
+  // ------------------- 永続ユーザーIDを復元／生成 -------------------
+  let userId = localStorage.getItem("soloUserId");
+  if (!userId) {
+    userId = crypto.randomUUID();
+    localStorage.setItem("soloUserId", userId);
+  }
+  sendBtn.dataset.userId = userId;
+
+  // ------------------- 保存済みデータから最後のデータを復元 -------------------
+  restoreSoloNameMsg();
+
+  // ------------------- 送信ボタンクリック処理 -------------------
+  sendBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    if (!name) {
+      nicknameModal.style.display = "flex";
+      return; // ニックネーム未入力は保存中断
+    }
+
+    const msg = msgInput.value.trim();
+
+    // 中央カウンターの現在の値取得
+    const totalCount = Number(document.getElementById("soloCount").textContent);
+
+    // 本体カラー取得
+    const wrapperColor = document.getElementById("wrapperColorSlider")?.style.backgroundColor || "";
+
+    // 保存オブジェクト
+    const record = {
+      id: userId,
+      name: name,
+      msg: msg,
+      color: wrapperColor,
+      total: totalCount
+    };
+
+    // ★ ニックネーム専用ストレージに保存
+    const savedRecords = JSON.parse(localStorage.getItem("soloUserRecords") || "[]");
+    const existingIndex = savedRecords.findIndex(r => r.id === record.id);
+    if (existingIndex >= 0) {
+      savedRecords[existingIndex] = record;
+    } else {
+      savedRecords.push(record);
+    }
+    localStorage.setItem("soloUserRecords", JSON.stringify(savedRecords));
+
+    console.log("ニックネーム保存:", record);
+
+    // ★ 送信完了表示
+    showPartnerMessage("ひとりカウンター情報を送信しました", 3000);
+
+  };
+}
+
+// ------------------- ニックネーム・つぶやき復元関数 -------------------
+function restoreSoloNameMsg() {
+  const nameInput = document.getElementById("soloName");
+  const msgInput  = document.getElementById("soloMsg");
+
+  // ★ ニックネーム専用ストレージ
+  const savedRecords = JSON.parse(localStorage.getItem("soloUserRecords") || "[]");
+  if (savedRecords.length === 0) return;
+
+  const sendBtn = document.getElementById("soloSendBtn");
+  const userId = sendBtn?.dataset.userId;
+  let record;
+
+  if (userId) {
+    record = savedRecords.find(r => r.id === userId);
+  }
+  if (!record) record = savedRecords[savedRecords.length - 1];
+
+  if (record) {
+    nameInput.value = record.name || "";
+    msgInput.value  = record.msg  || "";
+  }
+}
+
+// 初期化
+document.addEventListener("DOMContentLoaded", setupSoloSendButton);
+
+// ------------------- メッセージ欄送信確認表示用 -------------------
+function showTempInfo(msg, duration=2500){
+  const el = document.querySelector(".info-placeholder-text");
+  if(!el) return;
+
+  const original = el.textContent;
+
+  el.classList.remove("show");
+  setTimeout(()=>{
+    el.textContent = msg;
+    el.classList.add("show");
+
+    setTimeout(()=>{
+      el.classList.remove("show");
+      setTimeout(()=>{
+        el.textContent = original;
+        el.classList.add("show");
+      },500);
+    }, duration);
+
+  },500);
+}
+
+// ------------------- メッセージ欄送信確認表示用 -------------------
+
+/* ------------------------ ひとりカウンター送信ボタン ------------------------ */
+
+
+/* =========================================
+   エサ投入・交換タイマー STEP1
+========================================= */
+
+let baitTimerMinutes = 15;      // 設定時間（分）
+let baitTimerSeconds = baitTimerMinutes * 60;
+let baitTimerInterval = null;
+
+// 表示更新
+function updateBaitTimerDisplay() {
+
+    const min = Math.floor(baitTimerSeconds / 60);
+    const sec = baitTimerSeconds % 60;
+
+document.querySelector(".bait-min").textContent =
+  String(min).padStart(2,"0");
+
+document.querySelector(".bait-sec").textContent =
+  String(sec).padStart(2,"0");
+
+}
+
+// タイマー開始
+function startBaitTimer(){
+
+    // 動いていたら停止
+    clearInterval(baitTimerInterval);
+
+    // ボタンを通常色へ戻す
+    document
+        .getElementById("baitTimerBtn")
+        .classList.remove("timeout");
+
+    // 時を戻す
+    baitTimerSeconds = baitTimerMinutes * 60;
+
+    updateBaitTimerDisplay();
+
+    baitTimerInterval = setInterval(()=>{
+
+        if(baitTimerSeconds > 0){
+
+            baitTimerSeconds--;
+
+            updateBaitTimerDisplay();
+
+        }else{
+
+            clearInterval(baitTimerInterval);
+
+            // 時間切れ表示
+            document.getElementById("baitTimer").textContent =
+                "交換です！";
+
+            // ボタンを赤くする
+            document
+                .getElementById("baitTimerBtn")
+                .classList.add("timeout");
+
+        }
+
+    },1000);
+
+}
+
+// ボタン
+document.getElementById("baitTimerBtn")
+.addEventListener("click",startBaitTimer);
+
+
+/* =========================
+   シンプルアラート
+========================= */
+
+function showSimpleAlert(msg){
+  const dialog = document.getElementById("simpleAlertDialog");
+  const message = document.getElementById("simpleAlertMessage");
+
+  message.textContent = msg;
+  dialog.style.display = "flex";
+}
+
+function simpleAlertOK(){
+  document.getElementById("simpleAlertDialog").style.display = "none";
+}
+
+/* =========================
+   URLコピー機能
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const copyBtn = document.getElementById("copyURL");
+
+  copyBtn.addEventListener("click", () => {
+
+    const urlText = document.getElementById("appURLText").textContent;
+
+    navigator.clipboard.writeText(urlText)
+      .then(() => {
+        showSimpleAlert("URLをコピーしました！");
+      })
+      .catch(() => {
+        showSimpleAlert("コピーに失敗しました");
+      });
+  });
+
+});
+
+
+/* =========================
+   シンプルアラート
+   背景タップでも閉じる
+========================= */
+
+document.getElementById("simpleAlertDialog").addEventListener("click", function(e) {
+
+  // 背景部分だけクリックした場合
+  if (e.target === this) {
+    simpleAlertOK();
+  }
+
+});
+
+// =========================
+// QRコード共有モーダル
+// =========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("openQrModal");
+  const modal    = document.getElementById("qrModal");
+  const closeBtn = document.getElementById("closeQrModal");
+  const canvas   = document.getElementById("qrCanvas");
+  const urlText  = document.getElementById("qrUrlText");
+
+  if (!openBtn || !modal || !closeBtn || !canvas || !urlText) return;
+
+  // ダブルカウンターのURL
+  const APP_URL = "https://tok-dot.github.io/doublebite/";
+
+  // URLを表示
+  urlText.textContent = APP_URL;
+
+  // QRコード生成
+  const qr = new QRious({
+    element: canvas,
+    size: 200,
+    value: APP_URL
+  });
+
+  // モーダルを開く
+  openBtn.addEventListener("click", () => {
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+
+    // 念のため毎回更新
+    qr.set({
+      value: APP_URL
+    });
+
+  });
+
+  // モーダルを閉じる
+  function closeQrModal() {
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+
+  }
+
+  closeBtn.addEventListener("click", closeQrModal);
+
+  // 背景クリックでも閉じる
+  modal.addEventListener("click", (e) => {
+
+    if (e.target === modal) {
+      closeQrModal();
+    }
+
+  });
+
+});
+
+/* =========================
+   利用規約モーダル
+========================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const footer = document.getElementById("settingsFooter");
+  const dialog = document.getElementById("termsDialog");
+  const closeBtn = dialog.querySelector(".help-close");
+
+  if (!footer || !dialog || !closeBtn) return;
+
+  // 開く
+  footer.addEventListener("click", () => {
+
+    dialog.classList.add("show");
+    dialog.setAttribute("aria-hidden", "false");
+
+  });
+
+  function closeTermsDialog() {
+
+    dialog.classList.remove("show");
+    dialog.setAttribute("aria-hidden", "true");
+
+  }
+
+  // 閉じるボタン
+  closeBtn.addEventListener("click", closeTermsDialog);
+
+  // 背景クリック
+  dialog.addEventListener("click", (e) => {
+
+    if (e.target === dialog) {
+      closeTermsDialog();
+    }
+
+  });
+
+  // ESCキー
+  document.addEventListener("keydown", (e) => {
+
+    if (e.key === "Escape") {
+      closeTermsDialog();
+    }
+
+  });
+
+});
+
+// =========================
+// OFUSE モーダル
+// =========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const openBtn  = document.getElementById("openSupportModal");
+  const modal    = document.getElementById("supportModal");
+  const closeBtn = document.getElementById("closeSupportModal");
+
+  if (!openBtn || !modal || !closeBtn) return;
+
+  // ------------------------
+  // 開く
+  // ------------------------
+  openBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+  });
+
+  // ------------------------
+  // 閉じるボタン
+  // ------------------------
+  closeBtn.addEventListener("click", () => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  });
+
+  // ------------------------
+  // 背景クリックで閉じる
+  // ------------------------
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+  // ------------------------
+  // ESCキーで閉じる
+  // ------------------------
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+
+});
+
+// ----------------------------
+// スケーリング処理
+// ----------------------------
+function applyAutoScale() {
+  const baseW = 400;  
+  const baseH = 800;  
+  const screenW = window.innerWidth;
+  const screenH = window.innerHeight;
+  const scale = Math.min(screenW/baseW, screenH/baseH);
+  const app = document.getElementById("appScaleWrapper");
+  if(!app) return;
+  app.style.transform = `scale(${scale})`;
+  app.style.transformOrigin = "top left";
+  app.style.position = "fixed";
+  app.style.left = `${(screenW - baseW*scale)/2}px`;
+  app.style.top  = `${(screenH - baseH*scale)/2}px`;
+}
+let resizeTimeout;
+function onResize(){
+  clearTimeout(resizeTimeout);
+  resizeTimeout=setTimeout(applyAutoScale,50);
+}
+window.addEventListener('load', applyAutoScale);
+window.addEventListener('resize', onResize);
+
+// =========================
+// エサ設定モーダル
+// =========================
+window.addEventListener("load", () => {
+
+// 保存されている設定時間を読み込む
+const savedMinutes = localStorage.getItem("baitTimerMinutes");
+
+if(savedMinutes){
+
+    baitTimerMinutes = Number(savedMinutes);
+
+    baitTimerSeconds = baitTimerMinutes * 60;
+
+    document.getElementById("baitSetting").textContent =
+        `設定：${baitTimerMinutes}分`;
+
+    updateBaitTimerDisplay();
+
+}
+
+    const baitModal = document.getElementById("baitSettingModal");
+    const baitSetting = document.getElementById("baitSetting");
+    const closeBaitModal = document.getElementById("closeBaitModal");
+
+    baitSetting.addEventListener("click", () => {
+        baitModal.style.display = "flex";
+    });
+
+    closeBaitModal.addEventListener("click", () => {
+        baitModal.style.display = "none";
+    });
+
+    document.querySelectorAll(".bait-time-option").forEach(btn => {
+
+        btn.addEventListener("click", () => {
+
+            baitTimerMinutes = Number(btn.dataset.time);
+
+            localStorage.setItem("baitTimerMinutes", baitTimerMinutes);
+
+            document.getElementById("baitSetting").textContent =
+            `設定：${baitTimerMinutes}分`;
+
+            baitModal.style.display = "none";
+
+        });
+
+    });
+
+    baitModal.addEventListener("click", e => {
+
+        if(e.target === baitModal){
+
+            baitModal.style.display = "none";
+
+        }
+
+    });
+
+});
+
+</script>
+
+<!-- =========================
+     エサ投入・交換時間設定モーダル
+========================= -->
+<div id="baitSettingModal" class="bait-modal">
+
+  <div class="bait-modal-content">
+
+    <h3>エサ投入・交換時間</h3>
+
+    <div id="baitTimeList">
+
+      <button class="bait-time-option" data-time="5">5分</button>
+      <button class="bait-time-option" data-time="10">10分</button>
+      <button class="bait-time-option" data-time="15">15分</button>
+      <button class="bait-time-option" data-time="20">20分</button>
+      <button class="bait-time-option" data-time="25">25分</button>
+      <button class="bait-time-option" data-time="30">30分</button>
+      <button class="bait-time-option" data-time="35">35分</button>
+      <button class="bait-time-option" data-time="40">40分</button>
+      <button class="bait-time-option" data-time="45">45分</button>
+      <button class="bait-time-option" data-time="50">50分</button>
+      <button class="bait-time-option" data-time="55">55分</button>
+      <button class="bait-time-option" data-time="60">60分</button>
+
+    </div>
+
+    <button id="closeBaitModal">キャンセル</button>
+
+  </div>
+
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('SW registered:', reg);
+      })
+      .catch(err => {
+        console.log('SW registration failed:', err);
+      });
+  });
+}
+</script>
+
+<!-- QRコード用QRious ライブラリ読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+
+<!-- OFUSE ウィジェット（async でOK） -->
+<script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
+
+</body>
+</html>
