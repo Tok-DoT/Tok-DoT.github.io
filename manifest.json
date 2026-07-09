@@ -1,7 +1,8 @@
 {
+  "id": "/",
   "name": "ソフトテニス ダブルスマッチ スコアボード",
   "short_name": "ソフトテニスSB",
-  "start_url": "./index.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#1B5E20",
   "theme_color": "#006400",
