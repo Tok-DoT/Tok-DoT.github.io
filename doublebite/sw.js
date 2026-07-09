@@ -1,5 +1,5 @@
 // sw.js (安定版・GitHub Pages向け)
-const CACHE_NAME = "doublecounter-v9";
+const CACHE_NAME = "doublecounter-v10";
 
 // ★静的アセットのみキャッシュ（HTMLは入れない）
 const ASSETS = [

@@ -1,7 +1,8 @@
 {
   "name": "ダブルカウンター",
   "short_name": "DoubleCounter",
-  "start_url": "/doublebite/index.html",
+  "id": "/doublebite/",
+  "start_url": "/doublebite/",
   "scope": "/doublebite/",
   "display": "standalone",
   "background_color": "#f2f2f2",
