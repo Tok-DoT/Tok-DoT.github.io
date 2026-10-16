@@ -9107,5 +9107,362 @@ if ('serviceWorker' in navigator) {
 <!-- OFUSE ウィジェット（async でOK） -->
 <script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
 
+<!-- ========================= PWA インストール案内 ========================= -->
+
+
+
+<!-- =========================
+     PWA インストール案内
+========================= -->
+
+<style>
+  #pwaInstallModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  #pwaInstallModal .pwa-install-content {
+    width: 100%;
+    max-width: 360px;
+    background: #ffffff;
+    color: #333333;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  #pwaInstallModal .pwa-install-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 14px;
+  }
+
+  #pwaInstallModal .pwa-install-message {
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0 0 20px;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  #pwaInstallModal .pwa-install-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  #pwaInstallModal .pwa-install-buttons button {
+    flex: 1;
+    min-height: 44px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #pwaInstallOk {
+    background: #168447;
+    color: #ffffff;
+  }
+
+  #pwaInstallLater {
+    background: #eeeeee;
+    color: #333333;
+  }
+</style>
+
+<div id="pwaInstallModal">
+  <div
+    class="pwa-install-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pwaInstallTitle"
+  >
+    <p id="pwaInstallTitle" class="pwa-install-title">
+      アプリをインストールしますか？
+    </p>
+
+    <div id="pwaInstallMessage" class="pwa-install-message">
+      ホーム画面に追加すると、次回からアプリをすぐに開けます。
+    </div>
+
+    <div class="pwa-install-buttons">
+      <button type="button" id="pwaInstallOk">OK</button>
+      <button type="button" id="pwaInstallLater">あとで</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const pwaModal = document.getElementById("pwaInstallModal");
+  const pwaTitle = document.getElementById("pwaInstallTitle");
+  const pwaMessage = document.getElementById("pwaInstallMessage");
+  const pwaOkButton = document.getElementById("pwaInstallOk");
+  const pwaLaterButton = document.getElementById("pwaInstallLater");
+
+  if (
+    !pwaModal ||
+    !pwaTitle ||
+    !pwaMessage ||
+    !pwaOkButton ||
+    !pwaLaterButton
+  ) {
+    return;
+  }
+
+  const PWA_INSTALLED_KEY = "doubleCounterPwaInstalled";
+
+  let deferredInstallPrompt = null;
+  let guideMode = false;
+  let promptFinished = false;
+
+  const userAgent = navigator.userAgent || "";
+
+ 
+  const isIOS =
+    /iPhone|iPad|iPod/i.test(userAgent) ||
+    (
+      navigator.platform === "MacIntel" &&
+      navigator.maxTouchPoints > 1
+    );
+
+  const isAndroid = /Android/i.test(userAgent);
+
+  // LINE内ブラウザで開かれているかを判定
+  const isLineApp = /Line\//i.test(userAgent);
+
+
+  const isMobile =
+    isIOS ||
+    isAndroid ||
+    /Mobile|Tablet/i.test(userAgent);
+
+  
+function isPwaInstalled() {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches ||
+    navigator.standalone === true
+  );
+}
+
+
+  function showPwaModal() {
+    if (isPwaInstalled() || promptFinished) {
+      return;
+    }
+
+    pwaModal.style.display = "flex";
+  }
+
+  function hidePwaModal() {
+    pwaModal.style.display = "none";
+  }
+
+
+  function showInstallPromptMessage() {
+    guideMode = false;
+
+    pwaTitle.textContent = "アプリをインストールしますか？";
+    pwaMessage.textContent =
+      "ホーム画面に追加すると、次回からアプリをすぐに開けます。";
+
+    pwaOkButton.textContent = "インストール";
+    pwaLaterButton.textContent = "あとで";
+    pwaLaterButton.style.display = "";
+  }
+
+  function showHomeScreenGuide() {
+    guideMode = true;
+
+    pwaTitle.textContent = "アプリをホーム画面に追加";
+
+    if (isLineApp) {
+      pwaMessage.innerHTML =
+        "<strong>【1】LINEからブラウザで開く</strong><br>" +
+        "LINEで届いたアプリのアドレスを開いている場合は、" +
+        "まずLINEの画面右下にある「︙」を押してください。<br><br>" +
+        "メニューから「デフォルトのブラウザで開く」を選びます。<br><br>" +
+        "<strong>【2】ブラウザでインストールする</strong><br>" +
+        "ブラウザでアプリが開いたら、インストール案内が表示される場合は「インストール」を押してください。<br><br>" +
+        "案内が表示されない場合は、ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選んでください。";
+    } else if (isIOS) {
+      pwaMessage.innerHTML =
+        "<strong>【1】Safariで開く</strong><br>" +
+        "LINEから開いた場合は、右下の「︙」などのメニューから、" +
+        "Safariなどの外部ブラウザで開いてください。<br><br>" +
+        "<strong>【2】ホーム画面に追加</strong><br>" +
+        "Safariの共有ボタン（四角から上向きの矢印）を押します。<br><br>" +
+        "メニューから「ホーム画面に追加」を選び、画面の案内に従って「追加」を押してください。<br><br>" +
+        "※ iOSのバージョンによってメニューの位置や表示が異なる場合があります。";
+    } else if (isAndroid) {
+      pwaMessage.innerHTML =
+        "<strong>【1】ブラウザで開く</strong><br>" +
+        "LINEから開いた場合は、画面右下の「︙」から" +
+        "「デフォルトのブラウザで開く」を選んでください。<br><br>" +
+        "<strong>【2】ホーム画面に追加</strong><br>" +
+        "ブラウザでアプリが開いたら、インストール案内が表示される場合は「インストール」を押してください。<br><br>" +
+        "案内が表示されない場合は、ブラウザ右上の「︙」を押し、" +
+        "「アプリをインストール」または「ホーム画面に追加」を選んでください。";
+    } else {
+      pwaMessage.innerHTML =
+        "ブラウザのメニューを開き、" +
+        "「アプリをインストール」または「ホーム画面に追加」を選んでください。<br><br>" +
+        "LINEから開いている場合は、まずLINEのメニューから外部ブラウザで開いてください。";
+    }
+
+    // 案内画面では、左右とも「閉じる」になるのを防ぐ
+    pwaOkButton.textContent = "確認しました";
+    pwaLaterButton.style.display = "none";
+  }
+
+
+  // ブラウザが標準のインストール画面を利用できると通知した場合
+  window.addEventListener("beforeinstallprompt", function (event) {
+    if (isPwaInstalled()) {
+      return;
+    }
+
+    event.preventDefault();
+    deferredInstallPrompt = event;
+
+    // 案内を表示済みでも、標準画面を使えるなら内容を更新する
+    if (pwaModal.style.display === "flex") {
+      showInstallPromptMessage();
+    }
+  });
+
+  // インストール完了をブラウザが通知した場合
+  
+
+window.addEventListener("appinstalled", function () {
+  promptFinished = true;
+  deferredInstallPrompt = null;
+
+  // インストール完了後の案内に切り替える
+  guideMode = true;
+
+  pwaTitle.textContent = "インストールが完了しました！";
+
+  pwaMessage.innerHTML =
+    "アプリのインストールが完了しました。<br><br>" +
+    "<strong>次回からは、ブラウザではなく、ホーム画面に追加されたアプリアイコンから起動してください。</strong><br><br>" +
+    "現在開いているブラウザの画面を閉じて、ホーム画面に戻り、アイコンをタップしてください。<br><br>" +
+    "アプリ専用の画面で、快適にご利用いただけます。";
+
+  pwaOkButton.textContent = "確認しました";
+  pwaLaterButton.style.display = "none";
+
+  // 完了メッセージを表示する
+  pwaModal.style.display = "flex";
+
+  console.log("PWA installation completed.");
+});
+
+  // OKボタン
+  pwaOkButton.addEventListener("click", async function () {
+    if (isPwaInstalled()) {
+      hidePwaModal();
+      return;
+    }
+
+    // 標準インストール画面が使えない端末では操作方法を案内する
+    if (!deferredInstallPrompt) {
+      if (!guideMode) {
+        showHomeScreenGuide();
+      } else {
+        hidePwaModal();
+      }
+      return;
+    }
+
+    const installPrompt = deferredInstallPrompt;
+
+    try {
+      // ボタン操作をきっかけに標準インストール画面を表示
+      await installPrompt.prompt();
+
+      const choice = await installPrompt.userChoice;
+
+      if (choice && choice.outcome === "accepted") {
+        console.log("PWA installation accepted.");
+      } else {
+        console.log("PWA installation dismissed.");
+      }
+    } catch (error) {
+      console.log("PWA installation prompt failed:", error);
+    } finally {
+      deferredInstallPrompt = null;
+      hidePwaModal();
+    }
+  });
+
+  // あとでボタン
+  pwaLaterButton.addEventListener("click", function () {
+    hidePwaModal();
+  });
+
+
+  // 初回表示時の準備
+  window.addEventListener("load", function () {
+    if (isPwaInstalled()) {
+      return;
+    }
+
+    // LINE内では、最初に外部ブラウザで開く方法を案内する
+    if (isLineApp) {
+      showHomeScreenGuide();
+      showPwaModal();
+      return;
+    }
+
+    // 標準インストール画面が使える場合
+    if (deferredInstallPrompt) {
+      showInstallPromptMessage();
+      showPwaModal();
+      return;
+    }
+
+    // 標準画面が使えないスマートフォンでは手順を案内
+    if (isMobile) {
+      showHomeScreenGuide();
+
+      // インストールイベントが届く場合に備えて少し待つ
+      window.setTimeout(function () {
+        if (isPwaInstalled()) {
+          return;
+        }
+
+        if (deferredInstallPrompt) {
+          showInstallPromptMessage();
+        }
+
+        showPwaModal();
+      }, 1500);
+    }
+  });
+
+
+})();
+</script>
+
+
+<!-- ========================= PWA インストール案内 ========================= -->
+
+
 </body>
 </html>
