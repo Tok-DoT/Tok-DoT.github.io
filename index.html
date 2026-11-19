@@ -2797,7 +2797,7 @@ body::after {
   background: #222;
   scroll-snap-type: y mandatory;
   position: relative;
-  scroll-behavior: smooth;
+  
 }
 
 .favorites-picker-wrapper::-webkit-scrollbar {
@@ -8380,7 +8380,7 @@ window.addEventListener("load", selectSavedItem);
 });
 /* ------------------- 背景とコートの色（終り） ------------------- */
 
-/* ------------------- 色の組み合わせお気に入り ------------------- */
+/* ------------------- 色の組み合わせお気に入り（滑らかスライド改善版） ------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const DEFAULT_FAVORITE = {
     team_scroll_bgA: "#FFFF00",
@@ -8394,12 +8394,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const FAV_ITEM_H = 30;
   const SAVE_TIME = 2000;
   const DELETE_THRESHOLD = 180;
+  const LOOP_COUNT = 100;
 
   const favWrapper = document.getElementById('favoritesPicker');
   if (!favWrapper) return;
 
   let favorites = JSON.parse(localStorage.getItem('favorites3bars')) || Array(MAX_FAVORITES).fill(null);
   const TOTAL_ITEMS = MAX_FAVORITES + 1; // 0=★ + 5 favorites
+  const CYCLE_HEIGHT = TOTAL_ITEMS * FAV_ITEM_H;
+  const INITIAL_SCROLL_TOP = Math.floor(LOOP_COUNT / 2) * CYCLE_HEIGHT;
+
+  let initializedOnVisible = false;
+  let favScrollTimer = null;
 
   function rgbToHex(rgb) {
     if (!rgb) return "#000000";
@@ -8413,6 +8419,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return displayIndex === 0 ? DEFAULT_FAVORITE : favorites[displayIndex - 1];
   }
 
+  function getCenterFavoriteIndex() {
+    const scrollTop = favWrapper.scrollTop;
+    const rawIndex = Math.round(scrollTop / FAV_ITEM_H);
+    return ((rawIndex % TOTAL_ITEMS) + TOTAL_ITEMS) % TOTAL_ITEMS;
+  }
+
   function updateFavoritesActive() {
     const displayIndex = getCenterFavoriteIndex();
     favWrapper.querySelectorAll('.favorites-picker-item').forEach((item, idx) => {
@@ -8420,214 +8432,243 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function getCenterFavoriteIndex() {
-    const scrollTop = favWrapper.scrollTop;
-    return Math.round(scrollTop / FAV_ITEM_H) % TOTAL_ITEMS;
-  }
-
- function buildFavoritesPicker() {
-  const currentScroll = favWrapper.scrollTop;
-  favWrapper.innerHTML = '';
-  const LOOP_COUNT = 100;
-
-  for (let loop = 0; loop < LOOP_COUNT; loop++) {
-    for (let idx = 0; idx < TOTAL_ITEMS; idx++) {
-
-      const div = document.createElement('div');
-      div.className = 'favorites-picker-item';
-      div.dataset.index = idx;
-
-      const numberSpan = document.createElement('span');
-      numberSpan.className = 'number';
-      numberSpan.textContent = idx === 0 ? '★' : ['①', '②', '③', '④', '⑤'][idx - 1];
-      div.appendChild(numberSpan);
-
-      // ★ ここで新しいキー名で取得
-      const data = getFavoriteByDisplayIndex(idx);
-
-      const blocks = [
-        { key: 'team_scroll_bgA', text: 'Aチーム', cls: 'left' },
-        { key: 'team_scroll_bgB', text: 'Bチーム', cls: 'left' },
-        { key: 'scoreA_color', text: 'A', cls: 'middle' },
-        { key: 'scoreB_color', text: 'D', cls: 'middle' },
-        { key: 'court', text: 'イン', cls: 'right' },
-        { key: 'out', text: 'アウト', cls: 'right' }
-      ];
-
-      blocks.forEach((b, i) => {
-        const block = document.createElement('div');
-        block.className = `fav-color ${b.cls}`;
-
-        const span = document.createElement('span');
-        span.textContent = b.text;
-
-        if (data) {
-          if (b.cls === 'middle') {
-            // A/D の黒背景のまま上に色文字を乗せる
-            block.style.background = '#000';
-            span.style.color = data[b.key];
-          } else {
-            // レフト・ライト・イン・アウト
-            block.style.background = data[b.key];
-            span.style.color = (i >= 4) ? '#fff' : '#000';
-          }
-        }
-
-        block.appendChild(span);
-        div.appendChild(block);
-      });
-
-      // ★ スワイプ削除 ＆ 長押し保存（以前の仕様そのまま）
-      if (idx !== 0) {
-        div.style.position = 'relative';
-
-        /* 長押しによる保存バー（現在は透明水色） */
-        const saveBar = document.createElement('div');
-        saveBar.className = 'longpress-save';
-        saveBar.style.position = 'absolute';
-        saveBar.style.top = '0';
-        saveBar.style.left = '0';
-        saveBar.style.height = '100%';
-        saveBar.style.width = '0%';
-        saveBar.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.4), rgba(255,165,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,0,255,0.4), rgba(75,0,130,0.4), rgba(238,130,238,0.4))'; // ← ここを虹色に修正したい
-        saveBar.style.borderRadius = '2px';
-        div.appendChild(saveBar);
-
-
-// ===== 1回だけ宣言 =====
-let saveTimer, saveInterval;
-
-const startPress = () => {
-  const startTime = Date.now();
-  saveBar.style.width = '0%';
-
-  saveInterval = setInterval(() => {
-    const elapsed = Date.now() - startTime;
-    saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
-  }, 50);
-
-  saveTimer = setTimeout(() => {
-    saveFavorite(idx - 1);
-    clearInterval(saveInterval);
-    saveBar.style.width = '0%';
-  }, SAVE_TIME);
-};
-
-const cancelPress = () => {
-  clearTimeout(saveTimer);
-  clearInterval(saveInterval);
-  saveBar.style.width = '0%';
-};
-
-// ===== 既存（そのまま）=====
-div.addEventListener('mousedown', startPress);
-div.addEventListener('mouseup', cancelPress);
-div.addEventListener('mouseleave', cancelPress);
-div.addEventListener('touchstart', startPress);
-div.addEventListener('touchend', cancelPress);
-div.addEventListener('touchcancel', cancelPress);
-
-// ===== ★ 追加するのはここだけ =====
-let pointerActive = false;
-
-div.addEventListener('pointerdown', (e) => {
-  pointerActive = true;
-  e.preventDefault(); // ← OSの長押しだけ無効化
-});
-
-div.addEventListener('pointerup', () => {
-  pointerActive = false;
-});
-
-div.addEventListener('pointerleave', () => {
-  pointerActive = false;
-});
-
-div.addEventListener('pointercancel', () => {
-  pointerActive = false;
-});
-
-        // スワイプ削除
-        let startX = 0, currentX = 0, isDragging = false;
-
-        const startDrag = x => {
-          startX = x;
-          currentX = x;
-          isDragging = true;
-          div.style.transition = 'none';
-        };
-
-        const moveDrag = x => {
-          if (!isDragging) return;
-          currentX = x;
-          div.style.transform = `translateX(${currentX - startX}px)`;
-        };
-
-        const endDrag = () => {
-          if (!isDragging) return;
-          isDragging = false;
-
-          const delta = currentX - startX;
-
-          if (Math.abs(delta) > DELETE_THRESHOLD) {
-            div.style.transition = '0.2s';
-            div.style.transform = `translateX(${delta > 0 ? 200 : -200}px)`;
-            setTimeout(() => deleteFavorite(idx - 1), 200);
-          } else {
-            div.style.transition = '0.2s';
-            div.style.transform = 'translateX(0)';
-          }
-        };
-
-        div.addEventListener('mousedown', e => startDrag(e.clientX));
-        document.addEventListener('mousemove', e => isDragging && moveDrag(e.clientX));
-        document.addEventListener('mouseup', endDrag);
-
-        div.addEventListener('touchstart', e => startDrag(e.touches[0].clientX));
-        div.addEventListener('touchmove', e => moveDrag(e.touches[0].clientX));
-        div.addEventListener('touchend', endDrag);
-      }
-
-      div.addEventListener('click', () => {
-        const realIndex = parseInt(div.dataset.index);
-        applyFavorite(realIndex);
-      });
-
-      favWrapper.appendChild(div);
+  // 画面に表示されたタイミングで初期位置を一度だけ確実に整える
+  function ensureInitialScrollPosition(force = false) {
+    if (favWrapper.clientHeight === 0) return;
+    if (!initializedOnVisible || force) {
+      favWrapper.scrollTop = INITIAL_SCROLL_TOP;
+      initializedOnVisible = true;
+      updateFavoritesActive();
     }
   }
 
-  requestAnimationFrame(() => {
-    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * FAV_ITEM_H : currentScroll;
-    updateFavoritesActive();
-  });
-}
+  // 端付近まで行ったとき、中央付近の同じ位置へ静かに戻す
+  function recenterIfNearEdge() {
+    const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
+    if (maxScroll <= 0) return;
 
-favWrapper.addEventListener('scroll', () => {
-  const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
-  const SAFE_ZONE = FAV_ITEM_H * 2;
-
-  // 無限スクロール補正（最低限）
-  if (favWrapper.scrollTop < SAFE_ZONE) {
-    requestAnimationFrame(() => {
-      favWrapper.scrollTop += TOTAL_ITEMS * FAV_ITEM_H;
-    });
-  } else if (favWrapper.scrollTop > maxScroll - SAFE_ZONE) {
-    requestAnimationFrame(() => {
-      favWrapper.scrollTop -= TOTAL_ITEMS * FAV_ITEM_H;
-    });
+    const margin = CYCLE_HEIGHT * 5;
+    if (favWrapper.scrollTop < margin || favWrapper.scrollTop > maxScroll - margin) {
+      const offsetInCycle = ((favWrapper.scrollTop % CYCLE_HEIGHT) + CYCLE_HEIGHT) % CYCLE_HEIGHT;
+      favWrapper.scrollTop = INITIAL_SCROLL_TOP + offsetInCycle;
+    }
   }
 
-  // 🔥 ここを修正
-  clearTimeout(favScrollTimer);
-  favScrollTimer = setTimeout(() => {
-    updateFavoritesActive();  // scroll停止後だけ呼ぶ
-  }, 120); // 120ms後に1回だけ
-});
+  function buildFavoritesPicker(keepCurrentScroll = true) {
+    const prevScroll = keepCurrentScroll ? favWrapper.scrollTop : INITIAL_SCROLL_TOP;
+    favWrapper.innerHTML = '';
 
-  /* --------------------------------------------------------
-      得点盤にも1回クリックで全て反映
-     -------------------------------------------------------- */
+    for (let loop = 0; loop < LOOP_COUNT; loop++) {
+      for (let idx = 0; idx < TOTAL_ITEMS; idx++) {
+        const div = document.createElement('div');
+        div.className = 'favorites-picker-item';
+        div.dataset.index = idx;
+
+        const numberSpan = document.createElement('span');
+        numberSpan.className = 'number';
+        numberSpan.textContent = idx === 0 ? '★' : ['①', '②', '③', '④', '⑤'][idx - 1];
+        div.appendChild(numberSpan);
+
+        const data = getFavoriteByDisplayIndex(idx);
+
+        const blocks = [
+          { key: 'team_scroll_bgA', text: 'Aチーム', cls: 'left' },
+          { key: 'team_scroll_bgB', text: 'Bチーム', cls: 'left' },
+          { key: 'scoreA_color', text: 'A', cls: 'middle' },
+          { key: 'scoreB_color', text: 'D', cls: 'middle' },
+          { key: 'court', text: 'イン', cls: 'right' },
+          { key: 'out', text: 'アウト', cls: 'right' }
+        ];
+
+        blocks.forEach((b, i) => {
+          const block = document.createElement('div');
+          block.className = `fav-color ${b.cls}`;
+
+          const span = document.createElement('span');
+          span.textContent = b.text;
+
+          if (data) {
+            if (b.cls === 'middle') {
+              block.style.background = '#000';
+              span.style.color = data[b.key];
+            } else {
+              block.style.background = data[b.key];
+              span.style.color = (i >= 4) ? '#fff' : '#000';
+            }
+          }
+
+          block.appendChild(span);
+          div.appendChild(block);
+        });
+
+        if (idx !== 0) {
+          div.style.position = 'relative';
+
+          const saveBar = document.createElement('div');
+          saveBar.className = 'longpress-save';
+          saveBar.style.position = 'absolute';
+          saveBar.style.top = '0';
+          saveBar.style.left = '0';
+          saveBar.style.height = '100%';
+          saveBar.style.width = '0%';
+          saveBar.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.4), rgba(255,165,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,0,255,0.4), rgba(75,0,130,0.4), rgba(238,130,238,0.4))';
+          saveBar.style.borderRadius = '2px';
+          saveBar.style.pointerEvents = 'none';
+          div.appendChild(saveBar);
+
+          let saveTimer = null;
+          let saveInterval = null;
+          let startX = 0;
+          let startY = 0;
+          let currentX = 0;
+          let isDragging = false;
+          let suppressClick = false;
+
+          const startPress = (x, y) => {
+            startX = x;
+            startY = y;
+            currentX = x;
+            isDragging = false;
+            suppressClick = false;
+            saveBar.style.width = '0%';
+
+            clearTimeout(saveTimer);
+            clearInterval(saveInterval);
+
+            const startTime = Date.now();
+            saveInterval = setInterval(() => {
+              const elapsed = Date.now() - startTime;
+              saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
+            }, 50);
+
+            saveTimer = setTimeout(() => {
+              suppressClick = true;
+              saveFavorite(idx - 1);
+              clearInterval(saveInterval);
+              saveBar.style.width = '0%';
+            }, SAVE_TIME);
+          };
+
+          const movePress = (x, y) => {
+            const dx = x - startX;
+            const dy = y - startY;
+
+            // 縦方向または少しでも動いたら長押し保存はキャンセル
+            if (Math.abs(dy) > 8 || Math.abs(dx) > 8) {
+              clearTimeout(saveTimer);
+              clearInterval(saveInterval);
+              saveBar.style.width = '0%';
+            }
+
+            // 横方向へしっかり動かしたときだけスワイプ削除モードにする
+            if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) {
+              isDragging = true;
+              suppressClick = true;
+              currentX = x;
+              div.style.transition = 'none';
+              div.style.transform = `translateX(${currentX - startX}px)`;
+            }
+          };
+
+          const endPress = () => {
+            clearTimeout(saveTimer);
+            clearInterval(saveInterval);
+            saveBar.style.width = '0%';
+
+            if (!isDragging) return;
+            isDragging = false;
+
+            const delta = currentX - startX;
+            if (Math.abs(delta) > DELETE_THRESHOLD) {
+              div.style.transition = '0.2s';
+              div.style.transform = `translateX(${delta > 0 ? 200 : -200}px)`;
+              setTimeout(() => {
+                div.style.transition = '';
+                div.style.transform = '';
+                deleteFavorite(idx - 1);
+              }, 200);
+            } else {
+              div.style.transition = '0.2s';
+              div.style.transform = 'translateX(0)';
+              setTimeout(() => {
+                div.style.transition = '';
+              }, 200);
+            }
+          };
+
+          div.addEventListener('mousedown', e => startPress(e.clientX, e.clientY));
+          div.addEventListener('mousemove', e => movePress(e.clientX, e.clientY));
+          div.addEventListener('mouseup', endPress);
+          div.addEventListener('mouseleave', endPress);
+
+          div.addEventListener('touchstart', e => {
+            if (e.touches[0]) startPress(e.touches[0].clientX, e.touches[0].clientY);
+          }, { passive: true });
+
+          div.addEventListener('touchmove', e => {
+            if (e.touches[0]) movePress(e.touches[0].clientX, e.touches[0].clientY);
+          }, { passive: true });
+
+          div.addEventListener('touchend', endPress);
+          div.addEventListener('touchcancel', endPress);
+
+          div.addEventListener('click', (e) => {
+            if (suppressClick) {
+              suppressClick = false;
+              e.preventDefault();
+              return;
+            }
+            const realIndex = parseInt(div.dataset.index, 10);
+            applyFavorite(realIndex);
+          });
+        } else {
+          div.addEventListener('click', () => {
+            const realIndex = parseInt(div.dataset.index, 10);
+            applyFavorite(realIndex);
+          });
+        }
+
+        favWrapper.appendChild(div);
+      }
+    }
+
+    if (favWrapper.clientHeight > 0 && (keepCurrentScroll && prevScroll > 0)) {
+      favWrapper.scrollTop = prevScroll;
+      initializedOnVisible = true;
+    } else if (favWrapper.clientHeight > 0) {
+      favWrapper.scrollTop = INITIAL_SCROLL_TOP;
+      initializedOnVisible = true;
+    }
+    updateFavoritesActive();
+  }
+
+  favWrapper.addEventListener('touchstart', () => {
+    ensureInitialScrollPosition(false);
+  }, { passive: true });
+
+  favWrapper.addEventListener('mousedown', () => {
+    ensureInitialScrollPosition(false);
+  });
+
+  favWrapper.addEventListener('scroll', () => {
+    clearTimeout(favScrollTimer);
+    favScrollTimer = setTimeout(() => {
+      updateFavoritesActive();
+      recenterIfNearEdge();
+    }, 150);
+  }, { passive: true });
+
+  // 試合画面が開かれたタイミングでも初期位置を確認
+  const gameScreen = document.getElementById('gameScreen');
+  if (gameScreen) {
+    const observer = new MutationObserver(() => {
+      if (gameScreen.style.display !== 'none') {
+        requestAnimationFrame(() => ensureInitialScrollPosition(false));
+      }
+    });
+    observer.observe(gameScreen, { attributes: true, attributeFilter: ['style'] });
+  }
+
   function forceApplyScoreColor(lblA, lblB, f) {
     if (!lblA || !lblB) return;
 
@@ -8653,151 +8694,141 @@ favWrapper.addEventListener('scroll', () => {
       localStorage.setItem('scoreLastColorB', colorB);
     };
 
-    requestAnimationFrame(() => { applyColors(); requestAnimationFrame(applyColors); });
+    requestAnimationFrame(() => {
+      applyColors();
+      requestAnimationFrame(applyColors);
+    });
   }
 
-function applyFavorite(displayIndex) {
-  const f = getFavoriteByDisplayIndex(displayIndex);
-  if (!f) return;
+  function applyFavorite(displayIndex) {
+    const f = getFavoriteByDisplayIndex(displayIndex);
+    if (!f) return;
 
-  // ----------------------
-  // チームスクロールバー
-  // ----------------------
-  const teamWrapper = document.getElementById('teamPicker');
-  if (teamWrapper) {
-    const items = teamWrapper.querySelectorAll('.team-picker-item');
-    const centerIndex = Math.floor(items.length / 3);
-    const item = items[centerIndex];
-    const bgA = item.querySelector('.team-scroll-bgA');
-    const bgB = item.querySelector('.team-scroll-bgB');
-    if (bgA) bgA.style.background = f.team_scroll_bgA;
-    if (bgB) bgB.style.background = f.team_scroll_bgB;
-    teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
-    if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
-  }
-
-  // ----------------------
-  // コートスクロールバー
-  // ----------------------
-  const courtWrapper = document.getElementById('picker');
-  if (courtWrapper) {
-    const items = courtWrapper.querySelectorAll('.picker-item');
-    const centerIndex = Math.floor(items.length / 3);
-    const item = items[centerIndex];
-    const bgCourt = item.querySelector('.bg-court');
-    const bgOut = item.querySelector('.bg-out');
-    if (bgCourt) bgCourt.style.background = f.court;
-    if (bgOut) bgOut.style.background = f.out;
-    courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
-
-    // ★ ここで画面の背景とコートを即反映
-    const courtContainer = document.getElementById('courtContainer');
-    if (courtContainer) courtContainer.style.background = f.court;
-    document.body.style.background = f.out;
-
-    // meta theme-color も更新
-    const metaTheme = document.querySelector('meta[name="theme-color"]');
-    if (metaTheme) metaTheme.setAttribute('content', f.out);
-  }
-
-  // ----------------------
-  // 得点盤
-  // ----------------------
-  const scoreWrapper = document.getElementById('scorePickerCustom');
-  if (scoreWrapper) {
-    const items = scoreWrapper.querySelectorAll('.scorePicker-item');
-    const centerIndex = Math.floor(items.length / 3);
-    const item = items[centerIndex];
-    const lblA = item.querySelector('.scorePicker-labelA span');
-    const lblB = item.querySelector('.scorePicker-labelB span');
-
-// ★★★ ここで「お気に入り経由」を通知 ★★★
-    if (window.markScoreFromFavorite) {
-      window.markScoreFromFavorite();
+    const teamWrapper = document.getElementById('teamPicker');
+    if (teamWrapper) {
+      const items = teamWrapper.querySelectorAll('.team-picker-item');
+      const centerIndex = Math.floor(items.length / 3);
+      const item = items[centerIndex];
+      if (item) {
+        const bgA = item.querySelector('.team-scroll-bgA');
+        const bgB = item.querySelector('.team-scroll-bgB');
+        if (bgA) bgA.style.background = f.team_scroll_bgA;
+        if (bgB) bgB.style.background = f.team_scroll_bgB;
+      }
+      teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+      if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
     }
 
-    forceApplyScoreColor(lblA, lblB, f);
+    const courtWrapper = document.getElementById('picker');
+    if (courtWrapper) {
+      const items = courtWrapper.querySelectorAll('.picker-item');
+      const centerIndex = Math.floor(items.length / 3);
+      const item = items[centerIndex];
+      if (item) {
+        const bgCourt = item.querySelector('.bg-court');
+        const bgOut = item.querySelector('.bg-out');
+        if (bgCourt) bgCourt.style.background = f.court;
+        if (bgOut) bgOut.style.background = f.out;
+      }
+      courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
 
-    scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+      const courtContainer = document.getElementById('courtContainer');
+      if (courtContainer) courtContainer.style.background = f.court;
+      document.body.style.background = f.out;
+
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) metaTheme.setAttribute('content', f.out);
+    }
+
+    const scoreWrapper = document.getElementById('scorePickerCustom');
+    if (scoreWrapper) {
+      const items = scoreWrapper.querySelectorAll('.scorePicker-item');
+      const centerIndex = Math.floor(items.length / 3);
+      const item = items[centerIndex];
+      if (item) {
+        const lblA = item.querySelector('.scorePicker-labelA span');
+        const lblB = item.querySelector('.scorePicker-labelB span');
+
+        if (window.markScoreFromFavorite) {
+          window.markScoreFromFavorite();
+        }
+
+        forceApplyScoreColor(lblA, lblB, f);
+      }
+      scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+    }
   }
-}
 
   function deleteFavorite(realIndex) {
     favorites[realIndex] = null;
     localStorage.setItem('favorites3bars', JSON.stringify(favorites));
-    buildFavoritesPicker();
+    buildFavoritesPicker(true);
   }
 
-function saveFavorite(realIndex) {
+  function saveFavorite(realIndex) {
+    const scoreWrapper = document.getElementById('scorePickerCustom');
+    let colorA = '#FFFFFF', colorB = '#FFFFFF';
 
-  /* ------------------- スコアスクロールバーの色取得 ------------------- */
-  const scoreWrapper = document.getElementById('scorePickerCustom');
-  let colorA = '#FFFFFF', colorB = '#FFFFFF';
+    if (scoreWrapper) {
+      const wrapperRect = scoreWrapper.getBoundingClientRect();
+      const items = Array.from(scoreWrapper.querySelectorAll('.scorePicker-item'));
+      let closest = null, minDist = Infinity;
 
-  if (scoreWrapper) {
-    const wrapperRect = scoreWrapper.getBoundingClientRect();
-    const items = Array.from(scoreWrapper.querySelectorAll('.scorePicker-item'));
-    let closest = null, minDist = Infinity;
+      items.forEach(it => {
+        const r = it.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+        if (d < minDist) { minDist = d; closest = it; }
+      });
 
-    items.forEach(it => {
-      const r = it.getBoundingClientRect();
-      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
-      if (d < minDist) { minDist = d; closest = it; }
-    });
-
-    if (closest) {
-      const lblA = closest.querySelector('.scorePicker-labelA span');
-      const lblB = closest.querySelector('.scorePicker-labelB span');
-      if (lblA) colorA = rgbToHex(lblA.style.color);
-      if (lblB) colorB = rgbToHex(lblB.style.color);
+      if (closest) {
+        const lblA = closest.querySelector('.scorePicker-labelA span');
+        const lblB = closest.querySelector('.scorePicker-labelB span');
+        if (lblA) colorA = rgbToHex(lblA.style.color);
+        if (lblB) colorB = rgbToHex(lblB.style.color);
+      }
     }
-  }
 
+    const teamWrapper = document.getElementById('teamPicker');
+    let teamA = '#FF0000';
+    let teamB = '#00FF00';
 
-  /* ------------------- チームスクロールバーの色取得（修正点） ------------------- */
-  const teamWrapper = document.getElementById('teamPicker');
-  let teamA = '#FF0000';
-  let teamB = '#00FF00';
+    if (teamWrapper) {
+      const wrapperRect = teamWrapper.getBoundingClientRect();
+      const items = Array.from(teamWrapper.querySelectorAll('.team-picker-item'));
+      let closest = null, minDist = Infinity;
 
-  if (teamWrapper) {
-    const wrapperRect = teamWrapper.getBoundingClientRect();
-    const items = Array.from(teamWrapper.querySelectorAll('.team-picker-item'));
-    let closest = null, minDist = Infinity;
+      items.forEach(it => {
+        const r = it.getBoundingClientRect();
+        const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+        if (d < minDist) { minDist = d; closest = it; }
+      });
 
-    items.forEach(it => {
-      const r = it.getBoundingClientRect();
-      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
-      if (d < minDist) { minDist = d; closest = it; }
-    });
-
-    if (closest) {
-      const bgA = closest.querySelector('.team-scroll-bgA');
-      const bgB = closest.querySelector('.team-scroll-bgB');
-      if (bgA) teamA = rgbToHex(bgA.style.background);
-      if (bgB) teamB = rgbToHex(bgB.style.background);
+      if (closest) {
+        const bgA = closest.querySelector('.team-scroll-bgA');
+        const bgB = closest.querySelector('.team-scroll-bgB');
+        if (bgA) teamA = rgbToHex(bgA.style.background);
+        if (bgB) teamB = rgbToHex(bgB.style.background);
+      }
     }
+
+    const colors = {
+      team_scroll_bgA: teamA,
+      team_scroll_bgB: teamB,
+      scoreA_color: colorA,
+      scoreB_color: colorB,
+      court: rgbToHex(document.getElementById('courtContainer')?.style.background) || '#444444',
+      out: rgbToHex(document.body.style.background) || '#222222'
+    };
+
+    favorites[realIndex] = colors;
+    localStorage.setItem('favorites3bars', JSON.stringify(favorites));
+
+    buildFavoritesPicker(true);
   }
 
-
-  /* ------------------- ローカル保存データ作成 ------------------- */
-  const colors = {
-    team_scroll_bgA: teamA,
-    team_scroll_bgB: teamB,
-    scoreA_color: colorA,
-    scoreB_color: colorB,
-    court: rgbToHex(document.getElementById('courtContainer')?.style.background) || '#444444',
-    out: rgbToHex(document.body.style.background) || '#222222'
-  };
-
-  favorites[realIndex] = colors;
-  localStorage.setItem('favorites3bars', JSON.stringify(favorites));
-
-  buildFavoritesPicker();
-}
-
-buildFavoritesPicker();
-
+  buildFavoritesPicker(false);
 });
+
 /* ------------------- 色の組み合わせお気に入り終り ------------------- */
 
 /* ------------------- アプリURLをコピーして友達に共有 ------------------- */

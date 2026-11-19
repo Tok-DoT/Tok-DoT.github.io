@@ -1,5 +1,5 @@
 // sw.js (ハイブリッド方式・最終版)
-const CACHE_NAME = "softtennis-cache-v88"; // 必要に応じて更新
+const CACHE_NAME = "softtennis-cache-v89"; // 必要に応じて更新
 const ASSETS = [
   "./",
   "./index.html",
