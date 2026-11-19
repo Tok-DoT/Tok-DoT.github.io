@@ -5829,7 +5829,7 @@ function addVibrationToggleLongPress(button) {
             if (typeof showSimpleAlert === "function") {
                 const statusText = isVibrationEnabled ? "ON" : "OFF";
                 showSimpleAlert(
-                    `得点盤タップ時の振動を<br><strong>${statusText}</strong>にしました`,
+                    `ポイント盤タップ時の振動を<br><strong>${statusText}</strong>にしました`,
                     null,
                     3000
                 );
@@ -9351,7 +9351,12 @@ function showSimpleAlert(message, callback, autoCloseMs = 0) {
         box.style.setProperty('padding', '16px 24px', 'important');
         box.style.setProperty('box-sizing', 'border-box', 'important');
         box.style.setProperty('text-align', 'center', 'important');
+        box.style.setProperty('font-size', '14px', 'important');
     }
+
+    // ★ メッセージ文字サイズを固定
+    msgEl.style.setProperty('font-size', '14px', 'important');
+    msgEl.style.setProperty('line-height', '1.5', 'important');
 
     if (simpleAlertAutoCloseTimer) {
         clearTimeout(simpleAlertAutoCloseTimer);
