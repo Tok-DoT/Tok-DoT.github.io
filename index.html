@@ -2797,7 +2797,7 @@ body::after {
   background: #222;
   scroll-snap-type: y mandatory;
   position: relative;
-  
+  scroll-behavior: smooth;
 }
 
 .favorites-picker-wrapper::-webkit-scrollbar {
@@ -2974,336 +2974,6 @@ body::after {
     inset 0 1px 2px rgba(255,255,255,0.2),
     inset 0 -2px 4px rgba(0,0,0,0.25);
 }
-
-
-
-
-/* ==========================================
-   Smash!!!! データ引継ぎボタン
-========================================== */
-
-.smash-revival-fab {
-    position: fixed;
-    right: 20px;
-    bottom: 18px;
-
-    width: 36px;
-    height: 36px;
-
-    border: 2px solid rgba(255, 255, 255, 0.65);
-    border-radius: 50%;
-
-    background: linear-gradient(135deg, #9575cd, #673ab7);
-    color: #fff;
-
-    font-size: 18px;
-    font-weight: bold;
-
-    cursor: pointer;
-    z-index: 9000;
-
-    box-shadow: 0 3px 8px rgba(103, 58, 183, 0.35);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    /* タップ時の四角いハイライトを消す */
-    -webkit-tap-highlight-color: transparent;
-
-    /* フォーカス枠を消す */
-    outline: none;
-
-    /* 左に45px、上に3px移動 */
-    transform: translate(-45px, -3px);
-
-    box-sizing: border-box;
-
-    transition:
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-
-/* hover */
-.smash-revival-fab:hover {
-    box-shadow: 0 4px 10px rgba(103, 58, 183, 0.45);
-}
-
-/* フォーカス時の枠を消す */
-.smash-revival-fab:focus,
-.smash-revival-fab:focus-visible {
-    outline: none;
-}
-
-/* 押した時 */
-.smash-revival-fab:active {
-    transform: translate(-45px, -2px);
-    box-shadow: 0 2px 5px rgba(103, 58, 183, 0.35) inset;
-}
-
-/* ==========================================
-   Smash!!!! データ引継ぎボタン
-========================================== */
-
-
-/* ==========================================
-   データ引継ぎモーダル
-========================================== */
-
-#revivalModal {
-    display: none;
-    position: fixed;
-    inset: 0;
-
-    z-index: 10000;
-
-    background: rgba(0, 0, 0, 0.65);
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-
-/* モーダル本体 */
-
-.smash-revival-content {
-    position: relative;
-
-    width: 100%;
-    max-width: 420px;
-
-    max-height: 85vh;
-    max-height: 85dvh;
-
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-
-    background: #fff;
-    color: #333;
-
-    border-radius: 16px;
-
-    padding: 22px;
-
-    box-sizing: border-box;
-
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
-}
-
-
-/* ヘッダー */
-
-.smash-revival-header {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 18px;
-
-    padding: 0 42px;
-
-    min-height: 36px;
-}
-
-
-/* タイトル */
-
-.smash-revival-title {
-    display: block;
-
-    width: 100%;
-
-    margin: 0;
-
-    font-size: 21px;
-    font-weight: bold;
-    line-height: 1.4;
-
-    color: #333;
-
-    text-align: center;
-
-    white-space: nowrap;
-}
-
-
-/* 閉じるボタン */
-
-.smash-revival-close {
-    position: absolute;
-
-    top: 50%;
-    right: 0;
-
-    transform: translateY(-50%);
-
-    width: 34px;
-    height: 36px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: none;
-    background: transparent;
-
-    color: #666;
-
-    font-size: 30px;
-    line-height: 1;
-
-    cursor: pointer;
-
-    padding: 0;
-}
-
-
-/* 説明文 */
-
-.smash-revival-description {
-    font-size: 14px;
-    line-height: 1.7;
-
-    color: #555;
-
-    margin: 0 0 20px;
-}
-
-
-/* ==========================================
-   操作ボタン
-========================================== */
-
-.smash-revival-action {
-    display: block;
-
-    width: 100%;
-    min-height: 48px;
-
-    margin-top: 12px;
-    padding: 12px;
-
-    border: none;
-    border-radius: 9px;
-
-    color: #fff;
-
-    font-size: 16px;
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-.smash-revival-backup {
-    background: #3949ab;
-}
-
-.smash-revival-restore {
-    background: #00897b;
-}
-
-.smash-revival-save {
-    background: #616161;
-}
-
-.smash-revival-action:active {
-    opacity: 0.8;
-    transform: scale(0.99);
-}
-
-
-/* ==========================================
-   QRコード表示
-========================================== */
-
-#revivalQrArea {
-    display: none;
-
-    margin-top: 22px;
-    padding: 15px;
-
-    border: 1px solid #ddd;
-    border-radius: 12px;
-
-    text-align: center;
-
-    background: #fafafa;
-}
-
-#revivalQrCanvas {
-    display: block;
-
-    width: 100%;
-    max-width: 280px;
-
-    height: auto;
-
-    margin: 10px auto;
-
-    background: #fff;
-}
-
-#revivalBackupDate {
-    font-size: 12px;
-    color: #666;
-
-    margin: 8px 0;
-}
-
-
-/* ==========================================
-   復元結果表示
-========================================== */
-
-#revivalRestoreResult {
-    display: none;
-
-    margin-top: 16px;
-    padding: 12px;
-
-    border-radius: 8px;
-
-    background: #f5f5f5;
-}
-
-#revivalRestoreMessage {
-    margin: 0;
-
-    font-size: 14px;
-    line-height: 1.7;
-
-    white-space: pre-line;
-}
-
-
-/* ==========================================
-   ファイル入力欄
-========================================== */
-
-#revivalQrFile {
-    display: none;
-}
-
-
-/* ==========================================
-   スマートフォン表示
-========================================== */
-
-@media (max-width: 480px) {
-
-    .smash-revival-content {
-        padding: 18px;
-    }
-
-}
-
-
 
 /* -------------------------- リロードボタン -------------------------- */
 
@@ -3557,123 +3227,6 @@ body::after {
 
 <!-- iOS対策：リロードボタン（左下固定） -->
 <button class="reloadFab" onclick="showExitConfirm()"></button>
-
-
-<!-- ==========================================
-     Smash!!!! データ引継ぎボタン
-========================================== -->
-
-<button
-    type="button"
-    class="smash-revival-fab"
-    id="revivalBtn"
-    onclick="openRevivalModal()"
-    aria-label="データ引継ぎ"
-    title="データ引継ぎ"
->
-    ⇧
-</button>
-
-
-<!-- ==========================================
-     データ引継ぎモーダル
-========================================== -->
-
-<div id="revivalModal">
-
-    <div class="smash-revival-content">
-
-        <!-- ヘッダー -->
-        <div class="smash-revival-header">
-
-            <h2 class="smash-revival-title">
-                データ引継ぎ
-            </h2>
-
-            <button
-                type="button"
-                class="smash-revival-close"
-                onclick="closeRevivalModal()"
-                aria-label="閉じる"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <!-- 説明 -->
-        <div class="smash-revival-description">
-            機種変更やアプリの再インストールに備えて、
-            データをQRコードで保存できます。<br><br>
-
-            保存したQRコード画像を読み込むことで、
-            別の端末へデータを引き継ぐことができます。
-        </div>
-
-
-        <!-- バックアップ作成 -->
-        <button
-            type="button"
-            class="smash-revival-action smash-revival-backup"
-            onclick="createRevivalBackup()"
-        >
-            QRコードを作成
-        </button>
-
-
-        <!-- QRコード表示エリア -->
-        <div id="revivalQrArea">
-
-            <div>
-                **バックアップ用QRコード**
-            </div>
-
-            <canvas id="revivalQrCanvas"></canvas>
-
-            <div id="revivalBackupDate"></div>
-
-            <button
-                type="button"
-                class="smash-revival-action smash-revival-save"
-                onclick="saveRevivalQr()"
-            >
-                QRコード画像を保存
-            </button>
-
-        </div>
-
-
-        <!-- データ復元 -->
-        <button
-            type="button"
-            class="smash-revival-action smash-revival-restore"
-            onclick="openRevivalRestore()"
-        >
-            QRコードからデータを復元
-        </button>
-
-
-        <!-- QR画像選択 -->
-        <input
-            type="file"
-            id="revivalQrFile"
-            accept="image/*"
-            onchange="readRevivalQrFile(event)"
-        >
-
-
-        <!-- 復元結果 -->
-        <div id="revivalRestoreResult">
-
-            <p id="revivalRestoreMessage"></p>
-
-        </div>
-
-    </div>
-
-</div>
-
 
 <!-- アプリURLコピー（コンパクト・ラベル付き） -->
 <div class="share-url-wrapper-compact">
@@ -5813,26 +5366,20 @@ function updatePointDisplay(team) {
   }
 }
 
-// ---------------------- 長押しで振動ON/OFF切替（3秒で自動消去＋OK対応） ----------------------
+// ---------------------- 長押しで振動ON/OFF切替 ----------------------
 function addVibrationToggleLongPress(button) {
     let pressTimer;
 
     const start = () => {
-        clearTimeout(pressTimer);
         pressTimer = setTimeout(() => {
             isVibrationEnabled = !isVibrationEnabled;
 
+            // デバッグ用（不要なら削除OK）
+            console.log("Vibration:", isVibrationEnabled ? "ON" : "OFF");
+
+            // ONにした瞬間だけ軽く振動（任意）
             if (navigator.vibrate && isVibrationEnabled) {
                 navigator.vibrate(30);
-            }
-
-            if (typeof showSimpleAlert === "function") {
-                const statusText = isVibrationEnabled ? "ON" : "OFF";
-                showSimpleAlert(
-                    `ポイント盤タップ時の振動を<br><strong>${statusText}</strong>にしました`,
-                    null,
-                    3000
-                );
             }
         }, 500); // 500ms 長押し
     };
@@ -5840,7 +5387,7 @@ function addVibrationToggleLongPress(button) {
     const cancel = () => clearTimeout(pressTimer);
 
     button.addEventListener("mousedown", start);
-    button.addEventListener("touchstart", start, { passive: true });
+    button.addEventListener("touchstart", start);
 
     button.addEventListener("mouseup", cancel);
     button.addEventListener("mouseleave", cancel);
@@ -8386,7 +7933,7 @@ window.addEventListener("load", selectSavedItem);
 });
 /* ------------------- 背景とコートの色（終り） ------------------- */
 
-/* ------------------- 色の組み合わせお気に入り（滑らかスライド改善版） ------------------- */
+/* ------------------- 色の組み合わせお気に入り ------------------- */
 document.addEventListener('DOMContentLoaded', () => {
   const DEFAULT_FAVORITE = {
     team_scroll_bgA: "#FFFF00",
@@ -8400,18 +7947,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const FAV_ITEM_H = 30;
   const SAVE_TIME = 2000;
   const DELETE_THRESHOLD = 180;
-  const LOOP_COUNT = 100;
 
   const favWrapper = document.getElementById('favoritesPicker');
   if (!favWrapper) return;
 
   let favorites = JSON.parse(localStorage.getItem('favorites3bars')) || Array(MAX_FAVORITES).fill(null);
   const TOTAL_ITEMS = MAX_FAVORITES + 1; // 0=★ + 5 favorites
-  const CYCLE_HEIGHT = TOTAL_ITEMS * FAV_ITEM_H;
-  const INITIAL_SCROLL_TOP = Math.floor(LOOP_COUNT / 2) * CYCLE_HEIGHT;
-
-  let initializedOnVisible = false;
-  let favScrollTimer = null;
 
   function rgbToHex(rgb) {
     if (!rgb) return "#000000";
@@ -8425,12 +7966,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return displayIndex === 0 ? DEFAULT_FAVORITE : favorites[displayIndex - 1];
   }
 
-  function getCenterFavoriteIndex() {
-    const scrollTop = favWrapper.scrollTop;
-    const rawIndex = Math.round(scrollTop / FAV_ITEM_H);
-    return ((rawIndex % TOTAL_ITEMS) + TOTAL_ITEMS) % TOTAL_ITEMS;
-  }
-
   function updateFavoritesActive() {
     const displayIndex = getCenterFavoriteIndex();
     favWrapper.querySelectorAll('.favorites-picker-item').forEach((item, idx) => {
@@ -8438,243 +7973,214 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 画面に表示されたタイミングで初期位置を一度だけ確実に整える
-  function ensureInitialScrollPosition(force = false) {
-    if (favWrapper.clientHeight === 0) return;
-    if (!initializedOnVisible || force) {
-      favWrapper.scrollTop = INITIAL_SCROLL_TOP;
-      initializedOnVisible = true;
-      updateFavoritesActive();
-    }
+  function getCenterFavoriteIndex() {
+    const scrollTop = favWrapper.scrollTop;
+    return Math.round(scrollTop / FAV_ITEM_H) % TOTAL_ITEMS;
   }
 
-  // 端付近まで行ったとき、中央付近の同じ位置へ静かに戻す
-  function recenterIfNearEdge() {
-    const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
-    if (maxScroll <= 0) return;
+ function buildFavoritesPicker() {
+  const currentScroll = favWrapper.scrollTop;
+  favWrapper.innerHTML = '';
+  const LOOP_COUNT = 100;
 
-    const margin = CYCLE_HEIGHT * 5;
-    if (favWrapper.scrollTop < margin || favWrapper.scrollTop > maxScroll - margin) {
-      const offsetInCycle = ((favWrapper.scrollTop % CYCLE_HEIGHT) + CYCLE_HEIGHT) % CYCLE_HEIGHT;
-      favWrapper.scrollTop = INITIAL_SCROLL_TOP + offsetInCycle;
-    }
-  }
+  for (let loop = 0; loop < LOOP_COUNT; loop++) {
+    for (let idx = 0; idx < TOTAL_ITEMS; idx++) {
 
-  function buildFavoritesPicker(keepCurrentScroll = true) {
-    const prevScroll = keepCurrentScroll ? favWrapper.scrollTop : INITIAL_SCROLL_TOP;
-    favWrapper.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = 'favorites-picker-item';
+      div.dataset.index = idx;
 
-    for (let loop = 0; loop < LOOP_COUNT; loop++) {
-      for (let idx = 0; idx < TOTAL_ITEMS; idx++) {
-        const div = document.createElement('div');
-        div.className = 'favorites-picker-item';
-        div.dataset.index = idx;
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'number';
+      numberSpan.textContent = idx === 0 ? '★' : ['①', '②', '③', '④', '⑤'][idx - 1];
+      div.appendChild(numberSpan);
 
-        const numberSpan = document.createElement('span');
-        numberSpan.className = 'number';
-        numberSpan.textContent = idx === 0 ? '★' : ['①', '②', '③', '④', '⑤'][idx - 1];
-        div.appendChild(numberSpan);
+      // ★ ここで新しいキー名で取得
+      const data = getFavoriteByDisplayIndex(idx);
 
-        const data = getFavoriteByDisplayIndex(idx);
+      const blocks = [
+        { key: 'team_scroll_bgA', text: 'Aチーム', cls: 'left' },
+        { key: 'team_scroll_bgB', text: 'Bチーム', cls: 'left' },
+        { key: 'scoreA_color', text: 'A', cls: 'middle' },
+        { key: 'scoreB_color', text: 'D', cls: 'middle' },
+        { key: 'court', text: 'イン', cls: 'right' },
+        { key: 'out', text: 'アウト', cls: 'right' }
+      ];
 
-        const blocks = [
-          { key: 'team_scroll_bgA', text: 'Aチーム', cls: 'left' },
-          { key: 'team_scroll_bgB', text: 'Bチーム', cls: 'left' },
-          { key: 'scoreA_color', text: 'A', cls: 'middle' },
-          { key: 'scoreB_color', text: 'D', cls: 'middle' },
-          { key: 'court', text: 'イン', cls: 'right' },
-          { key: 'out', text: 'アウト', cls: 'right' }
-        ];
+      blocks.forEach((b, i) => {
+        const block = document.createElement('div');
+        block.className = `fav-color ${b.cls}`;
 
-        blocks.forEach((b, i) => {
-          const block = document.createElement('div');
-          block.className = `fav-color ${b.cls}`;
+        const span = document.createElement('span');
+        span.textContent = b.text;
 
-          const span = document.createElement('span');
-          span.textContent = b.text;
-
-          if (data) {
-            if (b.cls === 'middle') {
-              block.style.background = '#000';
-              span.style.color = data[b.key];
-            } else {
-              block.style.background = data[b.key];
-              span.style.color = (i >= 4) ? '#fff' : '#000';
-            }
+        if (data) {
+          if (b.cls === 'middle') {
+            // A/D の黒背景のまま上に色文字を乗せる
+            block.style.background = '#000';
+            span.style.color = data[b.key];
+          } else {
+            // レフト・ライト・イン・アウト
+            block.style.background = data[b.key];
+            span.style.color = (i >= 4) ? '#fff' : '#000';
           }
-
-          block.appendChild(span);
-          div.appendChild(block);
-        });
-
-        if (idx !== 0) {
-          div.style.position = 'relative';
-
-          const saveBar = document.createElement('div');
-          saveBar.className = 'longpress-save';
-          saveBar.style.position = 'absolute';
-          saveBar.style.top = '0';
-          saveBar.style.left = '0';
-          saveBar.style.height = '100%';
-          saveBar.style.width = '0%';
-          saveBar.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.4), rgba(255,165,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,0,255,0.4), rgba(75,0,130,0.4), rgba(238,130,238,0.4))';
-          saveBar.style.borderRadius = '2px';
-          saveBar.style.pointerEvents = 'none';
-          div.appendChild(saveBar);
-
-          let saveTimer = null;
-          let saveInterval = null;
-          let startX = 0;
-          let startY = 0;
-          let currentX = 0;
-          let isDragging = false;
-          let suppressClick = false;
-
-          const startPress = (x, y) => {
-            startX = x;
-            startY = y;
-            currentX = x;
-            isDragging = false;
-            suppressClick = false;
-            saveBar.style.width = '0%';
-
-            clearTimeout(saveTimer);
-            clearInterval(saveInterval);
-
-            const startTime = Date.now();
-            saveInterval = setInterval(() => {
-              const elapsed = Date.now() - startTime;
-              saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
-            }, 50);
-
-            saveTimer = setTimeout(() => {
-              suppressClick = true;
-              saveFavorite(idx - 1);
-              clearInterval(saveInterval);
-              saveBar.style.width = '0%';
-            }, SAVE_TIME);
-          };
-
-          const movePress = (x, y) => {
-            const dx = x - startX;
-            const dy = y - startY;
-
-            // 縦方向または少しでも動いたら長押し保存はキャンセル
-            if (Math.abs(dy) > 8 || Math.abs(dx) > 8) {
-              clearTimeout(saveTimer);
-              clearInterval(saveInterval);
-              saveBar.style.width = '0%';
-            }
-
-            // 横方向へしっかり動かしたときだけスワイプ削除モードにする
-            if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) {
-              isDragging = true;
-              suppressClick = true;
-              currentX = x;
-              div.style.transition = 'none';
-              div.style.transform = `translateX(${currentX - startX}px)`;
-            }
-          };
-
-          const endPress = () => {
-            clearTimeout(saveTimer);
-            clearInterval(saveInterval);
-            saveBar.style.width = '0%';
-
-            if (!isDragging) return;
-            isDragging = false;
-
-            const delta = currentX - startX;
-            if (Math.abs(delta) > DELETE_THRESHOLD) {
-              div.style.transition = '0.2s';
-              div.style.transform = `translateX(${delta > 0 ? 200 : -200}px)`;
-              setTimeout(() => {
-                div.style.transition = '';
-                div.style.transform = '';
-                deleteFavorite(idx - 1);
-              }, 200);
-            } else {
-              div.style.transition = '0.2s';
-              div.style.transform = 'translateX(0)';
-              setTimeout(() => {
-                div.style.transition = '';
-              }, 200);
-            }
-          };
-
-          div.addEventListener('mousedown', e => startPress(e.clientX, e.clientY));
-          div.addEventListener('mousemove', e => movePress(e.clientX, e.clientY));
-          div.addEventListener('mouseup', endPress);
-          div.addEventListener('mouseleave', endPress);
-
-          div.addEventListener('touchstart', e => {
-            if (e.touches[0]) startPress(e.touches[0].clientX, e.touches[0].clientY);
-          }, { passive: true });
-
-          div.addEventListener('touchmove', e => {
-            if (e.touches[0]) movePress(e.touches[0].clientX, e.touches[0].clientY);
-          }, { passive: true });
-
-          div.addEventListener('touchend', endPress);
-          div.addEventListener('touchcancel', endPress);
-
-          div.addEventListener('click', (e) => {
-            if (suppressClick) {
-              suppressClick = false;
-              e.preventDefault();
-              return;
-            }
-            const realIndex = parseInt(div.dataset.index, 10);
-            applyFavorite(realIndex);
-          });
-        } else {
-          div.addEventListener('click', () => {
-            const realIndex = parseInt(div.dataset.index, 10);
-            applyFavorite(realIndex);
-          });
         }
 
-        favWrapper.appendChild(div);
-      }
-    }
+        block.appendChild(span);
+        div.appendChild(block);
+      });
 
-    if (favWrapper.clientHeight > 0 && (keepCurrentScroll && prevScroll > 0)) {
-      favWrapper.scrollTop = prevScroll;
-      initializedOnVisible = true;
-    } else if (favWrapper.clientHeight > 0) {
-      favWrapper.scrollTop = INITIAL_SCROLL_TOP;
-      initializedOnVisible = true;
+      // ★ スワイプ削除 ＆ 長押し保存（以前の仕様そのまま）
+      if (idx !== 0) {
+        div.style.position = 'relative';
+
+        /* 長押しによる保存バー（現在は透明水色） */
+        const saveBar = document.createElement('div');
+        saveBar.className = 'longpress-save';
+        saveBar.style.position = 'absolute';
+        saveBar.style.top = '0';
+        saveBar.style.left = '0';
+        saveBar.style.height = '100%';
+        saveBar.style.width = '0%';
+        saveBar.style.background = 'linear-gradient(90deg, rgba(255,0,0,0.4), rgba(255,165,0,0.4), rgba(255,255,0,0.4), rgba(0,255,0,0.4), rgba(0,0,255,0.4), rgba(75,0,130,0.4), rgba(238,130,238,0.4))'; // ← ここを虹色に修正したい
+        saveBar.style.borderRadius = '2px';
+        div.appendChild(saveBar);
+
+
+// ===== 1回だけ宣言 =====
+let saveTimer, saveInterval;
+
+const startPress = () => {
+  const startTime = Date.now();
+  saveBar.style.width = '0%';
+
+  saveInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    saveBar.style.width = Math.min(100, (elapsed / SAVE_TIME) * 100) + '%';
+  }, 50);
+
+  saveTimer = setTimeout(() => {
+    saveFavorite(idx - 1);
+    clearInterval(saveInterval);
+    saveBar.style.width = '0%';
+  }, SAVE_TIME);
+};
+
+const cancelPress = () => {
+  clearTimeout(saveTimer);
+  clearInterval(saveInterval);
+  saveBar.style.width = '0%';
+};
+
+// ===== 既存（そのまま）=====
+div.addEventListener('mousedown', startPress);
+div.addEventListener('mouseup', cancelPress);
+div.addEventListener('mouseleave', cancelPress);
+div.addEventListener('touchstart', startPress);
+div.addEventListener('touchend', cancelPress);
+div.addEventListener('touchcancel', cancelPress);
+
+// ===== ★ 追加するのはここだけ =====
+let pointerActive = false;
+
+div.addEventListener('pointerdown', (e) => {
+  pointerActive = true;
+  e.preventDefault(); // ← OSの長押しだけ無効化
+});
+
+div.addEventListener('pointerup', () => {
+  pointerActive = false;
+});
+
+div.addEventListener('pointerleave', () => {
+  pointerActive = false;
+});
+
+div.addEventListener('pointercancel', () => {
+  pointerActive = false;
+});
+
+        // スワイプ削除
+        let startX = 0, currentX = 0, isDragging = false;
+
+        const startDrag = x => {
+          startX = x;
+          currentX = x;
+          isDragging = true;
+          div.style.transition = 'none';
+        };
+
+        const moveDrag = x => {
+          if (!isDragging) return;
+          currentX = x;
+          div.style.transform = `translateX(${currentX - startX}px)`;
+        };
+
+        const endDrag = () => {
+          if (!isDragging) return;
+          isDragging = false;
+
+          const delta = currentX - startX;
+
+          if (Math.abs(delta) > DELETE_THRESHOLD) {
+            div.style.transition = '0.2s';
+            div.style.transform = `translateX(${delta > 0 ? 200 : -200}px)`;
+            setTimeout(() => deleteFavorite(idx - 1), 200);
+          } else {
+            div.style.transition = '0.2s';
+            div.style.transform = 'translateX(0)';
+          }
+        };
+
+        div.addEventListener('mousedown', e => startDrag(e.clientX));
+        document.addEventListener('mousemove', e => isDragging && moveDrag(e.clientX));
+        document.addEventListener('mouseup', endDrag);
+
+        div.addEventListener('touchstart', e => startDrag(e.touches[0].clientX));
+        div.addEventListener('touchmove', e => moveDrag(e.touches[0].clientX));
+        div.addEventListener('touchend', endDrag);
+      }
+
+      div.addEventListener('click', () => {
+        const realIndex = parseInt(div.dataset.index);
+        applyFavorite(realIndex);
+      });
+
+      favWrapper.appendChild(div);
     }
+  }
+
+  requestAnimationFrame(() => {
+    favWrapper.scrollTop = currentScroll === 0 ? TOTAL_ITEMS * FAV_ITEM_H : currentScroll;
     updateFavoritesActive();
-  }
-
-  favWrapper.addEventListener('touchstart', () => {
-    ensureInitialScrollPosition(false);
-  }, { passive: true });
-
-  favWrapper.addEventListener('mousedown', () => {
-    ensureInitialScrollPosition(false);
   });
+}
 
-  favWrapper.addEventListener('scroll', () => {
-    clearTimeout(favScrollTimer);
-    favScrollTimer = setTimeout(() => {
-      updateFavoritesActive();
-      recenterIfNearEdge();
-    }, 150);
-  }, { passive: true });
+favWrapper.addEventListener('scroll', () => {
+  const maxScroll = favWrapper.scrollHeight - favWrapper.clientHeight;
+  const SAFE_ZONE = FAV_ITEM_H * 2;
 
-  // 試合画面が開かれたタイミングでも初期位置を確認
-  const gameScreen = document.getElementById('gameScreen');
-  if (gameScreen) {
-    const observer = new MutationObserver(() => {
-      if (gameScreen.style.display !== 'none') {
-        requestAnimationFrame(() => ensureInitialScrollPosition(false));
-      }
+  // 無限スクロール補正（最低限）
+  if (favWrapper.scrollTop < SAFE_ZONE) {
+    requestAnimationFrame(() => {
+      favWrapper.scrollTop += TOTAL_ITEMS * FAV_ITEM_H;
     });
-    observer.observe(gameScreen, { attributes: true, attributeFilter: ['style'] });
+  } else if (favWrapper.scrollTop > maxScroll - SAFE_ZONE) {
+    requestAnimationFrame(() => {
+      favWrapper.scrollTop -= TOTAL_ITEMS * FAV_ITEM_H;
+    });
   }
 
+  // 🔥 ここを修正
+  clearTimeout(favScrollTimer);
+  favScrollTimer = setTimeout(() => {
+    updateFavoritesActive();  // scroll停止後だけ呼ぶ
+  }, 120); // 120ms後に1回だけ
+});
+
+  /* --------------------------------------------------------
+      得点盤にも1回クリックで全て反映
+     -------------------------------------------------------- */
   function forceApplyScoreColor(lblA, lblB, f) {
     if (!lblA || !lblB) return;
 
@@ -8700,141 +8206,151 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('scoreLastColorB', colorB);
     };
 
-    requestAnimationFrame(() => {
-      applyColors();
-      requestAnimationFrame(applyColors);
-    });
+    requestAnimationFrame(() => { applyColors(); requestAnimationFrame(applyColors); });
   }
 
-  function applyFavorite(displayIndex) {
-    const f = getFavoriteByDisplayIndex(displayIndex);
-    if (!f) return;
+function applyFavorite(displayIndex) {
+  const f = getFavoriteByDisplayIndex(displayIndex);
+  if (!f) return;
 
-    const teamWrapper = document.getElementById('teamPicker');
-    if (teamWrapper) {
-      const items = teamWrapper.querySelectorAll('.team-picker-item');
-      const centerIndex = Math.floor(items.length / 3);
-      const item = items[centerIndex];
-      if (item) {
-        const bgA = item.querySelector('.team-scroll-bgA');
-        const bgB = item.querySelector('.team-scroll-bgB');
-        if (bgA) bgA.style.background = f.team_scroll_bgA;
-        if (bgB) bgB.style.background = f.team_scroll_bgB;
-      }
-      teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
-      if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
-    }
-
-    const courtWrapper = document.getElementById('picker');
-    if (courtWrapper) {
-      const items = courtWrapper.querySelectorAll('.picker-item');
-      const centerIndex = Math.floor(items.length / 3);
-      const item = items[centerIndex];
-      if (item) {
-        const bgCourt = item.querySelector('.bg-court');
-        const bgOut = item.querySelector('.bg-out');
-        if (bgCourt) bgCourt.style.background = f.court;
-        if (bgOut) bgOut.style.background = f.out;
-      }
-      courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
-
-      const courtContainer = document.getElementById('courtContainer');
-      if (courtContainer) courtContainer.style.background = f.court;
-      document.body.style.background = f.out;
-
-      const metaTheme = document.querySelector('meta[name="theme-color"]');
-      if (metaTheme) metaTheme.setAttribute('content', f.out);
-    }
-
-    const scoreWrapper = document.getElementById('scorePickerCustom');
-    if (scoreWrapper) {
-      const items = scoreWrapper.querySelectorAll('.scorePicker-item');
-      const centerIndex = Math.floor(items.length / 3);
-      const item = items[centerIndex];
-      if (item) {
-        const lblA = item.querySelector('.scorePicker-labelA span');
-        const lblB = item.querySelector('.scorePicker-labelB span');
-
-        if (window.markScoreFromFavorite) {
-          window.markScoreFromFavorite();
-        }
-
-        forceApplyScoreColor(lblA, lblB, f);
-      }
-      scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
-    }
+  // ----------------------
+  // チームスクロールバー
+  // ----------------------
+  const teamWrapper = document.getElementById('teamPicker');
+  if (teamWrapper) {
+    const items = teamWrapper.querySelectorAll('.team-picker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const bgA = item.querySelector('.team-scroll-bgA');
+    const bgB = item.querySelector('.team-scroll-bgB');
+    if (bgA) bgA.style.background = f.team_scroll_bgA;
+    if (bgB) bgB.style.background = f.team_scroll_bgB;
+    teamWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+    if (typeof updateTeamPickerCenter === 'function') updateTeamPickerCenter();
   }
+
+  // ----------------------
+  // コートスクロールバー
+  // ----------------------
+  const courtWrapper = document.getElementById('picker');
+  if (courtWrapper) {
+    const items = courtWrapper.querySelectorAll('.picker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const bgCourt = item.querySelector('.bg-court');
+    const bgOut = item.querySelector('.bg-out');
+    if (bgCourt) bgCourt.style.background = f.court;
+    if (bgOut) bgOut.style.background = f.out;
+    courtWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+
+    // ★ ここで画面の背景とコートを即反映
+    const courtContainer = document.getElementById('courtContainer');
+    if (courtContainer) courtContainer.style.background = f.court;
+    document.body.style.background = f.out;
+
+    // meta theme-color も更新
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', f.out);
+  }
+
+  // ----------------------
+  // 得点盤
+  // ----------------------
+  const scoreWrapper = document.getElementById('scorePickerCustom');
+  if (scoreWrapper) {
+    const items = scoreWrapper.querySelectorAll('.scorePicker-item');
+    const centerIndex = Math.floor(items.length / 3);
+    const item = items[centerIndex];
+    const lblA = item.querySelector('.scorePicker-labelA span');
+    const lblB = item.querySelector('.scorePicker-labelB span');
+
+// ★★★ ここで「お気に入り経由」を通知 ★★★
+    if (window.markScoreFromFavorite) {
+      window.markScoreFromFavorite();
+    }
+
+    forceApplyScoreColor(lblA, lblB, f);
+
+    scoreWrapper.scrollTop = FAV_ITEM_H * centerIndex;
+  }
+}
 
   function deleteFavorite(realIndex) {
     favorites[realIndex] = null;
     localStorage.setItem('favorites3bars', JSON.stringify(favorites));
-    buildFavoritesPicker(true);
+    buildFavoritesPicker();
   }
 
-  function saveFavorite(realIndex) {
-    const scoreWrapper = document.getElementById('scorePickerCustom');
-    let colorA = '#FFFFFF', colorB = '#FFFFFF';
+function saveFavorite(realIndex) {
 
-    if (scoreWrapper) {
-      const wrapperRect = scoreWrapper.getBoundingClientRect();
-      const items = Array.from(scoreWrapper.querySelectorAll('.scorePicker-item'));
-      let closest = null, minDist = Infinity;
+  /* ------------------- スコアスクロールバーの色取得 ------------------- */
+  const scoreWrapper = document.getElementById('scorePickerCustom');
+  let colorA = '#FFFFFF', colorB = '#FFFFFF';
 
-      items.forEach(it => {
-        const r = it.getBoundingClientRect();
-        const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
-        if (d < minDist) { minDist = d; closest = it; }
-      });
+  if (scoreWrapper) {
+    const wrapperRect = scoreWrapper.getBoundingClientRect();
+    const items = Array.from(scoreWrapper.querySelectorAll('.scorePicker-item'));
+    let closest = null, minDist = Infinity;
 
-      if (closest) {
-        const lblA = closest.querySelector('.scorePicker-labelA span');
-        const lblB = closest.querySelector('.scorePicker-labelB span');
-        if (lblA) colorA = rgbToHex(lblA.style.color);
-        if (lblB) colorB = rgbToHex(lblB.style.color);
-      }
+    items.forEach(it => {
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+      if (d < minDist) { minDist = d; closest = it; }
+    });
+
+    if (closest) {
+      const lblA = closest.querySelector('.scorePicker-labelA span');
+      const lblB = closest.querySelector('.scorePicker-labelB span');
+      if (lblA) colorA = rgbToHex(lblA.style.color);
+      if (lblB) colorB = rgbToHex(lblB.style.color);
     }
-
-    const teamWrapper = document.getElementById('teamPicker');
-    let teamA = '#FF0000';
-    let teamB = '#00FF00';
-
-    if (teamWrapper) {
-      const wrapperRect = teamWrapper.getBoundingClientRect();
-      const items = Array.from(teamWrapper.querySelectorAll('.team-picker-item'));
-      let closest = null, minDist = Infinity;
-
-      items.forEach(it => {
-        const r = it.getBoundingClientRect();
-        const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
-        if (d < minDist) { minDist = d; closest = it; }
-      });
-
-      if (closest) {
-        const bgA = closest.querySelector('.team-scroll-bgA');
-        const bgB = closest.querySelector('.team-scroll-bgB');
-        if (bgA) teamA = rgbToHex(bgA.style.background);
-        if (bgB) teamB = rgbToHex(bgB.style.background);
-      }
-    }
-
-    const colors = {
-      team_scroll_bgA: teamA,
-      team_scroll_bgB: teamB,
-      scoreA_color: colorA,
-      scoreB_color: colorB,
-      court: rgbToHex(document.getElementById('courtContainer')?.style.background) || '#444444',
-      out: rgbToHex(document.body.style.background) || '#222222'
-    };
-
-    favorites[realIndex] = colors;
-    localStorage.setItem('favorites3bars', JSON.stringify(favorites));
-
-    buildFavoritesPicker(true);
   }
 
-  buildFavoritesPicker(false);
+
+  /* ------------------- チームスクロールバーの色取得（修正点） ------------------- */
+  const teamWrapper = document.getElementById('teamPicker');
+  let teamA = '#FF0000';
+  let teamB = '#00FF00';
+
+  if (teamWrapper) {
+    const wrapperRect = teamWrapper.getBoundingClientRect();
+    const items = Array.from(teamWrapper.querySelectorAll('.team-picker-item'));
+    let closest = null, minDist = Infinity;
+
+    items.forEach(it => {
+      const r = it.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - (wrapperRect.top + wrapperRect.height / 2));
+      if (d < minDist) { minDist = d; closest = it; }
+    });
+
+    if (closest) {
+      const bgA = closest.querySelector('.team-scroll-bgA');
+      const bgB = closest.querySelector('.team-scroll-bgB');
+      if (bgA) teamA = rgbToHex(bgA.style.background);
+      if (bgB) teamB = rgbToHex(bgB.style.background);
+    }
+  }
+
+
+  /* ------------------- ローカル保存データ作成 ------------------- */
+  const colors = {
+    team_scroll_bgA: teamA,
+    team_scroll_bgB: teamB,
+    scoreA_color: colorA,
+    scoreB_color: colorB,
+    court: rgbToHex(document.getElementById('courtContainer')?.style.background) || '#444444',
+    out: rgbToHex(document.body.style.background) || '#222222'
+  };
+
+  favorites[realIndex] = colors;
+  localStorage.setItem('favorites3bars', JSON.stringify(favorites));
+
+  buildFavoritesPicker();
+}
+
+buildFavoritesPicker();
+
 });
-
 /* ------------------- 色の組み合わせお気に入り終り ------------------- */
 
 /* ------------------- アプリURLをコピーして友達に共有 ------------------- */
@@ -9304,82 +8820,18 @@ function showSimpleConfirm(message, callback) {
   }
 <!-- ==================== シンプルOK・キャンセル　ダイアログ ==================== -->
 
-// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版） ====================
-let simpleAlertAutoCloseTimer = null;
-
-function showSimpleAlert(message, callback, autoCloseMs = 0) {
+<!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
+function showSimpleAlert(message, callback) {
     const dialog = document.getElementById('simpleAlertDialog');
-    const msgEl = document.getElementById('simpleAlertMessage');
-    if (!dialog || !msgEl) return;
+    document.getElementById('simpleAlertMessage').innerHTML = message;
+    dialog.style.display = 'flex'; // ここで初めて表示
 
-    // 親要素が display: none でも巻き込まれないよう <body> の直下へ移動
-    if (dialog.parentElement !== document.body) {
-        document.body.appendChild(dialog);
-    }
-
-    msgEl.innerHTML = message;
-    dialog.style.setProperty('display', 'flex', 'important');
-    dialog.style.setProperty('position', 'fixed', 'important');
-    dialog.style.setProperty('inset', '0px', 'important');
-    dialog.style.setProperty('background', 'rgba(0, 0, 0, 0.5)', 'important');
-    dialog.style.setProperty('align-items', 'center', 'important');
-    dialog.style.setProperty('justify-content', 'center', 'important');
-    dialog.style.setProperty('z-index', '99999', 'important');
-
-    // ★ OKボタンの見た目を固定
-    const okBtn = dialog.querySelector('button');
-    if (okBtn) {
-        okBtn.style.setProperty('flex', '0 0 auto', 'important');
-        okBtn.style.setProperty('width', 'auto', 'important');
-        okBtn.style.setProperty('min-width', '88px', 'important');
-        okBtn.style.setProperty('padding', '8px 20px', 'important');
-        okBtn.style.setProperty('font-size', '14px', 'important');
-        okBtn.style.setProperty('font-weight', '600', 'important');
-        okBtn.style.setProperty('border-radius', '8px', 'important');
-        okBtn.style.setProperty('background', '#0072ff', 'important');
-        okBtn.style.setProperty('color', '#ffffff', 'important');
-        okBtn.style.setProperty('border', 'none', 'important');
-        okBtn.style.setProperty('cursor', 'pointer', 'important');
-    }
-
-    // ★ モーダル内側ボックス（枠）の幅・余白・見た目を固定
-    const box = dialog.firstElementChild;
-    if (box) {
-        box.style.setProperty('transform', 'none', 'important');
-        box.style.setProperty('width', '240px', 'important');
-        box.style.setProperty('max-width', '240px', 'important');
-        box.style.setProperty('padding', '16px 24px', 'important');
-        box.style.setProperty('box-sizing', 'border-box', 'important');
-        box.style.setProperty('text-align', 'center', 'important');
-        box.style.setProperty('font-size', '14px', 'important');
-    }
-
-    // ★ メッセージ文字サイズを固定
-    msgEl.style.setProperty('font-size', '14px', 'important');
-    msgEl.style.setProperty('line-height', '1.5', 'important');
-
-    if (simpleAlertAutoCloseTimer) {
-        clearTimeout(simpleAlertAutoCloseTimer);
-        simpleAlertAutoCloseTimer = null;
-    }
-
-    const closeDialog = () => {
-        if (simpleAlertAutoCloseTimer) {
-            clearTimeout(simpleAlertAutoCloseTimer);
-            simpleAlertAutoCloseTimer = null;
-        }
-        dialog.style.setProperty('display', 'none', 'important');
-        if (callback) callback();
-    };
-
-    window.simpleAlertOK = closeDialog;
-
-    if (autoCloseMs > 0) {
-        simpleAlertAutoCloseTimer = setTimeout(closeDialog, autoCloseMs);
+    window.simpleAlertOK = function() {
+        dialog.style.display = 'none';
+        if(callback) callback();
     }
 }
-
-// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版）終り ====================
+<!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
 
 // QRモーダル 開く
 document.addEventListener("DOMContentLoaded", () => {
@@ -9649,17 +9101,8 @@ if ('serviceWorker' in navigator) {
 </body>
 </html>
 
-
-<!-- QRコード生成ライブラリ（QRious） -->
-<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-
-<!-- データ圧縮・解凍ライブラリ（fflate） -->
-<script src="https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js"></script>
-
-<!-- QRコード読み取りライブラリ（jsQR） -->
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-
-<script src="backupManager.js"></script>
+<!-- QR生成ライブラリ（QRious） -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
 <!-- OFUSE ウィジェット（async でOK） -->
 <script async src="https://ofuse.me/assets/platform/widget.js" charset="utf-8"></script>
