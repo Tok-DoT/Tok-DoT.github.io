@@ -5813,20 +5813,26 @@ function updatePointDisplay(team) {
   }
 }
 
-// ---------------------- 長押しで振動ON/OFF切替 ----------------------
+// ---------------------- 長押しで振動ON/OFF切替（3秒で自動消去＋OK対応） ----------------------
 function addVibrationToggleLongPress(button) {
     let pressTimer;
 
     const start = () => {
+        clearTimeout(pressTimer);
         pressTimer = setTimeout(() => {
             isVibrationEnabled = !isVibrationEnabled;
 
-            // デバッグ用（不要なら削除OK）
-            console.log("Vibration:", isVibrationEnabled ? "ON" : "OFF");
-
-            // ONにした瞬間だけ軽く振動（任意）
             if (navigator.vibrate && isVibrationEnabled) {
                 navigator.vibrate(30);
+            }
+
+            if (typeof showSimpleAlert === "function") {
+                const statusText = isVibrationEnabled ? "ON" : "OFF";
+                showSimpleAlert(
+                    `得点盤タップ時の振動を<br><strong>${statusText}</strong>にしました`,
+                    null,
+                    3000
+                );
             }
         }, 500); // 500ms 長押し
     };
@@ -5834,7 +5840,7 @@ function addVibrationToggleLongPress(button) {
     const cancel = () => clearTimeout(pressTimer);
 
     button.addEventListener("mousedown", start);
-    button.addEventListener("touchstart", start);
+    button.addEventListener("touchstart", start, { passive: true });
 
     button.addEventListener("mouseup", cancel);
     button.addEventListener("mouseleave", cancel);
@@ -9298,17 +9304,49 @@ function showSimpleConfirm(message, callback) {
   }
 <!-- ==================== シンプルOK・キャンセル　ダイアログ ==================== -->
 
-<!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
-function showSimpleAlert(message, callback) {
-    const dialog = document.getElementById('simpleAlertDialog');
-    document.getElementById('simpleAlertMessage').innerHTML = message;
-    dialog.style.display = 'flex'; // ここで初めて表示
+/// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版） ====================
+let simpleAlertAutoCloseTimer = null;
 
-    window.simpleAlertOK = function() {
-        dialog.style.display = 'none';
-        if(callback) callback();
+function showSimpleAlert(message, callback, autoCloseMs = 0) {
+    const dialog = document.getElementById('simpleAlertDialog');
+    const msgEl = document.getElementById('simpleAlertMessage');
+    if (!dialog || !msgEl) return;
+
+    // 親要素が display: none でも巻き込まれないよう <body> の直下へ移動
+    if (dialog.parentElement !== document.body) {
+        document.body.appendChild(dialog);
+    }
+
+    msgEl.innerHTML = message;
+    dialog.style.setProperty('display', 'flex', 'important');
+    dialog.style.setProperty('position', 'fixed', 'important');
+    dialog.style.setProperty('inset', '0px', 'important');
+    dialog.style.setProperty('background', 'rgba(0, 0, 0, 0.5)', 'important');
+    dialog.style.setProperty('align-items', 'center', 'important');
+    dialog.style.setProperty('justify-content', 'center', 'important');
+    dialog.style.setProperty('z-index', '99999', 'important');
+
+    if (simpleAlertAutoCloseTimer) {
+        clearTimeout(simpleAlertAutoCloseTimer);
+        simpleAlertAutoCloseTimer = null;
+    }
+
+    const closeDialog = () => {
+        if (simpleAlertAutoCloseTimer) {
+            clearTimeout(simpleAlertAutoCloseTimer);
+            simpleAlertAutoCloseTimer = null;
+        }
+        dialog.style.setProperty('display', 'none', 'important');
+        if (callback) callback();
+    };
+
+    window.simpleAlertOK = closeDialog;
+
+    if (autoCloseMs > 0) {
+        simpleAlertAutoCloseTimer = setTimeout(closeDialog, autoCloseMs);
     }
 }
+
 <!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
 
 // QRモーダル 開く
