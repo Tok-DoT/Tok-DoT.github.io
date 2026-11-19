@@ -9304,7 +9304,7 @@ function showSimpleConfirm(message, callback) {
   }
 <!-- ==================== シンプルOK・キャンセル　ダイアログ ==================== -->
 
-/// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版） ====================
+// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版） ====================
 let simpleAlertAutoCloseTimer = null;
 
 function showSimpleAlert(message, callback, autoCloseMs = 0) {
@@ -9325,6 +9325,33 @@ function showSimpleAlert(message, callback, autoCloseMs = 0) {
     dialog.style.setProperty('align-items', 'center', 'important');
     dialog.style.setProperty('justify-content', 'center', 'important');
     dialog.style.setProperty('z-index', '99999', 'important');
+
+    // ★ OKボタンの見た目を固定
+    const okBtn = dialog.querySelector('button');
+    if (okBtn) {
+        okBtn.style.setProperty('flex', '0 0 auto', 'important');
+        okBtn.style.setProperty('width', 'auto', 'important');
+        okBtn.style.setProperty('min-width', '88px', 'important');
+        okBtn.style.setProperty('padding', '8px 20px', 'important');
+        okBtn.style.setProperty('font-size', '14px', 'important');
+        okBtn.style.setProperty('font-weight', '600', 'important');
+        okBtn.style.setProperty('border-radius', '8px', 'important');
+        okBtn.style.setProperty('background', '#0072ff', 'important');
+        okBtn.style.setProperty('color', '#ffffff', 'important');
+        okBtn.style.setProperty('border', 'none', 'important');
+        okBtn.style.setProperty('cursor', 'pointer', 'important');
+    }
+
+    // ★ モーダル内側ボックス（枠）の幅・余白・見た目を固定
+    const box = dialog.firstElementChild;
+    if (box) {
+        box.style.setProperty('transform', 'none', 'important');
+        box.style.setProperty('width', '240px', 'important');
+        box.style.setProperty('max-width', '240px', 'important');
+        box.style.setProperty('padding', '16px 24px', 'important');
+        box.style.setProperty('box-sizing', 'border-box', 'important');
+        box.style.setProperty('text-align', 'center', 'important');
+    }
 
     if (simpleAlertAutoCloseTimer) {
         clearTimeout(simpleAlertAutoCloseTimer);
@@ -9347,7 +9374,7 @@ function showSimpleAlert(message, callback, autoCloseMs = 0) {
     }
 }
 
-<!-- ==================== シンプルOKのみ　ダイアログ ==================== -->
+// ==================== シンプルOKのみ ダイアログ（自動消去＋OK対応版）終り ====================
 
 // QRモーダル 開く
 document.addEventListener("DOMContentLoaded", () => {
